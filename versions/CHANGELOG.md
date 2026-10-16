@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3 - 2026-10-17
+- House rules: punctuation manners. Pause with commas, colons, or periods; no hyphen chains between clauses; greetings are prose, not status reports.
+- Manual: greeting example and section headers cleaned; updater note uses parentheses; manual rev bumped to 0.5.3.
+
 ## 0.5.2 - 2026-10-17
 - Manual: the session-start load is now blocking on the first message (even a bare "hi"): update + reads first, then greet. No more two-prompt warm-up.
 - Manual upkeep: `AGENTS.md` carries its manual rev; after engine updates the agent offers a refresh (replace for default, merge for customized).

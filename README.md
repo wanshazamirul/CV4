@@ -4,7 +4,7 @@
 **Start here:** give your AI agent this link and one instruction:
 
 ```
-https://github.com/wanshazamirul/CV4  - clone this and read BOOT.md
+Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
 ```
 
 It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. No terminals, no config. This README is the map.

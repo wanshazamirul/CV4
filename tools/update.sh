@@ -30,4 +30,4 @@ done
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")
 git add -A >/dev/null 2>&1
 git commit -q -m "engine update: v$NEWV ($BEHIND commit(s) from upstream)" >/dev/null 2>&1 || true
-echo "update: engine pulled to v$NEWV - $BEHIND new upstream commit(s). Mention this to the user in one line."
+echo "update: engine pulled to v$NEWV ($BEHIND upstream commit(s)). Mention it to the user in one line."
