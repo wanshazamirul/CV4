@@ -44,13 +44,16 @@ Two movements, forever: **recall** before acting, **record** before leaving.
  say: "read BOOT.md"
        │
        ▼
- 5 questions: names, timezone, tone, purpose
+ 3 questions: your name, its name, how it behaves
+       │
+       ▼
+ region + timezone detected silently (JST -> -san, etc.)
        │
        ▼
  AGENTS.md created (yours) + memory seeded + first log written
        │
        ▼
- talk like normal · say "save" when done
+ talk like normal - say "save" when done
 ```
 
 ## A day in the life

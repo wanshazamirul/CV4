@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1 - 2026-10-17
+- README: first-5-minutes flow updated to the real enrollment (3 questions + silent region detection).
+
 ## 0.4.0 - 2026-10-17
 - Public line opens: this content mirrors to the CV4 repo (clean history per release). Auto-update pulls from CV4.
 
