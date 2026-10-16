@@ -7,7 +7,7 @@
 Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
 ```
 
-It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. From then on, open your agent in that folder: the manual loads with the session. No terminals, no config. This README is the map.
+It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. From then on, open your agent in that folder: the manual loads with the session. Onboarding also offers the signpost, so any folder on the machine wakes with memory. No terminals, no config. This README is the map.
 
 ---
 
@@ -183,7 +183,9 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 
 **Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. `git log` is your full history.
 
-**Where do I start my agent from now on?** Inside this folder (or any folder within it): the manual loads when the session starts here, and that is what wakes the memory. Start it somewhere else and it greets you like a stranger.
+**Where do I start my agent from now on?** Inside this folder (or any folder within it): the manual loads when the session starts here, and that is what wakes the memory. If you accepted the signpost at onboarding, any folder works. Without it, start elsewhere and it greets you like a stranger.
+
+**What is the signpost, and how do I remove it?** One marked block, offered at onboarding, in your agent's global rules (`~/.config/opencode/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, or `~/.codex/AGENTS.md`): it points every session back to this repo. It is the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->`. Delete the block to detach; nothing else is touched.
 
 **Which agents work?** Anything that reads files. BOOT creates `AGENTS.md` plus a `CLAUDE.md` / `GEMINI.md` pointer when needed, so every tool reads the same manual.
 

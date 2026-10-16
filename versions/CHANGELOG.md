@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.5 - 2026-10-17
+- Signpost: onboarding offers one marked block in the agent's global rules, so any folder wakes with memory. opencode also gets the native `instructions` wiring.
+- Manual: Home anchoring (`[HOME]` baked at boot; all paths resolve against it), the updater works from any folder, signpost house rules.
+- README: signpost FAQ + where the block lives per tool.
+
 ## 0.5.4 - 2026-10-17
 - Boot: the hello now hands over home base. Open the agent in this folder from now on; the manual loads with the session.
 - Manual: a new house rule for sessions that started outside the repo (say it, ask them to restart inside).
