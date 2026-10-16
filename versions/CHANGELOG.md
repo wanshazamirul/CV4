@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.6 - 2026-10-17
+- Uninstall: a two-step exit in README (remove the signpost, delete the folder), an FAQ pointer, and a manual rule so the companion runs it on request (final save first).
+
 ## 0.5.5 - 2026-10-17
 - Signpost: onboarding offers one marked block in the agent's global rules, so any folder wakes with memory. opencode also gets the native `instructions` wiring.
 - Manual: Home anchoring (`[HOME]` baked at boot; all paths resolve against it), the updater works from any folder, signpost house rules.

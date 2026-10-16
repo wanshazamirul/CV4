@@ -173,6 +173,15 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.
 
+## Uninstalling
+
+Almost everything lives inside this folder; the only machine-level traces are the signpost block and the `instructions` entry. A clean exit is small:
+
+1. **Remove the signpost** (if installed): delete the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->` in whichever global files have it (`~/.config/opencode/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), and remove the `<HOME>/AGENTS.md` entry from `instructions` in `~/.config/opencode/opencode.json` if you added it. If that config file only existed for this, deleting the file is fine too.
+2. **Delete this folder.** Memory, logs, skills, and history all live inside it.
+
+Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the signpost, says what remains, and you delete the folder when you are done. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+
 ## Roadmap
 
 - **Solo (this)**: zero services, one session per brain at a time.
@@ -186,6 +195,8 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 **Where do I start my agent from now on?** Inside this folder (or any folder within it): the manual loads when the session starts here, and that is what wakes the memory. If you accepted the signpost at onboarding, any folder works. Without it, start elsewhere and it greets you like a stranger.
 
 **What is the signpost, and how do I remove it?** One marked block, offered at onboarding, in your agent's global rules (`~/.config/opencode/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, or `~/.codex/AGENTS.md`): it points every session back to this repo. It is the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->`. Delete the block to detach; nothing else is touched.
+
+**How do I uninstall CV4 completely?** See [Uninstalling](#uninstalling): remove the signpost, delete the folder. Nothing else on the machine is touched.
 
 **Which agents work?** Anything that reads files. BOOT creates `AGENTS.md` plus a `CLAUDE.md` / `GEMINI.md` pointer when needed, so every tool reads the same manual.
 
