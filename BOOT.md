@@ -26,24 +26,23 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 
 ## Step 1 - the interview (3 questions, once)
 
-Use your interactive question UI when you have one (opencode: the `question` tool; Claude Code: `AskUserQuestion`). Batch them on one screen if the tool allows; otherwise one at a time. No question tool? Ask the same three in plain text.
+Use your interactive question UI when you have one (opencode: the `question` tool; Claude Code: `AskUserQuestion`) for the choice parts: the behavior dials and the confirm card. The two name questions stay **plain text** - no examples, no suggestions, they type freely.
 
 ```
-What it looks like (one screen):
+What it looks like:
 
-  ? What should I call you?        [ type your answer ]
-  ? What should I call myself?     ( Rei · Nova · Sage · Mika · type your own )
+  ? What should I call you?        (plain text, they type freely)
+  ? What should I call myself?     (plain text, they type freely)
   ? How should I behave?           voice:   warm · playful · blunt · formal · dry
                                    emoji:   none · light · generous
                                    answers: short · balanced · detailed
 ```
 
-**Q1 - their name** (free text / the tool's type-your-own field):
+**Q1 - their name** (plain text, type freely):
 - "What should I call you?"
 
-**Q2 - your name** (suggestions + type-your-own):
+**Q2 - your name** (plain text, type freely):
 - "What should I call myself?"
-- Suggested options: `Rei` · `Nova` · `Sage` · `Mika`
 
 **Q3 - behavior** (one screen, three quick picks):
 - **Voice** (multi-select): `warm` · `playful` · `blunt` · `formal` · `dry`

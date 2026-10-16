@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.3 - 2026-10-17
+- BOOT: name questions are plain text (no examples, no suggestions); choice UI only for behavior dials + confirm.
+
 ## 0.4.2 - 2026-10-17
 - README: quickstart is now "paste the link to your agent"; First 5 minutes section removed.
 
