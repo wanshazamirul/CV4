@@ -177,6 +177,8 @@ Created locally at first boot (yours forever):
 
 **What if I delete `tools/.fts.db`?** Nothing. It rebuilds with one command. Files are the truth; the index is a cache.
 
+**Anything Windows-specific?** Where docs say `python3`, use `python` (`python tools/fts.py --build`). And if `tools/update.sh` ever throws `$'\r'` errors, that checkout has CRLF endings: heal once with `sed -i 's/\r$//' tools/update.sh`. Fresh clones ship LF.
+
 **How do I add my own ritual?** Create `skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add it to `skills/README.md`. Sub-skills nest under their parent. That is the entire SDK.
 
 **Why is there a `versions/` folder?** So the root stays clean and the update system has one obvious home for its state.

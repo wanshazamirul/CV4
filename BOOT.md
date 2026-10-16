@@ -111,6 +111,8 @@ Greet them by name. From now on, every session follows the manual.
 
 Run `bash tools/update.sh` at every session start. Offline? It exits silently.
 
+Windows first aid: if it throws `$'\r'` errors, that checkout has CRLF line endings. Heal once with `sed -i 's/\r$//' tools/update.sh`, then re-run. Newer clones ship LF; `.gitattributes` keeps it that way.
+
 ## Continuous improvement (the important part)
 
 Nothing repeats a third time for free. Repetitions become upgrades on this ladder, and the human approves every one:

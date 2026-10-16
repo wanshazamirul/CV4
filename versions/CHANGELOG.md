@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.4 - 2026-10-17
+- Windows: shell scripts stay LF (`.gitattributes` + updater self-heal), so `bash tools/update.sh` no longer hits `$'\r'` errors on fresh checkouts. BOOT + FAQ first aid for old clones; FAQ also notes `python` vs `python3`.
+
 ## 0.4.3 - 2026-10-17
 - BOOT: name questions are plain text (no examples, no suggestions); choice UI only for behavior dials + confirm.
 
