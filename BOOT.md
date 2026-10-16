@@ -27,25 +27,25 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 
 ## Step 1 - the interview (3 questions, once)
 
-Use your interactive question UI when you have one (opencode: the `question` tool; Claude Code: `AskUserQuestion`) for the choice parts: the behavior dials and the confirm card. The two name questions stay **plain text** - no examples, no suggestions, they type freely.
+Use your interactive question UI (opencode: the `question` tool; Claude Code: `AskUserQuestion`) for all of it: **question prompts, one per question, never a prose list**. Batch them on one screen when the tool allows; otherwise one at a time. The name prompts carry no suggested names: the user types their own (the tool's type-your-own field). If the tool cannot present a free-entry question, ask that one as a single plain question and wait for the reply. Never invent example names.
 
 ```
 What it looks like:
 
-  ? What should I call you?        (plain text, they type freely)
-  ? What should I call myself?     (plain text, they type freely)
+  ? What is your name?             (type your answer)
+  ? What is my name?               (type your answer; yours to choose)
   ? How should I behave?           voice:   warm · playful · blunt · formal · dry
                                    emoji:   none · light · generous
                                    answers: short · balanced · detailed
 ```
 
-**Q1 - their name** (plain text, type freely):
-- "What should I call you?"
+**Q1 - their name** (question prompt, free entry, no suggestions):
+- "What is your name?"
 
-**Q2 - your name** (plain text, type freely):
-- "What should I call myself?"
+**Q2 - your name** (question prompt, free entry, no suggestions):
+- "What is my name?"
 
-**Q3 - behavior** (one screen, three quick picks):
+**Q3 - behavior** (question prompt, three quick picks):
 - **Voice** (multi-select): `warm` · `playful` · `blunt` · `formal` · `dry`
 - **Emoji**: `none` · `light` · `generous`
 - **Answers**: `short` · `balanced` · `detailed`

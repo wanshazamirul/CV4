@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.1 - 2026-10-17
+- BOOT interview: all three questions render as question prompts (never a prose list); simpler wording: "What is your name?" and "What is my name?", free entry with no suggested names.
+
 ## 0.5.0 - 2026-10-17
 - Your own skills: `my-skills/` zone (never overwritten, primary) with its own registry. The bank (`skills/`) gets a registry too; usage lives in `memory/skills.md`, ticked at save.
 - The gate: `forge` scans both registries before generating anything. Dedicated wins: fold-in offered, never an auto-created overlap.
