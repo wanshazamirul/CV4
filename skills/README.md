@@ -2,6 +2,11 @@
 
 A skill is a small file with a **trigger** (its `description`) and a **procedure** (its body). When the trigger fires, the agent loads the file and follows it.
 
+## Two zones
+
+- `skills/` - the **bank**: these rituals, auto-updated with new versions.
+- `my-skills/` - **yours**: never overwritten, and primary. Your triggers win overlaps with the bank. Bring your own, or let `forge` add one.
+
 ## Catalog
 
 | Skill | Trigger | Does |
@@ -15,15 +20,15 @@ A skill is a small file with a **trigger** (its `description`) and a **procedure
 
 ## Structure
 
-- One folder per skill: `skills/<name>/SKILL.md`.
+- One folder per skill: `skills/<name>/SKILL.md` (bank) or `my-skills/<name>/SKILL.md` (yours).
 - **Sub-skills nest under their parent**: `skills/<parent>/<sub>/SKILL.md`. The parent lists its sub-skills. Use sub-skills when a repetition extends an existing ritual instead of becoming a new one.
 - The `name` must equal the folder name. The `description` is the trigger: specific, short, non-overlapping.
 
 ## Adding a skill
 
-1. Create `skills/<name>/SKILL.md` with `name` + `description` + the procedure.
-2. Add a row to the catalog above.
+1. Create `my-skills/<name>/SKILL.md` with `name` + `description` + the procedure.
+2. Add a row to `my-skills/registry.md` (the gate reads it).
 3. Mention it in your `AGENTS.md` skills line (so every session sees it).
 4. Log it in `memory/index.md`.
 
-Or let `forge` propose it when a pattern repeats. Skills are template-owned: new versions of this repo update them automatically, so keep personal tweaks in your own files.
+Or let `forge` propose it when a pattern repeats: it scans both registries first, and your skills win (fold-in offered, never an overlap). Bank skills (`skills/`) are template-owned and update automatically; anything personal belongs in `my-skills/`.

@@ -18,18 +18,22 @@ description: "Use when a pattern repeats 3+ times, the same mistake happens twic
 1. **Hotlist line** (mistakes, gotchas) -> `main/hotlist.md`: `trigger -> action`.
 2. **Library chapter** (solutions that generalize) -> `library/<book>/<chapter>/<chapter>.md`: Problem / Solution / Sources. Add the chapter to the book's README.
 3. **Sub-skill** (the repetition lives INSIDE an existing skill's workflow) -> `skills/<parent>/<sub>/SKILL.md`, and the parent lists its sub-skills. Extend before multiplying.
-4. **New skill** (a workflow that repeats end to end, standalone) -> `skills/<name>/SKILL.md` with a clear trigger; add it to `skills/README.md` and the manual's skills list.
+4. **New skill** (a workflow that repeats end to end, standalone) -> `my-skills/<name>/SKILL.md` with a clear trigger; add it to `my-skills/registry.md` and the manual's skills list.
 
 **Rung 3 vs 4 test:** does the repetition interrupt or extend something that already has a ritual? Sub-skill. Is it a whole new ritual? New skill.
 
 ## How
 
 1. Name the repetition: what happened, how many times, evidence from `logs/`.
-2. Pick the rung. When unsure, climb down: a hotlist line beats a whole skill.
-3. Draft the exact text or file structure.
-4. Show the user before writing. Get a yes.
-5. Write it + add the index row in `memory/index.md` so recall finds it.
-6. Confirm in one line: "Forged: <what> -> <where>."
+2. **Run the gate**: scan `skills/registry.md` + `my-skills/registry.md` (and the live folders).
+   - A `my-skills/` skill covers the trigger: STOP. No new skill. Offer the fold-in; the user decides, default defer.
+   - A bank skill covers it: upgrade that skill (usually a sub-skill), never a duplicate.
+   - Nothing covers it: continue.
+3. Pick the rung. When unsure, climb down: a hotlist line beats a whole skill.
+4. Draft the exact text or file structure.
+5. Show the user before writing. Get a yes.
+6. Write it + register it: new skills get a row in `my-skills/registry.md`; add the index row in `memory/index.md` so recall finds it.
+7. Confirm in one line: "Forged: <what> -> <where>."
 
 ## Monthly mini-review (only when the user asks for a review)
 
@@ -45,9 +49,11 @@ Read the last month of `logs/`:
 - Rules come from real repetitions, never from a single theory.
 - Prefer extending over multiplying: the catalog (`skills/README.md`) stays small and legible.
 - One upgrade per repetition. Don't turn one bug into three files.
+- Dedicated wins: never auto-create over one of the user's skills; fold-in only, on explicit approval.
 - No em-dashes in anything written.
 
 ## Level history
 
+- Lv.3 (2026-10-17) - the gate: registry scan before proposing; dedicated beats generated; forged skills land in `my-skills/`.
 - Lv.2 (2026-10-16) - sub-skill rung added; ladder unified with the library book structure.
 - Lv.1 - initial skeleton ritual.

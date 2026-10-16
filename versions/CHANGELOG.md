@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 - 2026-10-17
+- Your own skills: `my-skills/` zone (never overwritten, primary) with its own registry. The bank (`skills/`) gets a registry too; usage lives in `memory/skills.md`, ticked at save.
+- The gate: `forge` scans both registries before generating anything. Dedicated wins: fold-in offered, never an auto-created overlap.
+- Updater: one-time `my-skills/` seed for old clones, then never touched again.
+
 ## 0.4.4 - 2026-10-17
 - Windows: shell scripts stay LF (`.gitattributes` + updater self-heal), so `bash tools/update.sh` no longer hits `$'\r'` errors on fresh checkouts. BOOT + FAQ first aid for old clones; FAQ also notes `python` vs `python3`.
 

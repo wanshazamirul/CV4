@@ -30,6 +30,8 @@ Two movements, forever: **recall** before acting, **record** before leaving.
                  │   memory/    index · decisions · reminders │
                  │   logs/      every session, one file a day │
                  │   library/   books of reusable patterns    │
+                 │   skills/    bank rituals (auto-updated)   │
+                 │   my-skills/ your rituals, never touched   │
                  │                                            │
                  │   tools/fts.py   the search index          │
                  │   (derived: delete it, rebuild in seconds) │
@@ -72,7 +74,8 @@ Nothing repeats a third time for free.
 - Corrections become **hotlist** lines: the same mistake cannot return quietly.
 - Solved problems become **library chapters**: recall finds them next time.
 - Repetitions inside an existing workflow become **sub-skills** (nested under their parent).
-- Entire new workflows become **skills**.
+- Entire new workflows become **skills**: bank ones upgrade in place; yours land in `my-skills/`.
+- Before any new skill, the **gate** checks both registries: bank skills get upgraded, **your** skills win (fold-in offered, never overwritten).
 - The **soul** (`main/soul.md`) grows through use: real lessons land there during saves, nothing invented.
 
 Details and rules: `skills/forge/`.
@@ -109,6 +112,7 @@ CV4/
 │   ├── index.md                   fast recall layer: one line per durable item
 │   ├── decisions.md               append-only decision log
 │   ├── reminders.md               forward tasks that survive resets
+│   ├── skills.md                  skill usage ledger (ticked at save)
 │   └── feedback/                  suggestions about the workflow
 │
 ├── logs/                        SESSION HISTORY
@@ -121,14 +125,19 @@ CV4/
 │   └── workflow/                  a book (its README lists its chapters)
 │       └── recall-order/          a chapter
 │
-├── skills/                      THE RITUALS (load the file when triggered)
+├── skills/                      THE BANK (auto-updated rituals)
 │   ├── README.md                  catalog + how to add skills and sub-skills
+│   ├── registry.md                bank roster (the gate reads it)
 │   ├── save/                      "save" / goodbye: log + memory + reminders
 │   ├── check-reminders/           open items surface at session start
 │   ├── decision-log/              context, decision, why (append-only)
 │   ├── recall-memory/             hotlist -> index -> fts -> library
 │   ├── build-protocol/            restate, recall, plan, gates, verify
 │   └── forge/                     repetition -> rule, chapter, sub-skill, skill
+│
+├── my-skills/                   YOURS FOREVER (never overwritten; they win)
+│   ├── README.md                  bring your own, or let forge add one
+│   └── registry.md                your roster (the gate checks it first)
 │
 └── tools/                       THE TOOLBELT
     ├── fts.py                     search index (stdlib only)
@@ -149,6 +158,8 @@ Created locally at first boot (yours forever):
 | "build X", multi-step work | `build-protocol` | Restate, recall, plan, build in gates, verify |
 | "that keeps happening", 3x repeat | `forge` | The ladder: rule, chapter, sub-skill, or new skill |
 
+Your own rituals live in `my-skills/`: never overwritten, and on overlapping triggers yours win.
+
 ## Staying updated
 
 ```ascii
@@ -157,7 +168,8 @@ Created locally at first boot (yours forever):
 ```
 
 - **Auto-updated**: `skills/` `tools/` `versions/` `BOOT.md` `README.md`
-- **Yours forever**: `main/` `memory/` `logs/` `library/` `AGENTS.md` `CLAUDE.md` `GEMINI.md`
+- **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` `AGENTS.md` `CLAUDE.md` `GEMINI.md`
+- `my-skills/` is seeded once, then never touched: bring your skills and they stay yours.
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.
 
@@ -179,6 +191,10 @@ Created locally at first boot (yours forever):
 
 **Anything Windows-specific?** Where docs say `python3`, use `python` (`python tools/fts.py --build`). And if `tools/update.sh` ever throws `$'\r'` errors, that checkout has CRLF endings: heal once with `sed -i 's/\r$//' tools/update.sh`. Fresh clones ship LF.
 
-**How do I add my own ritual?** Create `skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add it to `skills/README.md`. Sub-skills nest under their parent. That is the entire SDK.
+**Can I bring my own skills?** Yes: drop them in `my-skills/` and register them in `my-skills/registry.md`. They are never overwritten, and they win when triggers overlap the bank. `forge` checks them before generating anything new.
+
+**How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
+
+**Which skills actually get used?** `memory/skills.md`: save ticks the `uses` count and last-used date for whatever fired.
 
 **Why is there a `versions/` folder?** So the root stays clean and the update system has one obvious home for its state.

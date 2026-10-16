@@ -11,6 +11,7 @@ A folder of plain markdown that remembers. Your AI reads it, writes to it, and g
   logs/      what happened, day by day         (the truth)
   library/   what it learned to reuse          (books of patterns)
   skills/    the rituals it follows            (save, recall, build, forge)
+  my-skills/ your own rituals, yours forever   (never overwritten; primary)
   tools/     search + update                   (zero dependencies)
 ```
 
@@ -106,7 +107,7 @@ Greet them by name. From now on, every session follows the manual.
     skills/  ·  tools/  ·  versions/  ·  BOOT.md  ·  README.md
 
   NEVER TOUCHED (yours forever)
-    main/  ·  memory/  ·  logs/  ·  library/  ·  AGENTS.md  ·  CLAUDE.md  ·  GEMINI.md
+    main/  ·  memory/  ·  logs/  ·  library/  ·  my-skills/  ·  AGENTS.md  ·  CLAUDE.md  ·  GEMINI.md
 ```
 
 Run `bash tools/update.sh` at every session start. Offline? It exits silently.
@@ -121,10 +122,12 @@ Nothing repeats a third time for free. Repetitions become upgrades on this ladde
   1. hotlist line      a mistake becomes a rule             (main/hotlist.md)
   2. library chapter   a solution becomes reusable          (library/<book>/<chapter>/)
   3. sub-skill         a repetition lives inside a skill    (skills/<parent>/<sub>/)
-  4. new skill         a workflow repeats end to end        (skills/<name>/)
+  4. new skill         a workflow repeats end to end        (my-skills/<name>/)
 ```
 
 Details in `skills/forge/`. Cheapest rung that fits, always.
+
+The gate comes before rung 4: check `skills/registry.md` + `my-skills/registry.md`. A bank skill covers it -> upgrade that skill. One of YOUR skills covers it -> it wins; offer the fold-in, never an auto-created overlap.
 
 ---
 
@@ -154,12 +157,13 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 
 ## Save
 
-- "save" = the `skills/save` ritual: session log + memory + reminders sweep + rotation.
+- "save" = the `skills/save` ritual: session log + memory + reminders sweep + rotation + skill usage ticks.
 - Goodbye = always a full save. Never lite.
 
 ## Improve
 
 - Repetition noticed? Forge it (`skills/forge`): hotlist line, library chapter, sub-skill, or new skill, in that order of preference. Propose first; the human approves.
+- The gate (before any new skill): scan `skills/registry.md` + `my-skills/registry.md`. Yours win: fold-in offered, never an overlap. Forged skills land in `my-skills/` and get a registry row.
 
 ## House rules
 
@@ -167,7 +171,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 - Append-only for logs and decisions; never rewrite history.
 - Keep memory small: index hot 12 / warm 20, current-session 3 sessions, reminders 200 open. Rotate, don't hoard.
 - `library/` is for patterns that generalize: books of chapters, one chapter per pattern.
-- Skills live in `skills/`; sub-skills nest under their parent. Catalog: `skills/README.md`.
+- Skills live in `skills/` (bank, auto-updated); sub-skills nest under their parent. Yours live in `my-skills/`, never overwritten, and they win overlaps. Catalogs: `skills/README.md` + the registries.
 - Language: English by default. Mirror the user's mix (if they blend languages, blend back; local words where they carry the meaning better, in native script when they read it, glossed once). Address conventions follow the region in `main/relationship-memory.md` (e.g. `-san` in Japan, `po` in the Philippines). Greet by time of day and recency; show times in the user's timezone.
 - Voice, emoji, and answer length come from `main/identity-core.md` (set at boot). Do not drift from them.
 - Zones: see BOOT.md. Personal files are never auto-updated.

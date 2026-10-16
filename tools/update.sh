@@ -1,10 +1,11 @@
 #!/bin/bash
 # Skeleton engine updater. Pulls the latest template-owned files from upstream.
-# Safe by design: never touches personal zones (main/ memory/ logs/ library/).
+# Safe by design: never touches personal zones (main/ memory/ logs/ library/ my-skills/).
 set -u
 cd "$(dirname "$0")/.." || exit 0
 
 UPSTREAM_URL="${CV4_UPSTREAM:-https://github.com/wanshazamirul/CV4.git}"
+# Invariant: my-skills/ is deliberately NOT in this list. It is the user's zone: never fetched, never overwritten.
 TEMPLATE_PATHS="BOOT.md README.md skills tools versions .gitattributes"
 
 git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$UPSTREAM_URL"
@@ -14,6 +15,11 @@ BEHIND=$(git rev-list --count HEAD..upstream/main 2>/dev/null || echo 0)
 if [ "$BEHIND" = "0" ]; then exit 0; fi
 
 git checkout --quiet upstream/main -- $TEMPLATE_PATHS 2>/dev/null
+
+# One-time seed: clones that predate my-skills/ get it once, then it is never touched again.
+if [ ! -d my-skills ]; then
+  git checkout --quiet upstream/main -- my-skills 2>/dev/null || true
+fi
 
 # Normalize shell scripts to LF: Windows checkouts can add \r and bash chokes on it.
 for f in tools/*.sh; do

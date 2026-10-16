@@ -19,14 +19,15 @@ description: "MUST use when the user says 'save', 'save progress', 'save session
    ```
 
 2. **Memory** - update `memory/index.md` (one durable row per item: tag, date, keypoint). Decisions go to `memory/decisions.md`. Lessons that can repeat go to `main/hotlist.md`.
-3. **Reminders sweep** - completed out, stale pruned, new follow-ups into `memory/reminders.md` (caps: 200 open, 100 completed).
-4. **Library harvest** - if the session produced a reusable pattern, file it in `library/<section>/<slug>/<slug>.md`.
-5. **Rotation** - `main/current-session.md` keeps the last 3 sessions; the index stays small (hot 12 / warm 20; oldest folds into a cold summary).
-6. **Confirm** - one line: what was saved, where.
+3. **Skill usage** - tick `memory/skills.md` for the skills that fired this session (`uses` + `last`, one batch edit).
+4. **Reminders sweep** - completed out, stale pruned, new follow-ups into `memory/reminders.md` (caps: 200 open, 100 completed).
+5. **Library harvest** - if the session produced a reusable pattern, file it in `library/<section>/<slug>/<slug>.md`.
+6. **Rotation** - `main/current-session.md` keeps the last 3 sessions; the index stays small (hot 12 / warm 20; oldest folds into a cold summary).
+7. **Confirm** - one line: what was saved, where.
 
 ## Lite save (mid-session)
 
-"save" while work is unfinished: append the log block and update only the files that actually changed. Skip rotation. Keep working.
+"save" while work is unfinished: append the log block and update only the files that actually changed. Skip rotation (usage ticks ride the full save). Keep working.
 
 ## Rules
 
@@ -37,4 +38,5 @@ description: "MUST use when the user says 'save', 'save progress', 'save session
 
 ## Level history
 
+- Lv.2 (2026-10-17) - skill usage ticks (`memory/skills.md`) in the full save.
 - Lv.1 - initial skeleton ritual.
