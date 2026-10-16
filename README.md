@@ -1,7 +1,13 @@
 # CV4 - a memory engine for any AI agent
 *A folder of plain markdown that remembers. Bring your own agent: Claude Code, opencode, Gemini CLI, anything with file access.*
 
-**Start here: open this folder with your agent and say "read BOOT.md".** BOOT interviews you, creates your agent files, seeds the memory, and hands you a companion that remembers. This README is the map.
+**Start here:** give your AI agent this link and one instruction:
+
+```
+https://github.com/wanshazamirul/CV4  - clone this and read BOOT.md
+```
+
+It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. No terminals, no config. This README is the map.
 
 ---
 
@@ -31,30 +37,6 @@ Two movements, forever: **recall** before acting, **record** before leaving.
 ```
 
 ---
-
-## First 5 minutes
-
-```ascii
- git clone/template
-       │
-       ▼
- open the folder with your agent
-       │
-       ▼
- say: "read BOOT.md"
-       │
-       ▼
- 3 questions: your name, its name, how it behaves
-       │
-       ▼
- region + timezone detected silently (JST -> -san, etc.)
-       │
-       ▼
- AGENTS.md created (yours) + memory seeded + first log written
-       │
-       ▼
- talk like normal - say "save" when done
-```
 
 ## A day in the life
 

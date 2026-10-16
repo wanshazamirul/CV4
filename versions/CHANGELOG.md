@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.2 - 2026-10-17
+- README: quickstart is now "paste the link to your agent"; First 5 minutes section removed.
+
 ## 0.4.1 - 2026-10-17
 - README: first-5-minutes flow updated to the real enrollment (3 questions + silent region detection).
 
