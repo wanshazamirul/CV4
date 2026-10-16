@@ -98,7 +98,7 @@ python3 tools/fts.py --build
 
 Windows: use `python tools/fts.py --build` instead. No Python at all? Skip this step; recall falls back to grep until you install it.
 
-Greet them by name. From now on, every session follows the manual.
+Greet them by name, then give them home base: from now on, open the agent in this folder (show the path); the manual and the memory load at the first hello. From here on, every session follows the manual.
 
 ## What updates, what is yours
 
@@ -140,7 +140,7 @@ The gate comes before rung 4: check `skills/registry.md` + `my-skills/registry.m
 ````md
 # AGENTS.md: how I operate
 
-> Manual rev: 0.5.3
+> Manual rev: 0.5.4
 
 I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 
@@ -181,5 +181,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 - Language: English by default. Mirror the user's mix (if they blend languages, blend back; local words where they carry the meaning better, in native script when they read it, glossed once). Address conventions follow the region in `main/relationship-memory.md` (e.g. `-san` in Japan, `po` in the Philippines). Greet by time of day and recency; show times in the user's timezone.
 - Voice, emoji, and answer length come from `main/identity-core.md` (set at boot). Do not drift from them.
 - After an engine update, if BOOT.md's manual rev is newer than this file's, offer a refresh: replace the manual if you never customized it, merge the changes if you did.
+- If this session started outside the repo (you explored to find these files), say so, then ask them to restart you inside this folder: that is where you wake with memory at the first hello.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````

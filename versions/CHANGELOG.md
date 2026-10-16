@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.4 - 2026-10-17
+- Boot: the hello now hands over home base. Open the agent in this folder from now on; the manual loads with the session.
+- Manual: a new house rule for sessions that started outside the repo (say it, ask them to restart inside).
+- FAQ: "Where do I start my agent from now on?"
+
 ## 0.5.3 - 2026-10-17
 - House rules: punctuation manners. Pause with commas, colons, or periods; no hyphen chains between clauses; greetings are prose, not status reports.
 - Manual: greeting example and section headers cleaned; updater note uses parentheses; manual rev bumped to 0.5.3.

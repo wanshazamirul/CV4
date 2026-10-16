@@ -7,7 +7,7 @@
 Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
 ```
 
-It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. No terminals, no config. This README is the map.
+It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. From then on, open your agent in that folder: the manual loads with the session. No terminals, no config. This README is the map.
 
 ---
 
@@ -182,6 +182,8 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 ## FAQ
 
 **Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. `git log` is your full history.
+
+**Where do I start my agent from now on?** Inside this folder (or any folder within it): the manual loads when the session starts here, and that is what wakes the memory. Start it somewhere else and it greets you like a stranger.
 
 **Which agents work?** Anything that reads files. BOOT creates `AGENTS.md` plus a `CLAUDE.md` / `GEMINI.md` pointer when needed, so every tool reads the same manual.
 
