@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 - 2026-10-17
+- Manual: the session-start load is now blocking on the first message (even a bare "hi"): update + reads first, then greet. No more two-prompt warm-up.
+- Manual upkeep: `AGENTS.md` carries its manual rev; after engine updates the agent offers a refresh (replace for default, merge for customized).
+
 ## 0.5.1 - 2026-10-17
 - BOOT interview: all three questions render as question prompts (never a prose list); simpler wording: "What is your name?" and "What is my name?", free entry with no suggested names.
 
