@@ -1,0 +1,7 @@
+# Derived search index (rebuild: python3 tools/fts.py --build)
+tools/.fts.db*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+node_modules/
