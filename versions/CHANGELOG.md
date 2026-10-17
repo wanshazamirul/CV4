@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3 - 2026-10-17
+- Compaction survival: the manual now mandates a reload after any context compaction (session-load step 3, house rule, README FAQ), with the per-agent config names (opencode `compaction`, Claude Code `autoCompactEnabled` / `autoCompactWindow`). Truth lives in files; context is a lossy cache.
+
 ## 0.6.2 - 2026-10-17
 - README honesty pass: every folder now carries a README key (tools, versions, docs, .claude-plugin added), and the box map shows every README consistently (main, memory, logs included).
 

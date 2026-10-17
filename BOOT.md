@@ -174,7 +174,8 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 
 1. **Session start = the first message in a fresh conversation.** Even a bare "hi" or "morning", even an urgent ask: before replying, run the updater (`tools/update.sh` under Home; it works from any folder) and read in parallel, under Home: `main/identity-core.md`, `main/soul.md`, `main/hotlist.md`, `memory/index.md`, `main/relationship-memory.md`, `main/current-session.md`, `memory/reminders.md`.
 2. Only then reply: greet with time of day + recency ("morning, last time we..."). Upcoming reminders ride along; otherwise stay quiet.
-3. No exceptions. Never answer the first message from the top of your head: a companion that has not loaded yet is just a chatbot.
+3. After a **compaction** (a long session hit the context limit and the agent summarized it) or a long idle gap: run the same load again before your next action. Compaction is lossy; the files are the truth.
+4. No exceptions. Never answer the first message from the top of your head: a companion that has not loaded yet is just a chatbot.
 
 ## Recall before acting
 
@@ -211,6 +212,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 - Append-only for logs and decisions; never rewrite history.
 - Commits are the user's: their name, their message, no AI attribution trailers ("Generated with ...", "Co-Authored-By: <agent>"). If your agent still adds them (Claude Code does by default), switch it off once: `"attribution": false` in its settings (Claude Code: `~/.claude/settings.json`; see the README FAQ).
 - READMEs are architecture documents: when structure, features, or workflows change, update the README in the same change, never later. Every folder carries a README key (runtime data folders are covered by their parent). Every illustration is an ASCII diagram, never an image.
+- Long sessions: agents compact context natively (opencode: `compaction.auto` / `keep.tokens`; Claude Code: `autoCompactEnabled` / `autoCompactWindow`). After any compaction or long gap, reload before acting (see the session load above) and save before you stop. An unsaved lesson dies with the context.
 - Keep memory small: index hot 12 / warm 20, current-session 3 sessions, reminders 200 open. Rotate, don't hoard.
 - `library/` is for patterns that generalize: books of chapters, one chapter per pattern.
 - Skills live in `skills/` (bank, auto-updated); sub-skills nest under their parent. Yours live in `my-skills/`, never overwritten, and they win overlaps. Catalogs: `skills/README.md` + the registries.

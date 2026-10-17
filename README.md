@@ -249,6 +249,8 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
 
 **Why are all illustrations ASCII?** Docs live in git and get read by agents; ASCII diffs cleanly, never breaks, and renders everywhere. House rule: every diagram in every README is ASCII, no images.
 
+**What happens when the context fills up (compaction)?** Your agent compacts natively: opencode summarizes automatically (`compaction` in its config, `keep.tokens` tunes how much detail survives, and the manual is re-read as the session baseline afterwards), Claude Code has `autoCompactEnabled` / `autoCompactWindow`. Compaction is lossy by nature. This repo's design makes it survivable: the truth lives in files, never only in the context, and the manual instructs the companion to reload `main/` + `memory/` after any compaction, and to save before stopping. Worst case, start a fresh session: the load is exactly the same.
+
 **How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
 
 **Which skills actually get used?** `memory/skills.md`: save ticks the `uses` count and last-used date for whatever fired.
