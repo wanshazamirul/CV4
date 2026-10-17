@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5 - 2026-10-17
+- Tagline: spec-driven by design (pairs with spec-kit; the bridge ships in `spec-kit/`, lessons land in `memory/`).
+- Boot step 7: the companion now offers the agent's global defaults (clean commits + one memory store) and applies them to the user's settings file with approval.
+
 ## 0.6.4 - 2026-10-17
 - Single memory store: the manual and README FAQ now say it plainly. Agents with built-in memory (Claude Code auto memory) get switched off (`"autoMemoryEnabled": false`); lessons land in the repo where you can read, diff, and keep them.
 

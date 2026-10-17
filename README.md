@@ -1,4 +1,4 @@
-# CV4 - a memory engine for any AI agent
+# CV4 - a memory engine for any AI agent, spec-driven by design
 *A folder of plain markdown that remembers. Bring your own agent: Claude Code, opencode, Gemini CLI, anything with file access.*
 
 **Start here:** give your AI agent this link and one instruction:
@@ -8,6 +8,8 @@ Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
 ```
 
 It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. From then on, open your agent in that folder: the manual loads with the session. Onboarding also offers the signpost, so any folder on the machine wakes with memory. No terminals, no config. This README is the map.
+
+**Spec-driven by design:** pairs with spec-kit (constitution -> specify -> plan -> tasks -> implement -> converge); the bridge ships in `spec-kit/` and the lessons land in `memory/`.
 
 ---
 
@@ -245,13 +247,13 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 { "attribution": false }
 ```
 
-That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead.
+That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead. Your companion can set this up for you: ask it, and it applies the change to your settings file with your approval.
 
 **Why are all illustrations ASCII?** Docs live in git and get read by agents; ASCII diffs cleanly, never breaks, and renders everywhere. House rule: every diagram in every README is ASCII, no images.
 
 **What happens when the context fills up (compaction)?** Your agent compacts natively: opencode summarizes automatically (`compaction` in its config, `keep.tokens` tunes how much detail survives, and the manual is re-read as the session baseline afterwards), Claude Code has `autoCompactEnabled` / `autoCompactWindow`. Compaction is lossy by nature. This repo's design makes it survivable: the truth lives in files, never only in the context, and the manual instructs the companion to reload `main/` + `memory/` after any compaction, and to save before stopping. Worst case, start a fresh session: the load is exactly the same.
 
-**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land.
+**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At boot the companion offers to apply both settings (commits + memory) to your agent for you.
 
 **How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
 

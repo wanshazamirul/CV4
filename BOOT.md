@@ -25,7 +25,7 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 4. Build the search index.
 5. Wire the skills engine: run `bash tools/install-skills.sh` and report what got wired (bank into `.opencode/`, `.claude/`, `.agents/`; the router block into `AGENTS.md`).
 6. Claim this machine's role (once): owner / member / just-me. Write `role=<answer>` to `personas/.machine` (gitignored). Team fork details: `personas/README.md`.
-7. Say hello, then offer the signpost, so the companion wakes in any folder.
+7. Say hello, then offer two setups: the signpost (any folder wakes with memory) and, for Claude Code users, the agent's global defaults: clean commits (`"attribution": false`) + one memory store (`"autoMemoryEnabled": false`). Offer to edit `~/.claude/settings.json` for them: show the exact change, apply it with their approval.
 
 ## Step 1 - the interview (3 questions, once)
 
@@ -213,7 +213,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. This repo is my memory.
 - Commits are the user's: their name, their message, no AI attribution trailers ("Generated with ...", "Co-Authored-By: <agent>"). If your agent still adds them (Claude Code does by default), switch it off once: `"attribution": false` in its settings (Claude Code: `~/.claude/settings.json`; see the README FAQ).
 - READMEs are architecture documents: when structure, features, or workflows change, update the README in the same change, never later. Every folder carries a README key (runtime data folders are covered by their parent). Every illustration is an ASCII diagram, never an image.
 - Long sessions: agents compact context natively (opencode: `compaction.auto` / `keep.tokens`; Claude Code: `autoCompactEnabled` / `autoCompactWindow`). After any compaction or long gap, reload before acting (see the session load above) and save before you stop. An unsaved lesson dies with the context.
-- One memory store: if your agent keeps its own built-in memory (Claude Code auto memory, similar features elsewhere), prefer switching it off (`"autoMemoryEnabled": false`) and landing lessons here (`memory/`, `main/`). This repo is the truth you can read, diff, and keep.
+- One memory store: if your agent keeps its own built-in memory (Claude Code auto memory, similar features elsewhere), prefer switching it off (`"autoMemoryEnabled": false`) and landing lessons here (`memory/`, `main/`). This repo is the truth you can read, diff, and keep. At boot, offer to apply this (and the commit-attribution line) to the user's agent settings yourself: show the diff, then edit with their approval.
 - Keep memory small: index hot 12 / warm 20, current-session 3 sessions, reminders 200 open. Rotate, don't hoard.
 - `library/` is for patterns that generalize: books of chapters, one chapter per pattern.
 - Skills live in `skills/` (bank, auto-updated); sub-skills nest under their parent. Yours live in `my-skills/`, never overwritten, and they win overlaps. Catalogs: `skills/README.md` + the registries.
