@@ -100,6 +100,7 @@ CV4/
 ├── BOOT.md                      START HERE: orientation + interview + manual
 ├── README.md                    this map
 ├── versions/                    VERSION + CHANGELOG.md (the update backbone)
+├── .claude-plugin/              Claude Code plugin packaging (the repo itself is the plugin)
 │
 ├── main/                        THE CORE - small on purpose
 │   ├── identity-core.md           who the AI is (persona contract)
@@ -120,10 +121,10 @@ CV4/
 │   ├── current/                   this month (YYYY-MM-DD.md)
 │   └── archived/                  monthly cold storage
 │
-├── library/                     BOOKS OF PATTERNS
-│   ├── README.md                  the shelf: books + chapter format
-│   └── workflow/                  a book (its README lists its chapters)
-│       └── recall-order/          a chapter
+├── library/                     THE SHELF - seven books + yours
+│   ├── README.md                  the shelf: chapter format + curation rules
+│   ├── frontend/ ... design/      the standard books (guardrail README keys inside)
+│   └── (your books)               personal domains: yours, never upstream
 │
 ├── skills/                      THE BANK (auto-updated rituals)
 │   ├── README.md                  catalog + how to add skills and sub-skills
@@ -133,15 +134,28 @@ CV4/
 │   ├── decision-log/              context, decision, why (append-only)
 │   ├── recall-memory/             hotlist -> index -> fts -> library
 │   ├── build-protocol/            restate, recall, plan, gates, verify
-│   └── forge/                     repetition -> rule, chapter, sub-skill, skill
+│   ├── forge/                     repetition -> rule, chapter, sub-skill, skill
+│   └── intake/                    foreign files: fence, assess, merge or reject, log
 │
 ├── my-skills/                   YOURS FOREVER (never overwritten; they win)
 │   ├── README.md                  bring your own, or let forge add one
 │   └── registry.md                your roster (the gate checks it first)
 │
+├── personas/                    WHO USES THIS INSTANCE (empty cups; fills stay local)
+│   ├── README.md                  role claim (owner / member / just-me), three lanes
+│   └── _template.md               the empty cup
+│
+├── spec-kit/                    OPTIONAL SDD BRIDGE
+│   ├── README.md                  wire spec-kit to this repo (per project)
+│   ├── constitution-template.md   house clauses; the project fills the stack
+│   └── converge-to-memory.sh      distill a converge outcome into memory/decisions.md
+│
 └── tools/                       THE TOOLBELT
     ├── fts.py                     search index (stdlib only)
-    └── update.sh                  safe auto-update (session start)
+    ├── update.sh                  safe auto-update (session start)
+    ├── install-skills.sh          wire the bank into your agent (opencode · Claude · .agents)
+    ├── scaffold-library.sh        restore any missing standard book
+    └── git-guard.sh               team forks: members push to dev, not main
 
 Created locally at first boot (yours forever):
     AGENTS.md (the manual) · CLAUDE.md / GEMINI.md (one-line pointers, if needed)
@@ -157,6 +171,7 @@ Created locally at first boot (yours forever):
 | "remember?", familiar bug | `recall-memory` | The recall order: hotlist, index, fts, library |
 | "build X", multi-step work | `build-protocol` | Restate, recall, plan, build in gates, verify |
 | "that keeps happening", 3x repeat | `forge` | The ladder: rule, chapter, sub-skill, or new skill |
+| foreign file arrives, "what do you think?" | `intake` | Fence, assess (card), merge or reject with reasons, log every verdict |
 
 Your own rituals live in `my-skills/`: never overwritten, and on overlapping triggers yours win.
 
@@ -167,8 +182,9 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
                               (session start)       (personal zone untouched)
 ```
 
-- **Auto-updated**: `skills/` `tools/` `versions/` `BOOT.md` `README.md`
+- **Auto-updated**: `skills/` `tools/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
 - **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` `AGENTS.md` `CLAUDE.md` `GEMINI.md`
+- After an update, `update.sh` also re-wires the skills engine and tops up any missing standard book.
 - `my-skills/` is seeded once, then never touched: bring your skills and they stay yours.
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.

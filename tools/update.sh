@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.." || exit 0
 
 UPSTREAM_URL="${CV4_UPSTREAM:-https://github.com/wanshazamirul/CV4.git}"
 # Invariant: my-skills/ is deliberately NOT in this list. It is the user's zone: never fetched, never overwritten.
-TEMPLATE_PATHS="BOOT.md README.md skills tools versions .gitattributes"
+TEMPLATE_PATHS="BOOT.md README.md skills tools versions .gitattributes .claude-plugin personas spec-kit"
 
 git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$UPSTREAM_URL"
 git fetch --quiet upstream main 2>/dev/null || { echo "update: offline, skipped"; exit 0; }
@@ -26,6 +26,10 @@ for f in tools/*.sh; do
   [ -f "$f" ] || continue
   tr -d '\r' < "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 done
+
+# Re-wire the skills engine and top up the library shelf after updates (best effort; never fails the update).
+[ -f tools/install-skills.sh ] && bash tools/install-skills.sh --quiet >/dev/null 2>&1 || true
+[ -f tools/scaffold-library.sh ] && bash tools/scaffold-library.sh --quiet >/dev/null 2>&1 || true
 
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")
 git add -A >/dev/null 2>&1

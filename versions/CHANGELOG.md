@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 - 2026-10-17
+- Skills engine: this repo is now a real Claude Code plugin; `tools/install-skills.sh` wires the bank into `.opencode/`, `.claude/`, and `.agents/`, and stamps a generated skills router (with G0: no blind action) into `AGENTS.md`. `update.sh` re-wires after updates.
+- Standard shelf: the library is seven books (frontend, backend, security, infra, process, ai, design) with guardrail README keys, a `_template/` kit, and `tools/scaffold-library.sh` to restore missing books. Personal books (like `trading/`) are yours and never travel.
+- Intake: a new bank skill that fences, assesses, routes, merges, logs, and verifies foreign material before anything lands. Nothing adopts blind, rejections get logged.
+- Personas: empty cups in the repo, one role claim per machine (owner / member / just-me), three lanes (engine down, knowledge up, personal never), and `tools/git-guard.sh` for member machines.
+- Spec-kit bridge: `spec-kit/` ships a constitution template (behavioral clauses, blank Stack section) and an idempotent converge-to-memory hook.
+- House rule: stack defaults are suggestions; the project's constitution wins.
+
 ## 0.5.6 - 2026-10-17
 - Uninstall: a two-step exit in README (remove the signpost, delete the folder), an FAQ pointer, and a manual rule so the companion runs it on request (final save first).
 
