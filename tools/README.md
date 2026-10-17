@@ -7,5 +7,6 @@
 | `install-skills.sh` | wire the bank into each agent (`.opencode/skills/`, `.claude/skills/`, `.agents/skills/`) and stamp the router block into `AGENTS.md`; `--check` to inspect, `--copy` for filesystems without symlinks |
 | `scaffold-library.sh` | top up missing standard books (README keys included); never overwrites filled content |
 | `git-guard.sh` | team forks: pre-push hook so member machines push to `dev`, not `main`; `--install` |
+| `self-test.sh` | proves the engine end to end: layout, wiring, registries, then an integration pass (installer, scaffold, hook, guard) in a scratch copy; `--quick` skips the pass |
 
 `.fts.db` is derived: delete it and rebuild in seconds. Windows: use `python` where docs say `python3`.

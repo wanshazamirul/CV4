@@ -172,7 +172,8 @@ CV4/
     ├── update.sh                  safe auto-update (session start)
     ├── install-skills.sh          wire the bank into your agent (opencode · Claude · .agents)
     ├── scaffold-library.sh        restore any missing standard book
-    └── git-guard.sh               team forks: members push to dev, not main
+    ├── git-guard.sh               team forks: members push to dev, not main
+    └── self-test.sh               prove the engine end to end (scratch integration pass)
 
 Created locally at first boot (yours forever):
     AGENTS.md (the manual) · CLAUDE.md / GEMINI.md (one-line pointers, if needed)
@@ -254,6 +255,8 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
 **What happens when the context fills up (compaction)?** Your agent compacts natively: opencode summarizes automatically (`compaction` in its config, `keep.tokens` tunes how much detail survives, and the manual is re-read as the session baseline afterwards), Claude Code has `autoCompactEnabled` / `autoCompactWindow`. Compaction is lossy by nature. This repo's design makes it survivable: the truth lives in files, never only in the context, and the manual instructs the companion to reload `main/` + `memory/` after any compaction, and to save before stopping. Worst case, start a fresh session: the load is exactly the same.
 
 **What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At boot the companion offers to apply both settings (commits + memory) to your agent for you.
+
+**How do I know my setup is healthy?** Run `bash tools/self-test.sh`: it checks the layout and README keys, the engine wiring and router, the registries, then runs the integration pass (installer, scaffold, converge hook, git-guard) in a scratch copy. `RESULT: PASS` means the engine is sound; `--quick` skips the scratch pass.
 
 **How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
 

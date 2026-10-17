@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.6 - 2026-10-17
+- Self-test: `tools/self-test.sh` proves an instance end to end. Layout + README keys, engine wiring and router, registry consistency, then a scratch integration pass: installer idempotency, G0 in the router, personal zones untouched, scaffold restore, converge hook, git-guard (member blocked / owner allowed).
+
 ## 0.6.5 - 2026-10-17
 - Tagline: spec-driven by design (pairs with spec-kit; the bridge ships in `spec-kit/`, lessons land in `memory/`).
 - Boot step 7: the companion now offers the agent's global defaults (clean commits + one memory store) and applies them to the user's settings file with approval.
