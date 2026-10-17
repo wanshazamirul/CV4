@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2 - 2026-10-17
+- README honesty pass: every folder now carries a README key (tools, versions, docs, .claude-plugin added), and the box map shows every README consistently (main, memory, logs included).
+
 ## 0.6.1 - 2026-10-17
 - Commits: new house rule, commits stay in the user's name with no AI attribution; README FAQ shows the one-line Claude Code switch (`"attribution": false`).
 - Docs discipline: READMEs are architecture documents, updated in the same change as the feature they describe; every illustration is ASCII, never an image.

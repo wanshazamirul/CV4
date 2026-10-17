@@ -99,10 +99,21 @@ Write side: today's work lands in `logs/` and the index at save time. Read side:
 CV4/
 ├── BOOT.md                      START HERE: orientation + interview + manual
 ├── README.md                    this map
-├── versions/                    VERSION + CHANGELOG.md (the update backbone)
-├── .claude-plugin/              Claude Code plugin packaging (the repo itself is the plugin)
+├── versions/                    THE UPDATE BACKBONE
+│   ├── README.md                  the files + the update contract
+│   ├── VERSION                    the current release string
+│   └── CHANGELOG.md               what changed, per release
+│
+├── .claude-plugin/              Claude Code packaging (the repo itself is the plugin)
+│   ├── README.md                  the key
+│   └── plugin.json                the manifest
+│
+├── docs/                        TEMPLATE DOCS (about CV4 itself)
+│   ├── README.md                  the key
+│   └── enterprise-edition.md      the team-edition design
 │
 ├── main/                        THE CORE - small on purpose
+│   ├── README.md                  this key: the five files + their disciplines
 │   ├── identity-core.md           who the AI is (persona contract)
 │   ├── soul.md                    what it is learning (40-line cap)
 │   ├── relationship-memory.md     who you are: preferences, world, history
@@ -110,6 +121,7 @@ CV4/
 │   └── hotlist.md                 never-again rules - read every session
 │
 ├── memory/                      WORKING MEMORY
+│   ├── README.md                  the key: parts, caps, when to write where
 │   ├── index.md                   fast recall layer: one line per durable item
 │   ├── decisions.md               append-only decision log
 │   ├── reminders.md               forward tasks that survive resets
@@ -117,6 +129,7 @@ CV4/
 │   └── feedback/                  suggestions about the workflow
 │
 ├── logs/                        SESSION HISTORY
+│   ├── README.md                  the key: write, read, rotate
 │   ├── protocol.md                append-only, one file per day
 │   ├── current/                   this month (YYYY-MM-DD.md)
 │   └── archived/                  monthly cold storage
@@ -124,6 +137,7 @@ CV4/
 ├── library/                     THE SHELF - seven books + yours
 │   ├── README.md                  the shelf: chapter format + curation rules
 │   ├── frontend/ ... design/      the standard books (guardrail README keys inside)
+│   ├── _template/                 the kit for a new book (its README is the key)
 │   └── (your books)               personal domains: yours, never upstream
 │
 ├── skills/                      THE BANK (auto-updated rituals)
@@ -151,6 +165,7 @@ CV4/
 │   └── converge-to-memory.sh      distill a converge outcome into memory/decisions.md
 │
 └── tools/                       THE TOOLBELT
+    ├── README.md                  the key: what each tool does
     ├── fts.py                     search index (stdlib only)
     ├── update.sh                  safe auto-update (session start)
     ├── install-skills.sh          wire the bank into your agent (opencode · Claude · .agents)
