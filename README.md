@@ -56,6 +56,28 @@ Two movements, forever: **recall** before acting, **record** before leaving.
  └──────────────────┘            └──────────────────┘            └──────────────────┘
 ```
 
+## Layers: the companion and the work
+
+```ascii
+                         ONE DAY AT THE DESK
+
+┌─ CV4 · THE COMPANION LAYER · lives with the person, forever ────────────┐
+│                                                                         │
+│   save · recall · reminders · decisions · forge · intake                │
+│   guardrails: G0 (no blind action) · docs · commits · compaction        │
+│                                                                         │
+│      ┌─ SPEC-KIT · THE WORK LAYER · lives with the project ────────┐    │
+│      │  constitution -> specify -> clarify -> plan -> checklist    │    │
+│      │  -> tasks -> analyze -> implement -> converge               │    │
+│      └─────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+- **spec-kit is opt-in**: without it, `build-protocol` plays the same role, lighter.
+- **Who leads**: the project's rules lead for the project's work; the companion still carries this identity and this memory across projects.
+- **The bridge**: the house supplies the constitution's behavioral half, and `/speckit-converge` sends lessons home via `spec-kit/converge-to-memory.sh`.
+
 ## It improves itself
 
 Nothing repeats a third time for free.

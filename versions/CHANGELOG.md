@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.7 - 2026-10-17
+- The "One day at the desk" diagram: the companion layer wrapping the work layer (spec-kit nested inside CV4), in the README and the spec-kit bridge doc, with who-leads rules underneath.
+
 ## 0.6.6 - 2026-10-17
 - Self-test: `tools/self-test.sh` proves an instance end to end. Layout + README keys, engine wiring and router, registry consistency, then a scratch integration pass: installer idempotency, G0 in the router, personal zones untouched, scaffold restore, converge hook, git-guard (member blocked / owner allowed).
 

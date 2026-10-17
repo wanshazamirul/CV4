@@ -2,6 +2,22 @@
 
 Spec-kit runs the process (constitution -> specify -> clarify -> plan -> checklist -> tasks -> analyze -> implement -> converge). This repo is the memory, skills, and guardrails around it. Thin seam, no fork: plain markdown plus one small script.
 
+```ascii
+                         ONE DAY AT THE DESK
+
+┌─ CV4 · THE COMPANION LAYER · lives with the person, forever ────────────┐
+│                                                                         │
+│   save · recall · reminders · decisions · forge · intake                │
+│   guardrails: G0 (no blind action) · docs · commits · compaction        │
+│                                                                         │
+│      ┌─ SPEC-KIT · THE WORK LAYER · lives with the project ────────┐    │
+│      │  constitution -> specify -> clarify -> plan -> checklist    │    │
+│      │  -> tasks -> analyze -> implement -> converge               │    │
+│      └─────────────────────────────────────────────────────────────┘    │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
 ## Install (per project, opt-in)
 
 In YOUR project repo (not this one):
