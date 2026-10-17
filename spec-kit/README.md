@@ -18,6 +18,17 @@ Spec-kit runs the process (constitution -> specify -> clarify -> plan -> checkli
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+## Who owns what
+
+| Question | Owner |
+|---|---|
+| What to build, why, in what order | spec-kit (spec, plan, tasks) |
+| Is the spec complete and consistent | spec-kit (checklist, analyze, converge) |
+| What do we already know about this | CV4 (recall: hotlist, library, fts) |
+| Who is this person, what happened last time | CV4 (memory, session load) |
+| Are we building it right (no blind action, verify, docs) | CV4's guardrails, running throughout |
+| What did we learn, what arrived from outside | CV4 (converge hook, forge, intake) |
+
 ## Install (per project, opt-in)
 
 In YOUR project repo (not this one):

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.8 - 2026-10-17
+- "Put it in the docs" is house law: chat diagrams get enshrined in the right doc (README, book chapter, bridge doc, `docs/`), ASCII, mechanically aligned.
+- Two keepers promoted: the compaction before/after diagram (README FAQ) and the ownership table (spec-kit bridge doc).
+
 ## 0.6.7 - 2026-10-17
 - The "One day at the desk" diagram: the companion layer wrapping the work layer (spec-kit nested inside CV4), in the README and the spec-kit bridge doc, with who-leads rules underneath.
 
