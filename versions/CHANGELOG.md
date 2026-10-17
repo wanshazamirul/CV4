@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4 - 2026-10-17
+- Single memory store: the manual and README FAQ now say it plainly. Agents with built-in memory (Claude Code auto memory) get switched off (`"autoMemoryEnabled": false`); lessons land in the repo where you can read, diff, and keep them.
+
 ## 0.6.3 - 2026-10-17
 - Compaction survival: the manual now mandates a reload after any context compaction (session-load step 3, house rule, README FAQ), with the per-agent config names (opencode `compaction`, Claude Code `autoCompactEnabled` / `autoCompactWindow`). Truth lives in files; context is a lossy cache.
 
