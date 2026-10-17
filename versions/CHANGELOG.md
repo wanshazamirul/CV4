@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 - 2026-10-17
+- Commits: new house rule, commits stay in the user's name with no AI attribution; README FAQ shows the one-line Claude Code switch (`"attribution": false`).
+- Docs discipline: READMEs are architecture documents, updated in the same change as the feature they describe; every illustration is ASCII, never an image.
+
 ## 0.6.0 - 2026-10-17
 - Skills engine: this repo is now a real Claude Code plugin; `tools/install-skills.sh` wires the bank into `.opencode/`, `.claude/`, and `.agents/`, and stamps a generated skills router (with G0: no blind action) into `AGENTS.md`. `update.sh` re-wires after updates.
 - Standard shelf: the library is seven books (frontend, backend, security, infra, process, ai, design) with guardrail README keys, a `_template/` kit, and `tools/scaffold-library.sh` to restore missing books. Personal books (like `trading/`) are yours and never travel.

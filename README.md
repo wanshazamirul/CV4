@@ -224,6 +224,16 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 
 **Can I bring my own skills?** Yes: drop them in `my-skills/` and register them in `my-skills/registry.md`. They are never overwritten, and they win when triggers overlap the bank. `forge` checks them before generating anything new.
 
+**How do I keep commits clean (no "Generated with AI" trailers)?** The manual instructs the companion to commit in your name with no AI attribution, and opencode respects those repo rules. Claude Code adds attribution by default; make it mechanical with one setting in `~/.claude/settings.json`:
+
+```json
+{ "attribution": false }
+```
+
+That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead.
+
+**Why are all illustrations ASCII?** Docs live in git and get read by agents; ASCII diffs cleanly, never breaks, and renders everywhere. House rule: every diagram in every README is ASCII, no images.
+
 **How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
 
 **Which skills actually get used?** `memory/skills.md`: save ticks the `uses` count and last-used date for whatever fired.
