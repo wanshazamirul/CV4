@@ -205,11 +205,11 @@ The fallback (a tool without global config, or the user opting out mid-way): wri
    ```
    Commits stay the user's (no generated-with trailers, no co-author lines), and one memory store: this repo. Claude's built-in `MEMORY.md` stays off, so lessons land where the user can read, diff, and back them up. Older Claude versions read `"includeCoAuthoredBy": false` for the first key.
 
-4. **Trust, pre-accepted** (Claude Code users): add Home to `~/.claude.json` so the workspace-trust dialog stops asking about the companion folder: `projects["<HOME>"].hasTrustDialogAccepted: true`. Merge: keep every existing entry, and match the path format the file already uses for its other projects (Windows entries keep their backslashes). It is the documented fix for the repeated "do you trust this folder?" prompt (a known Windows bug makes it repeat).
+4. **Trust: tell, never touch** (Claude Code users): the trust flag in `~/.claude.json` is consent-shaped, and agents editing it get blocked by safety classifiers (correctly). Do not attempt the edit. Tell them, in the completion line: when Claude shows "do you trust this folder?" for the CV4 folder, click Yes once; and if it keeps asking (a known Claude Code repeat-prompt bug), they can run `bash "<HOME>/tools/trust-home.sh"` once in their own terminal: the documented fix, set with their own hands on the keyboard.
 
 All three are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
 
-**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.claude.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`, and the command files): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file.
+**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`, and the command files): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file. (`~/.claude.json` is the one file you do not edit; the trust flag is the user's to set with `tools/trust-home.sh`.)
 
 **Writing the block.** Fill every `[PLACEHOLDER]` with the interview answers and `[HOME]` with Home's absolute path (forward slashes on Windows). Write the manual between the two marker lines; when the markers already exist, replace the text between them and nothing else. Markers present with a **different Home** baked in? Another CV4 instance lives there: say so, and offer to replace it with this one (one companion per machine is the model; two Homes in one file would fight).
 
@@ -218,7 +218,7 @@ All three are the intended setup, not extras. Without the install, memory only w
 - Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
 - Say it in the completion line: "brought N notes from your previous setup in; originals untouched (backups: <paths>)."
 
-Say one line back: what you wrote, where (block, commands, settings, trust), and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
+Say one line back: what you wrote, where (block, commands, settings), plus the one-click trust note, and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
 
 ### Test drive (once, one minute)
 
@@ -264,7 +264,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.9.0
+> Manual rev: 0.9.1
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -321,6 +321,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
 - Team fork? Your role comes from `personas/.machine` (personal / member; older machines may say owner or just-me, both behave as personal). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
-- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), drop the trust entry we added for Home in `~/.claude.json` (and the entry itself if it empties), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
+- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), try dropping the Home trust entry in `~/.claude.json` (backup first; if tooling blocks the edit, note it instead of forcing it), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````

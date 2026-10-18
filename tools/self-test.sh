@@ -93,6 +93,9 @@ fi
 if [ -f "$ROOT/spec-kit/converge-to-memory.sh" ]; then
   bash -n "$ROOT/spec-kit/converge-to-memory.sh" && ok "converge hook syntax ok" || fail "converge hook syntax error"
 fi
+if [ -f "$ROOT/tools/trust-home.sh" ]; then
+  bash -n "$ROOT/tools/trust-home.sh" && ok "trust-home syntax ok" || fail "trust-home syntax error"
+fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------
 if [ "$QUICK" = 0 ]; then

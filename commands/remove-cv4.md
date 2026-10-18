@@ -18,7 +18,7 @@ Home: [HOME]. You are running the full uninstall. Full means full: everything en
    - an install backup exists (`~/.claude/settings.json.bak-*`)? Copy it back over the file.
    - no install backup? Remove only the keys CV4 added (`"attribution"`, `"autoMemoryEnabled"`; older setups may say `"includeCoAuthoredBy"`), keep everything else, and delete the file if nothing else remains.
 4. Legacy: if `instructions` in `~/.config/opencode/opencode.json` carries an entry that is exactly `[HOME]/AGENTS.md` (or its backslash variant), remove that entry and nothing else.
-5. Trust: in `~/.claude.json`, delete `hasTrustDialogAccepted` from the `projects["<HOME>"]` entry that setup added (fresh `.bak-<YYYYMMDD>` copy of the file first); if that projects entry is then empty, remove the entry itself.
+5. Trust, best effort: in `~/.claude.json`, delete `hasTrustDialogAccepted` from the `projects["<HOME>"]` entry if one exists (fresh `.bak-<YYYYMMDD>` copy first); drop the entry itself if it empties. If tooling blocks the write, say so in the confirm line; a stale flag is harmless once the folder is gone.
 6. Persona: delete `[HOME]/personas/.machine`.
 7. Hand back, prefilled: write a short dated distillation of what CV4 learned (the essentials from `[HOME]/main/relationship-memory.md` plus the never-again rules from `[HOME]/main/hotlist.md`, top five each) as a "From CV4 (<date>)" section, routed to match the restored setup:
    - auto memory is on after the restore (`autoMemoryEnabled` true or absent) and a memory file exists (`~/.claude/projects/*/memory/MEMORY.md`)? Append to the most recently modified one.

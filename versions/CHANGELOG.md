@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1 - 2026-10-18
+- Trust flags are hands-off now: setup no longer edits `~/.claude.json` (safety classifiers block agent edits to consent flags, correctly, and there is still no official setting or flag for it). Instead it teaches the one-click path and ships `tools/trust-home.sh`, the documented user-run fix for the repeating trust prompt: run it yourself, it backs the file up and matches the path format Claude already uses.
+- Uninstall drops the Home trust entry when tooling allows, and says so honestly when it cannot.
+
 ## 0.9.0 - 2026-10-18
 - Wake word: the companion's name alone as a first message (for example "shu") is the session-start shortcut - full load, then the time-aware greeting in one reply. Explained at the hello and in the README; it goes away with the block, nothing extra to clean on removal.
 - Trust, pre-accepted: setup adds Home to `~/.claude.json` (`projects["<HOME>"].hasTrustDialogAccepted: true`, merged, path format matched) so the "do you trust this folder?" prompt stops nagging for the companion folder (a known Windows bug repeats it). Uninstall removes exactly that entry.
