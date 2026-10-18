@@ -86,14 +86,14 @@ Open with one short line, not a speech: three quick questions, then the companio
 
 **Q1 and Q2 are typed answers: ask them as plain text** (one per message). Option-based question tools cannot render free entry: Claude Code's `AskUserQuestion` requires preset options per question and fails free entry with an invalid parameter. If any question tool errors, fall back to plain text at once and never retry it in a loop. opencode's `question` tool carries a type-your-own field, so it asks each of its questions the same way: one call, one question. Never invent example names.
 
-Q3 uses the question UI with preset picks (Claude Code: `AskUserQuestion`; opencode: `question`), one question, its own round.
+Q3 uses the question UI with preset picks (Claude Code: `AskUserQuestion`; opencode: `question`), one round. Hard limits for every question tool: 4 options or fewer per question (a fifth throws `too big: expected array to have <= 4 items`), 4 questions or fewer per round. A failed question-tool call never shows its raw error to the user and never retries: fall back to plain text in the same message.
 
 ```
 What it looks like:
 
   ? What is your name?             (type your answer)
   ? What is my name?               (type your answer; yours to choose)
-  ? How should I behave?           voice:   warm · playful · blunt · formal · dry
+  ? How should I behave?           voice:   warm · playful · blunt · dry
                                    emoji:   none · light · generous
                                    answers: short · balanced · detailed
 ```
@@ -105,7 +105,7 @@ What it looks like:
 - "What is my name?"
 
 **Q3 - behavior** (question prompt, three quick picks):
-- **Voice** (multi-select): `warm` · `playful` · `blunt` · `formal` · `dry`
+- **Voice** (multi-select, 4 max): `warm` · `playful` · `blunt` · `dry` (the tool adds a type-your-own field for the rest, `formal` included)
 - **Emoji**: `none` · `light` · `generous`
 - **Answers**: `short` · `balanced` · `detailed`
 

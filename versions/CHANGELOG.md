@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.1 - 2026-10-18
+- Interview tool-proofed: every pick list is 4 options or fewer (a fifth throws `too big: expected array to have <= 4 items` in Claude Code), the voice pick reads warm/playful/blunt/dry with type-your-own covering the rest (`formal` included), and a failed question-tool call never surfaces a raw error or retries: it falls back to plain text in the same message.
+
 ## 0.8.0 - 2026-10-18
 - `/cv4-recap` ships (`commands/`): the cross-session recap built from the files (current-session, reminders, newest log), installed globally like `/remove-cv4`, working in any tool. Claude Code's built-in `/recap` stays for the live session; the two pair.
 - Setup never wipes an existing setup: an existing global config keeps every line, and Claude Code auto memory (`~/.claude/projects/*/memory/`) is read and folded into `main/relationship-memory.md` under a dated import heading. Originals stay in place; backups as always.
