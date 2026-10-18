@@ -136,7 +136,8 @@ CV4/
 │
 ├── commands/                    SLASH COMMANDS (installed to your tool; work everywhere)
 │   ├── README.md                  the key
-│   └── remove-cv4.md              /remove-cv4: full uninstall, settings offered back
+│   ├── remove-cv4.md              /remove-cv4: full uninstall, settings offered back
+│   └── cv4-recap.md               /cv4-recap: cross-session recap from the files
 │
 ├── docs/                        TEMPLATE DOCS (about CV4 itself)
 │   ├── README.md                  the key
@@ -241,9 +242,10 @@ Almost everything lives inside this folder. The machine-level traces: the compan
 
 1. **Remove the companion block** (if installed): delete the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->` in whichever global files have it (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), plus a repo-file fallback if you chose it. An older setup may also have added an `instructions` entry in `~/.config/opencode/opencode.json`: remove it too.
 2. **Settings** (if applied at setup): every global file edited at setup was backed up to `<file>.bak-<YYYYMMDD>` first. Keep the clean defaults, or restore the backup: `cp ~/.claude/settings.json.bak-20261018 ~/.claude/settings.json`.
-3. **Delete this folder.** Memory, logs, skills, and history all live inside it.
+3. **Hand back** (optional): what CV4 learned can flow back to your old setup as a short dated distillation (`main/relationship-memory.md` essentials + `main/hotlist.md` rules), written into an auto-memory file when one exists, else the global config file.
+4. **Delete this folder.** Memory, logs, skills, and history all live inside it.
 
-Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the block, offers keep-or-restore for the settings it applied, says what remains, and you delete the folder when you are done. The shortcut: `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup) does the same from any folder, and removes the command itself. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the block, offers keep-or-restore for the settings it applied, offers the hand-back of what it learned, says what remains, and you delete the folder when you are done. The shortcut: `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup) does the same from any folder, and removes the command itself. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
 
 ## Roadmap
 
@@ -291,6 +293,10 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
 ```
 
 **What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys ride one recommended card; the companion backs the file up first (`.bak-<date>`) and merges with your approval.
+
+**What about Claude Code's recap (`/recap`)?** Keep it. Recap covers the live session (a one-liner on demand, or the automatic sum-up after you step away); CV4 covers everything before it. Setup also installs `/cv4-recap`, which builds the cross-session recap from this repo's files, in any tool.
+
+**I already have a CLAUDE.md or Claude memory with content. Does setup wipe it?** No. Every existing line stays; setup backs files up first and folds the personal notes it finds into `main/relationship-memory.md` under a dated import heading, and Claude's auto-memory files stay exactly where they are (setup only switches off new writes there). Uninstalling offers the reverse: a short dated hand-back of what CV4 learned into your old setup.
 
 **How do I know my setup is healthy?** Run `bash tools/self-test.sh`: it checks the layout and README keys, the engine wiring and router, the registries, then runs the integration pass (installer, scaffold, converge hook, git-guard) in a scratch copy. `RESULT: PASS` means the engine is sound; `--quick` skips the scratch pass.
 

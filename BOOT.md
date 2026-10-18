@@ -208,14 +208,19 @@ Set up this machine (recommended):
 
 **Writing the block.** Fill every `[PLACEHOLDER]` with the interview answers and `[HOME]` with Home's absolute path (forward slashes on Windows). Write the manual between the two marker lines; when the markers already exist, replace the text between them and nothing else. Markers present with a **different Home** baked in? Another CV4 instance lives there: say so, and offer to replace it with this one (one companion per machine is the model; two Homes in one file would fight).
 
-**Also install the remove command** (Claude Code, opencode): copy `commands/remove-cv4.md` from Home into the tool's global commands directory, `[HOME]` filled:
+**Bring the old setup in (never wipe).** Look before you write, and fold what is useful into CV4's memory; nothing existing gets deleted:
+- their global config file: every line already there stays (your edits are additive; backup first as always). Personal notes in it (preferences, facts, ways of working) go into `main/relationship-memory.md` under a dated `## Imported from the previous setup (<date>)` heading, short and verbatim. Standing rules go in there too, flagged as "the user's call" for a later cleanup.
+- Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
+- Say it in the completion line: "brought N notes from your previous setup in; originals untouched (backups: <paths>)."
 
-| Your tool | Command file |
+**Also install the companion commands** (Claude Code, opencode): copy `commands/remove-cv4.md` and `commands/cv4-recap.md` from Home into the tool's global commands directory, `[HOME]` filled:
+
+| Your tool | Command files |
 |---|---|
-| Claude Code | `~/.claude/commands/remove-cv4.md` |
-| opencode | `~/.config/opencode/commands/remove-cv4.md` |
+| Claude Code | `~/.claude/commands/remove-cv4.md` · `~/.claude/commands/cv4-recap.md` |
+| opencode | `~/.config/opencode/commands/remove-cv4.md` · `~/.config/opencode/commands/cv4-recap.md` |
 
-Back up an existing copy before overwriting (same backup rule). It brings `/remove-cv4` to every session anywhere: one run undoes this whole install (settings included, offered back) and says what stays.
+Back up existing copies before overwriting (same backup rule). `/remove-cv4` undoes this whole install from any session (settings included, offered back); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
 
 Say one line back: what you wrote, where (block plus command), and that deleting the block detaches the companion. Declined? Note it in `main/relationship-memory.md` and ask once, not twice.
 
@@ -263,7 +268,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.7.0
+> Manual rev: 0.8.0
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -319,6 +324,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
 - Team fork? Your role comes from `personas/.machine` (owner / member / just-me). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
-- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Offer a final save, then remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one). For `settings.json` offer two lanes: keep the clean defaults, or restore the pre-setup backup (`.bak-<date>`, say which file). Confirm one line, and tell them to delete this folder when the session is done.
+- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Offer a final save, then remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one). For `settings.json` offer two lanes: keep the clean defaults, or restore the pre-setup backup (`.bak-<date>`, say which file). Then offer the hand-back: a short dated distillation of what this companion learned (relationship essentials plus the never-again rules) written into the old setup's memory home (an auto-memory file when one exists, else the global config file). Confirm one line, and tell them to delete this folder when the session is done.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````

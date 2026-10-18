@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0 - 2026-10-18
+- `/cv4-recap` ships (`commands/`): the cross-session recap built from the files (current-session, reminders, newest log), installed globally like `/remove-cv4`, working in any tool. Claude Code's built-in `/recap` stays for the live session; the two pair.
+- Setup never wipes an existing setup: an existing global config keeps every line, and Claude Code auto memory (`~/.claude/projects/*/memory/`) is read and folded into `main/relationship-memory.md` under a dated import heading. Originals stay in place; backups as always.
+- Uninstall hands memory back: `/remove-cv4` (and the uninstall rule) offers a short dated distillation of what CV4 learned (relationship essentials + never-again rules) into the old setup's memory home, after blocks, settings, and commands are handled.
+
 ## 0.7.3 - 2026-10-18
 - Execution-first BOOT: the file opens with a banner telling an AI agent plainly that it is a procedure to execute, not a document to summarize: no explaining CV4, no asking whether to begin, start Step 0 immediately, first reply opens the setup.
 - The start-here line now says "run the setup in BOOT.md" instead of "read BOOT.md": reading invited summaries, running invites setups.
