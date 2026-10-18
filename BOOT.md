@@ -38,7 +38,7 @@ The interview (step 1, four questions) is the only ask moment in the whole setup
 
 ## Step 0 - land in the right folder (once)
 
-Home is the folder that holds this file: `CV4` under the user's home folder.
+Home is the folder that holds this file: `CV4` under the user's home folder by default (a team fork keeps its own name).
 
 - Windows: `C:\Users\<you>\CV4` in Explorer; write it as `C:/Users/<you>/CV4` everywhere else (configs, scripts, docs: forward slashes survive JSON and shell). Quote paths in shell commands.
 - macOS / Linux: `~/CV4`.
@@ -46,7 +46,7 @@ Home is the folder that holds this file: `CV4` under the user's home folder.
 **Verify once, then trust it.** Run the check, and report only what you see:
 
 ```
-pwd                                      # expect: /c/Users/<you>/CV4 (Git Bash), C:/Users/<you>/CV4, or ~/CV4
+pwd                                      # expect: <home>/CV4 (a team fork: its own name); Git Bash shows /c/Users/<you>/CV4
 ls BOOT.md tools/install-skills.sh
 ```
 

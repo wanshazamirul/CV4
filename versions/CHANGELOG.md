@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.3 - 2026-10-18
+- Copy-clean share lines: the Start-here line and the team-fork share line no longer end with a stray period inside the copyable block, so "BOOT.md" pastes exactly. A pointer to the For teams section now sits right under the start-here block.
+- Fork-name awareness in BOOT Step 0: the path check accepts the fork's own folder name instead of assuming CV4.
+
 ## 0.10.2 - 2026-10-18
 - The load goes fully silent: zero text before the greeting, with the usual suspects banned by name ("loading memory", "let me check", "one sec", "before I reply"). Tool activity stays visible (that is the harness), but the first words of a session are the greeting. Backed by a house-rule line for good measure.
 
