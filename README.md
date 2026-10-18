@@ -4,7 +4,7 @@
 **Start here:** give your AI agent this link and one instruction:
 
 ```
-Clone https://github.com/wanshazamirul/CV4 into your home folder, then run the setup in BOOT.md
+Clone https://github.com/wanshazamirul/CV4 into my home folder, then run the setup in BOOT.md
 ```
 
 That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled. Running a team? The [For teams](#for-teams) section has the one-command fork flow.
@@ -250,7 +250,7 @@ Fork CV4 for my team, call it <name>.
 It forks `wanshazamirul/CV4` to your account (`gh` signed in; it asks the name you want, default `CV4`), updates the Start-here line in your fork's README to your fork's URL, pushes, and prints the line to share:
 
 ```
-Clone https://github.com/<you>/<name> into your home folder, then run the setup in BOOT.md
+Clone https://github.com/<you>/<name> into my home folder, then run the setup in BOOT.md
 ```
 
 No `gh`? Run `gh auth login` once, or click Fork on the original repo page and tell your agent the fork URL; it finishes the README and pushes. GitLab or Gitea? Import or push the repo into a new project named what you want; everything below is identical.
