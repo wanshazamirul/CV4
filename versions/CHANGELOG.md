@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.2 - 2026-10-18
+- Interview pinned: one question at a time, always (ask, wait, continue; opencode asks one call per question too). Opening is one short line, not a speech.
+- Test drive: the setup closes with the proof - open the agent in a different folder, say hi, watch memory arrive from anywhere. Stranger? Restart the app once, then check the block and settings together.
+- "Restart setup" / "start over" explicitly mean the re-boot reset (Step 0), same confirmation card.
+- Setup-flow discipline pass (reference: the MemoryCore setup wizard): taken are the one-at-a-time asks with a wait between, and the closing activation test. Not adopted: per-answer instant file writes (CV4 seeds right after the confirm card, minutes later), setup-file deletion (BOOT.md is the reinstall door), and the emoji-heavy voice (the user's chosen voice rules here).
+
 ## 0.7.1 - 2026-10-18
 - Clone path, settled for good: the start-here instruction names the target (your home folder), and on a terminal it is `cd ~` first then `git clone <url>`: git names the folder itself, so no path string gets typed, so nothing can get mangled.
 - BOOT Step 0 is evidence-first now: run the `pwd` + `ls` check, then speak only about what it shows. A healthy Home gets zero path talk; a genuinely mangled folder name gets one quoted move command, then a re-check. Speculative mangling warnings are called out as wrong behavior.

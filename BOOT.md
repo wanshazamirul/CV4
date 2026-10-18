@@ -63,7 +63,7 @@ Ran this before on this machine? Check for the marker `<!-- CV4 companion: start
 - the fallback files here in Home: `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`
 - `personas/.machine` (a role was claimed, so a setup ran at least partway)
 
-Found anything? This machine already runs (or half-runs) a companion. Ask once, in one round:
+Found anything? This machine already runs (or half-runs) a companion. Ask once, in one round (the user saying "restart setup" or "start over" means this same reset, straight away):
 
 ```
 CV4 is already set up on this machine (Home: <path seen>).
@@ -77,9 +77,13 @@ CV4 is already set up on this machine (Home: <path seen>).
 
 ## Step 1 - the interview (3 questions, once)
 
-**Q1 and Q2 are typed answers: ask them as plain text.** Option-based question tools cannot render free entry: Claude Code's `AskUserQuestion` requires preset options per question and fails free entry with an invalid parameter. If any question tool errors, fall back to plain text at once and never retry it in a loop. opencode's `question` tool carries a type-your-own field, so it may ask all three; Claude Code uses it for Q3 only. Never invent example names.
+Open with one short line, not a speech: three quick questions, then the companion is set up everywhere you work. Then ask Q1 and wait.
 
-Q3 uses the question UI with preset picks (Claude Code: `AskUserQuestion`; opencode: `question`): one prompt per question, never a prose list. Batch on one screen when the tool allows, otherwise one at a time.
+**One question at a time, always: ask it, then wait for the reply before anything else.** Never combine questions, never a prose list, never a second question while one is pending (an unanswered question is the only thing in your message).
+
+**Q1 and Q2 are typed answers: ask them as plain text** (one per message). Option-based question tools cannot render free entry: Claude Code's `AskUserQuestion` requires preset options per question and fails free entry with an invalid parameter. If any question tool errors, fall back to plain text at once and never retry it in a loop. opencode's `question` tool carries a type-your-own field, so it asks each of its questions the same way: one call, one question. Never invent example names.
+
+Q3 uses the question UI with preset picks (Claude Code: `AskUserQuestion`; opencode: `question`), one question, its own round.
 
 ```
 What it looks like:
@@ -211,6 +215,10 @@ Set up this machine (recommended):
 Back up an existing copy before overwriting (same backup rule). It brings `/remove-cv4` to every session anywhere: one run undoes this whole install (settings included, offered back) and says what stays.
 
 Say one line back: what you wrote, where (block plus command), and that deleting the block detaches the companion. Declined? Note it in `main/relationship-memory.md` and ask once, not twice.
+
+### Test drive (once, one minute)
+
+Close with the proof: ask them to open the agent in a different folder (any one) and say hi. Greeted by name, with memory, from anywhere: the install works, say so. Greeted like a stranger: restart the app once (a session that started before the install cannot see it), then come back and say so; you two check the block and the settings together.
 
 ## What updates, what is yours
 
