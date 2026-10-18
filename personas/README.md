@@ -15,9 +15,10 @@ The first boot on a fresh clone asks one question, then never again:
 
 | Role | Means | Engine paths (skills, tools, library) | Project paths |
 |---|---|---|---|
-| `owner` | the repo owner's machine | full: commit/merge to main | normal |
+| `personal` | your own machine: a solo instance, or the team's owner machine | full: commit/merge to main | normal |
 | `member` | an engineer on a team fork | dev branch only; PR, owner reviews/edits/merges | whatever the monorepo allows |
-| `just-me` | personal single-user instance | full (your repo, your rules) | normal |
+
+Older machines may carry `role=owner` or `role=just-me`; both behave exactly like `personal` (only `member` activates the guard).
 
 The claim lives in `personas/.machine` (gitignored). The persona reads it and behaves accordingly: a member's companion says the rule in plain words when a change crosses it ("not verified to push here; this goes to dev for review").
 

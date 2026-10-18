@@ -161,7 +161,7 @@ if [ "$QUICK" = 0 ]; then
       grep -v "self-test: probe" "$SCR/memory/decisions.md" > "$SCR/memory/decisions.md.tmp" 2>/dev/null && mv "$SCR/memory/decisions.md.tmp" "$SCR/memory/decisions.md"
     fi
 
-    # git-guard: member blocked on engine paths, owner passes
+    # git-guard: member blocked on engine paths, personal passes
     if [ -f "$SCR/tools/git-guard.sh" ] && have git; then
       cd "$SCR" || true
       git init -q 2>/dev/null
@@ -181,11 +181,11 @@ if [ "$QUICK" = 0 ]; then
           *BLOCKED*) ok "guard blocks member engine pushes" ;;
           *) fail "guard did not block a member engine push" ;;
         esac
-        printf 'role=owner\n' > personas/.machine
+        printf 'role=personal\n' > personas/.machine
         out3="$(git push origin main 2>&1 || true)"
         case "$out3" in
-          *BLOCKED*) fail "guard blocked the owner" ;;
-          *) ok "guard allows the owner" ;;
+          *BLOCKED*) fail "guard blocked the personal machine" ;;
+          *) ok "guard allows personal machines" ;;
         esac
       else
         fail "guard blocked the initial push"

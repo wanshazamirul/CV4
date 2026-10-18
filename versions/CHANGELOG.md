@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.3 - 2026-10-18
+- Roles collapsed to the two that actually change behavior: `personal` (just me; solo, or the team's owner machine - full rights) and `member` (team fork engineer - engine changes go to dev + PR). The old owner / just-me split was behavior-identical; legacy values keep working. `member` machines get the git-guard installed with the setup.
+- The install stops asking: one role question, then the companion install, the commands, and the clean Claude defaults all run in one pass (backups first; /remove-cv4 undoes it). No more apply / customize / skip prompt; object mid-way and that piece is honored.
+
 ## 0.8.2 - 2026-10-18
 - Voice is a single pick now, same shape as emoji and answers: warm, playful, blunt, or dry, with type-your-own for the rest. The summary card and the identity template follow ("I will be <voice>").
 

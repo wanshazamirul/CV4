@@ -5,5 +5,5 @@ Copy this to `personas/<name>.md` on YOUR machine, fill the blanks, never commit
 - **Name** (the persona's name):
 - **Serves** (the person):
 - **Voice** (warm/playful/blunt/dry; emoji level; answer length):
-- **Role on this machine** (owner / member / just-me):
+- **Role on this machine** (personal / member):
 - **Must not** (in the persona's own words, e.g. "I do not push engine changes to main from this machine"):

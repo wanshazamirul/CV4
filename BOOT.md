@@ -24,13 +24,13 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 
 Before step 1, one sanity pass: **stand in the folder that holds this file**. That folder is the companion's Home (Step 0). Step 0 verifies the path too: a healthy Home gets no path talk, a clone that landed wrong gets fixed there, before anything downstream bakes the path in. Re-reading this file on a machine that already ran it? Step 0 catches the old install and offers a fresh reset first, never a silent double-install.
 
-The interview (step 1) is the only question-heavy moment. Steps 2 to 4 are machinery. Step 5 is the only setup card. No setup question ever appears twice.
+The interview (step 1) plus one role question (step 5) are the only asks in the whole setup. Everything else is machinery and installs itself. No setup question ever appears twice.
 
 1. Interview (once): the three questions + one confirm card (Step 1).
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
 4. Wire the skills engine: run `bash tools/install-skills.sh` and report what got wired (bank into `.opencode/`, `.claude/`, `.agents/`).
-5. The install card (once, one card, recommended): machine role + the companion install (the manual, written into your tool's global config, so any folder and any session knows Home) + clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Show what changes, back up every file first, one approval runs it all (Step 5).
+5. The install (Step 5): one question (the machine role), then the whole setup runs in one pass: the companion install (the manual into your tool's global config, so any folder and any session knows Home), the commands, and clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Backups first, reversible.
 
 ## Step 0 - land in the right folder (once)
 
@@ -154,13 +154,19 @@ Greet them by name, then give them home base: memory lives in this folder (show 
 
 Run `bash tools/install-skills.sh` (Windows: from Git Bash). It wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`). Report in one line: wired what, where. No bash at all? Note it and move on; the engine wires later from inside this folder.
 
-## Step 5 - the install card (once, one card, recommended)
+## Step 5 - the install (one question, then do it)
 
-One card, one approval, then execute in one pass. Never drip it out as separate setup questions. Write nothing without this yes.
+Ask the machine role once, then run the whole install in one pass with no further prompts. It is standard and reversible (backups first; `/remove-cv4` undoes it), and nobody re-reads BOOT.md to be asked more questions. If the user objects to a piece mid-way ("not my settings"), honor that piece and note it; never re-ask for the rest.
 
-**A. This machine** (once per machine): `owner` (mine) / `member` (team fork) / `just-me`. Write `role=<answer>` to `personas/.machine` (gitignored). Team fork details: `personas/README.md`.
+**A. Ask once: this machine.** `personal` (just me; my own instance, or the team's owner machine) / `member` (an engineer on a team's fork). This is the one thing that cannot be guessed, and it changes the guard: members push engine changes to `dev` + PR, never straight to main. Write `role=<answer>` to `personas/.machine` (gitignored); when the answer is `member`, also run `bash tools/git-guard.sh --install`. Details: `personas/README.md`.
 
-**B. The companion install** (all tools): the manual at the bottom of this file, written into your tool's **global** config. The global config loads in every session, in every folder, so your companion is simply there, wherever you launch your agent. No pointer, no folder habits, no start-inside-CV4 rule.
+```
+This machine:  [personal] [team member]
+```
+
+**B. Then the setup, in one pass.** Say one line first ("setting up now: the companion install plus clean Claude defaults; backups first, /remove-cv4 undoes it"), then execute all of it:
+
+1. **The companion install** (all tools): the manual at the bottom of this file, written into your tool's **global** config. The global config loads in every session, in every folder, so your companion is simply there, wherever you launch your agent. No pointer, no folder habits, no start-inside-CV4 rule.
 
 Where the block goes, per tool:
 
@@ -182,29 +188,26 @@ The block is the full manual, wrapped in two markers:
 <!-- CV4 companion: end -->
 ```
 
-The fallback (declined, or a tool without global config): write the same manual into a repo file in Home (`CLAUDE.md` for Claude Code, `GEMINI.md` for Gemini CLI, `AGENTS.md` for the rest). Then sessions started inside Home work; sessions elsewhere wait for the install.
+The fallback (a tool without global config, or the user opting out mid-way): write the same manual into a repo file in Home (`CLAUDE.md` for Claude Code, `GEMINI.md` for Gemini CLI, `AGENTS.md` for the rest). Then sessions started inside Home work; sessions elsewhere wait for the install.
 
-**C. Clean Claude defaults** (Claude Code users): two keys in `~/.claude/settings.json`:
+2. **The companion commands** (Claude Code, opencode): copy `commands/remove-cv4.md` and `commands/cv4-recap.md` from Home into the tool's global commands directory, `[HOME]` filled:
+
+| Your tool | Command files |
+|---|---|
+| Claude Code | `~/.claude/commands/remove-cv4.md` · `~/.claude/commands/cv4-recap.md` |
+| opencode | `~/.config/opencode/commands/remove-cv4.md` · `~/.config/opencode/commands/cv4-recap.md` |
+
+`/remove-cv4` undoes this whole install from any session (settings included, offered back); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
+
+3. **Clean Claude defaults** (Claude Code users): two keys in `~/.claude/settings.json`:
    ```json
    { "attribution": false, "autoMemoryEnabled": false }
    ```
    Commits stay the user's (no generated-with trailers, no co-author lines), and one memory store: this repo. Claude's built-in `MEMORY.md` stays off, so lessons land where the user can read, diff, and back them up. Older Claude versions read `"includeCoAuthoredBy": false` for the first key.
 
-B and C are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
+All three are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
 
-Show the card once (batch it into a single interaction round: Claude Code runs one `AskUserQuestion` round with two questions, role then apply; opencode runs one `question` call):
-
-```
-Set up this machine (recommended):
-  This machine:  [mine (owner)] [team member] [just me]
-  Setup:         [x] Install the companion (global config: any folder, any session)
-                 [x] Clean Claude defaults (clean commits + one memory store)
-  -> [Apply the setup] [Customize] [Skip]
-```
-
-`Customize` lets them un-pick parts; `Skip` gets one polite line and no second ask.
-
-**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file.
+**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`, and the command files): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file.
 
 **Writing the block.** Fill every `[PLACEHOLDER]` with the interview answers and `[HOME]` with Home's absolute path (forward slashes on Windows). Write the manual between the two marker lines; when the markers already exist, replace the text between them and nothing else. Markers present with a **different Home** baked in? Another CV4 instance lives there: say so, and offer to replace it with this one (one companion per machine is the model; two Homes in one file would fight).
 
@@ -213,16 +216,7 @@ Set up this machine (recommended):
 - Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
 - Say it in the completion line: "brought N notes from your previous setup in; originals untouched (backups: <paths>)."
 
-**Also install the companion commands** (Claude Code, opencode): copy `commands/remove-cv4.md` and `commands/cv4-recap.md` from Home into the tool's global commands directory, `[HOME]` filled:
-
-| Your tool | Command files |
-|---|---|
-| Claude Code | `~/.claude/commands/remove-cv4.md` · `~/.claude/commands/cv4-recap.md` |
-| opencode | `~/.config/opencode/commands/remove-cv4.md` · `~/.config/opencode/commands/cv4-recap.md` |
-
-Back up existing copies before overwriting (same backup rule). `/remove-cv4` undoes this whole install from any session (settings included, offered back); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
-
-Say one line back: what you wrote, where (block plus command), and that deleting the block detaches the companion. Declined? Note it in `main/relationship-memory.md` and ask once, not twice.
+Say one line back: what you wrote, where (block, commands, settings), and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
 
 ### Test drive (once, one minute)
 
@@ -268,7 +262,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.8.0
+> Manual rev: 0.8.3
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -313,7 +307,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Commits are the user's: their name, their message, no AI attribution trailers ("Generated with ...", "Co-Authored-By: <agent>"). If your agent still adds them (Claude Code does by default), switch it off once: `"attribution": false` in its settings (Claude Code: `~/.claude/settings.json`; see the README FAQ).
 - READMEs are architecture documents: when structure, features, or workflows change, update the README in the same change, never later. Every folder carries a README key (runtime data folders are covered by their parent). Every illustration is an ASCII diagram, never an image. Diagrams from chat that earned a "put it in the docs" get enshrined in the right doc (README, book chapter, bridge doc, `docs/`), aligned and ASCII.
 - Long sessions: agents compact context natively (opencode: `compaction.auto` / `keep.tokens`; Claude Code: `autoCompactEnabled` / `autoCompactWindow`). After any compaction or long gap, reload before acting (see the session load above) and save before you stop. An unsaved lesson dies with the context.
-- One memory store: if your agent keeps its own built-in memory (Claude Code auto memory, similar features elsewhere), prefer switching it off (`"autoMemoryEnabled": false`) and landing lessons here (`memory/`, `main/`). This repo is the truth you can read, diff, and keep. At boot this rides the single setup card (Step 5): shown, backed up, applied on one approval.
+- One memory store: if your agent keeps its own built-in memory (Claude Code auto memory, similar features elsewhere), prefer switching it off (`"autoMemoryEnabled": false`) and landing lessons here (`memory/`, `main/`). This repo is the truth you can read, diff, and keep. At boot this rides the setup (Step 5): backed up and applied in the same pass.
 - Keep memory small: index hot 12 / warm 20, current-session 3 sessions, reminders 200 open. Rotate, don't hoard.
 - `library/` is for patterns that generalize: books of chapters, one chapter per pattern.
 - Skills live in `skills/` (bank, auto-updated); sub-skills nest under their parent. Yours live in `my-skills/`, never overwritten, and they win overlaps.
@@ -322,7 +316,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - After an engine update, if BOOT.md's manual rev is newer than this block's, offer a refresh: replace if you never customized it, merge if you did. Installed in more than one tool? Refresh every copy. No companion block yet (fallback file only, or nothing)? Offer the install (Step 5 in BOOT.md).
 - Companion installed in the global config? Any folder works: that is the point. Without it (declined, or a tool with no global file), the fallback file lives in Home, so sessions start there; offer the install once when it helps.
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
-- Team fork? Your role comes from `personas/.machine` (owner / member / just-me). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
+- Team fork? Your role comes from `personas/.machine` (personal / member; older machines may say owner or just-me, both behave as personal). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
 - Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Offer a final save, then remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one). For `settings.json` offer two lanes: keep the clean defaults, or restore the pre-setup backup (`.bak-<date>`, say which file). Then offer the hand-back: a short dated distillation of what this companion learned (relationship essentials plus the never-again rules) written into the old setup's memory home (an auto-memory file when one exists, else the global config file). Confirm one line, and tell them to delete this folder when the session is done.
 - Zones: see BOOT.md. Personal files are never auto-updated.

@@ -9,7 +9,7 @@ Clone https://github.com/wanshazamirul/CV4 into your home folder, then run the s
 
 That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled.
 
-It clones the repo to its home (`CV4` in your home folder), runs the 3-question enrollment, installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. One card, one approval: the install plus clean Claude defaults. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
+It clones the repo to its home (`CV4` in your home folder), runs the 3-question enrollment, installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. One question marks the machine (personal or team member), then the install runs itself: companion, commands, clean Claude defaults. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
 
 **Spec-driven by design:** pairs with spec-kit (constitution -> specify -> plan -> tasks -> implement -> converge); the bridge ships in `spec-kit/` and the lessons land in `memory/`.
 
@@ -187,7 +187,7 @@ CV4/
 │   └── registry.md                your roster (the gate checks it first)
 │
 ├── personas/                    WHO USES THIS INSTANCE (empty cups; fills stay local)
-│   ├── README.md                  role claim (owner / member / just-me), three lanes
+│   ├── README.md                  role claim (personal / member), three lanes
 │   └── _template.md               the empty cup
 │
 ├── spec-kit/                    OPTIONAL SDD BRIDGE
@@ -279,7 +279,7 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 { "attribution": false }
 ```
 
-That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead. At setup the companion bundles it with the one-memory-store default in a single recommended card, backs your settings file up first, and merges the keys with your approval.
+That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead. At setup the companion folds it into the same pass, backs your settings file up first, and merges the keys.
 
 **Why are all illustrations ASCII?** Docs live in git and get read by agents; ASCII diffs cleanly, never breaks, and renders everywhere. House rule: every diagram in every README is ASCII, no images.
 
@@ -292,7 +292,7 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
           rules auto-reload; memory files reload via the manual's rule
 ```
 
-**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys ride one recommended card; the companion backs the file up first (`.bak-<date>`) and merges with your approval.
+**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys are applied with the rest; the file is backed up first (`.bak-<date>`) and merged.
 
 **What about Claude Code's recap (`/recap`)?** Keep it. Recap covers the live session (a one-liner on demand, or the automatic sum-up after you step away); CV4 covers everything before it. Setup also installs `/cv4-recap`, which builds the cross-session recap from this repo's files, in any tool.
 

@@ -17,8 +17,8 @@ fi
 
 ROLE=""
 [ -f "$ROOT/personas/.machine" ] && ROLE="$(sed -n 's/^role=//p' "$ROOT/personas/.machine" | head -1)"
-[ -n "$ROLE" ] || ROLE="owner"        # no claim = personal instance = your repo
-[ "$ROLE" = "member" ] || exit 0      # owner / just-me: no interference
+[ -n "$ROLE" ] || ROLE="personal"     # no claim = personal instance = your repo
+[ "$ROLE" = "member" ] || exit 0      # personal (and legacy owner / just-me): no interference
 
 PROTECTED='^(skills/|tools/|library/|BOOT.md$|README.md$|\.claude-plugin/|versions/)'
 blocked=0
