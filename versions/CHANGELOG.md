@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.2 - 2026-10-18
+- Voice is a single pick now, same shape as emoji and answers: warm, playful, blunt, or dry, with type-your-own for the rest. The summary card and the identity template follow ("I will be <voice>").
+
 ## 0.8.1 - 2026-10-18
 - Interview tool-proofed: every pick list is 4 options or fewer (a fifth throws `too big: expected array to have <= 4 items` in Claude Code), the voice pick reads warm/playful/blunt/dry with type-your-own covering the rest (`formal` included), and a failed question-tool call never surfaces a raw error or retries: it falls back to plain text in the same message.
 

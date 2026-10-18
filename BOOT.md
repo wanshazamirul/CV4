@@ -105,7 +105,7 @@ What it looks like:
 - "What is my name?"
 
 **Q3 - behavior** (question prompt, three quick picks):
-- **Voice** (multi-select, 4 max): `warm` · `playful` · `blunt` · `dry` (the tool adds a type-your-own field for the rest, `formal` included)
+- **Voice** (single pick): `warm` · `playful` · `blunt` · `dry` (the tool adds a type-your-own field for the rest, `formal` included)
 - **Emoji**: `none` · `light` · `generous`
 - **Answers**: `short` · `balanced` · `detailed`
 
@@ -130,7 +130,7 @@ The region only changes how you address them:
 Taste rules: never assume closeness early; suffix conventions follow the person's lead; when unsure, mirror how they address you.
 
 **Confirm once, with a summary card:**
-> "You are <name>. I am <ai-name>. I will be <voice picks>, <emoji> emoji, <answers> answers. In <region>, I will address you as <style>. Ready?"
+> "You are <name>. I am <ai-name>. I will be <voice>, <emoji> emoji, <answers> answers. In <region>, I will address you as <style>. Ready?"
 > Options: [Looks right] [Adjust behavior] [Start over]
 
 ## Step 2 - seed memory
