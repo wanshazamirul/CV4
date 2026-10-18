@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3 - 2026-10-18
+- Execution-first BOOT: the file opens with a banner telling an AI agent plainly that it is a procedure to execute, not a document to summarize: no explaining CV4, no asking whether to begin, start Step 0 immediately, first reply opens the setup.
+- The start-here line now says "run the setup in BOOT.md" instead of "read BOOT.md": reading invited summaries, running invites setups.
+
 ## 0.7.2 - 2026-10-18
 - Interview pinned: one question at a time, always (ask, wait, continue; opencode asks one call per question too). Opening is one short line, not a speech.
 - Test drive: the setup closes with the proof - open the agent in a different folder, say hi, watch memory arrive from anywhere. Stranger? Restart the app once, then check the block and settings together.

@@ -4,7 +4,7 @@
 **Start here:** give your AI agent this link and one instruction:
 
 ```
-Clone https://github.com/wanshazamirul/CV4 into your home folder, and read BOOT.md.
+Clone https://github.com/wanshazamirul/CV4 into your home folder, then run the setup in BOOT.md.
 ```
 
 That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled.
