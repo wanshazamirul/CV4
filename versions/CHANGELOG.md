@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.4 - 2026-10-18
+- Session start is silent and one-shot: `tools/session-load.sh` runs the updater and prints every load file with headers in one call (the harness shows a single quick burst instead of nine reads), and the load itself is narration-free: the first written message is the finished greeting.
+- Recency is properly minute-accurate, spelled out in the manual: under 5 minutes "just now", under an hour "N minutes ago", under 6 hours "N hours ago" (small gaps beat calendar words, even across midnight), then "earlier today/tonight", "yesterday/last night", "N days ago". Computed against the actual clock, never guessed; no more "yesterday" for five minutes ago.
+
 ## 0.8.3 - 2026-10-18
 - Roles collapsed to the two that actually change behavior: `personal` (just me; solo, or the team's owner machine - full rights) and `member` (team fork engineer - engine changes go to dev + PR). The old owner / just-me split was behavior-identical; legacy values keep working. `member` machines get the git-guard installed with the setup.
 - The install stops asking: one role question, then the companion install, the commands, and the clean Claude defaults all run in one pass (backups first; /remove-cv4 undoes it). No more apply / customize / skip prompt; object mid-way and that piece is honored.

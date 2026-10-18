@@ -82,6 +82,13 @@ fi
 # --- 4. the search indexer is present ---------------------------------------
 if [ -f "$ROOT/tools/fts.py" ] || [ -f "$ROOT/tools/memory/fts.py" ]; then ok "search indexer present"; else fail "fts.py missing"; fi
 
+# --- 4b. session load serves the manual's files (when shipped) ---------------
+if [ -f "$ROOT/tools/session-load.sh" ]; then
+  out="$(bash "$ROOT/tools/session-load.sh" --no-update 2>&1 || true)"
+  n="$(printf '%s\n' "$out" | grep -c '^===== ' || true)"
+  [ "$n" -ge 6 ] && ok "session-load serves $n files" || fail "session-load served only $n file(s)"
+fi
+
 # --- 5. spec-kit hook syntax (when shipped) ----------------------------------
 if [ -f "$ROOT/spec-kit/converge-to-memory.sh" ]; then
   bash -n "$ROOT/spec-kit/converge-to-memory.sh" && ok "converge hook syntax ok" || fail "converge hook syntax error"
