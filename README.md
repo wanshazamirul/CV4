@@ -136,8 +136,7 @@ CV4/
 │
 ├── commands/                    SLASH COMMANDS (installed to your tool; work everywhere)
 │   ├── README.md                  the key
-│   ├── remove-cv4.md              /remove-cv4: full exit, settings restored, memory handed back
-│   └── cv4-recap.md               /cv4-recap: cross-session recap from the files
+│   └── remove-cv4.md              /remove-cv4: full exit, settings restored, memory handed back
 │
 ├── docs/                        TEMPLATE DOCS (about CV4 itself)
 │   ├── README.md                  the key
@@ -300,7 +299,7 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
 
 **What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys are applied with the rest; the file is backed up first (`.bak-<date>`) and merged.
 
-**What about Claude Code's recap (`/recap`)?** Keep it. Recap covers the live session (a one-liner on demand, or the automatic sum-up after you step away); CV4 covers everything before it. Setup also installs `/cv4-recap`, which builds the cross-session recap from this repo's files, in any tool.
+**What about Claude Code's recap (`/recap`)?** Keep it: recap covers the live session (a one-liner on demand, or the auto sum-up after you step away). The durable cross-session recap is CV4's session-start load itself: it reads the files and greets you with where things stand. No extra command needed.
 
 **I already have a CLAUDE.md or Claude memory with content. Does setup wipe it?** No. Every existing line stays; setup backs files up first and folds the personal notes it finds into `main/relationship-memory.md` under a dated import heading, and Claude's auto-memory files stay exactly where they are (setup only switches off new writes there). Uninstalling offers the reverse: a short dated hand-back of what CV4 learned into your old setup.
 

@@ -190,14 +190,14 @@ The block is the full manual, wrapped in two markers:
 
 The fallback (a tool without global config, or the user opting out mid-way): write the same manual into a repo file in Home (`CLAUDE.md` for Claude Code, `GEMINI.md` for Gemini CLI, `AGENTS.md` for the rest). Then sessions started inside Home work; sessions elsewhere wait for the install.
 
-2. **The companion commands** (Claude Code, opencode): copy `commands/remove-cv4.md` and `commands/cv4-recap.md` from Home into the tool's global commands directory, `[HOME]` filled:
+2. **The companion command** (Claude Code, opencode): copy `commands/remove-cv4.md` from Home into the tool's global commands directory, `[HOME]` filled:
 
-| Your tool | Command files |
+| Your tool | Command file |
 |---|---|
-| Claude Code | `~/.claude/commands/remove-cv4.md` · `~/.claude/commands/cv4-recap.md` |
-| opencode | `~/.config/opencode/commands/remove-cv4.md` · `~/.config/opencode/commands/cv4-recap.md` |
+| Claude Code | `~/.claude/commands/remove-cv4.md` |
+| opencode | `~/.config/opencode/commands/remove-cv4.md` |
 
-`/remove-cv4` undoes this whole install from any session without asking questions (settings restored from the install backup, memory handed back prefilled, the command itself removes its copies); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
+Then re-read the first lines of what you wrote and confirm they match the source: it must open with "Remove CV4 from this machine" (a crossed file is how a recap once ended up wearing the remove name). Older installs may carry a `cv4-recap.md` copy in either directory; delete leftovers if present. `/remove-cv4` undoes this whole install from any session without asking questions (settings restored from the install backup, memory handed back prefilled, the command itself removes its copy). Claude Code's built-in `/recap` stays as it is, for the live session; the durable cross-session recap is the session-start load, built from the files.
 
 3. **Clean Claude defaults** (Claude Code users): two keys in `~/.claude/settings.json`:
    ```json

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3 - 2026-10-18
+- `/cv4-recap` retired: the built-in `/recap` covers the live session and the session-start load covers everything before it, so the extra command was earning nothing. One command total now, which also kills the failure mode where two filled command files crossed and remove wore the recap's name.
+- The install step verifies what it wrote (the command must open with the removal procedure), and leftover `cv4-recap.md` copies from older installs get deleted at install and uninstall.
+
 ## 0.9.2 - 2026-10-18
 - Time aware, properly: the greeting matches the clock (morning 05-12, afternoon 12-17, evening 17-22, getting late 22-24, small hours 00-05) and late greetings carry one short note of care ("it is getting late"), never a lecture, never twice. House rule added: care is concrete and sparing.
 - Recency pinned harder: reference time from `current-session.md` or the newest log, subtracted with `date`; minutes never upgrade to "earlier today"; no usable timestamp means no invented recency.

@@ -25,9 +25,8 @@ Home: [HOME]. You are running the full uninstall. Full means full: everything en
    - otherwise: append it to the global config file (`~/.claude/CLAUDE.md`, or the tool's global file) if it exists; create that file with just the section if it does not.
 8. Commands: delete the installed copies.
    - `~/.claude/commands/remove-cv4.md`
-   - `~/.claude/commands/cv4-recap.md`
    - `~/.config/opencode/commands/remove-cv4.md`
-   - `~/.config/opencode/commands/cv4-recap.md`
+   Older installs may also carry a `cv4-recap.md` in either commands directory (retired in 0.9.3); delete it if present.
 9. Launch shortcut: remove the marked CV4 block from `~/.bashrc` / `~/.zshrc` / the PowerShell `$PROFILE` if one was added (fresh `.bak-<YYYYMMDD>` first; if the machine blocks the write, note it in the confirm line).
 10. The folder: delete [HOME] itself. Run it only after step 7 landed; if the hand-back did not land, STOP and say so instead of deleting. `cd ~` first (the session may be running inside it), then `rm -rf "[HOME]"` (Git Bash on Windows handles this; in Explorer, delete normally). If the delete fails because a file is held open (Windows), retry once; if it still resists, say plainly that the folder is the only thing left and it can go once the app closes.
 11. Confirm in one line: what was removed (blocks, settings restored, trust entry, shortcut block, hand-back location, commands, folder), and that the machine is back to pre-CV4, prefilled. The wake word goes away with the block on its own; nothing else to clean.

@@ -7,7 +7,8 @@ Template-owned command files. The setup copies them into your tool's **global** 
 | File | Installs to | Does |
 |---|---|---|
 | `remove-cv4.md` | Claude Code: `~/.claude/commands/remove-cv4.md` · opencode: `~/.config/opencode/commands/remove-cv4.md` | `/remove-cv4`: the full exit, no prompts. Saves first, blocks off, settings restored from the install backup, memory handed back prefilled (auto-routed), commands and the CV4 folder itself deleted (hand-back must land first) |
-| `cv4-recap.md` | Claude Code: `~/.claude/commands/cv4-recap.md` · opencode: `~/.config/opencode/commands/cv4-recap.md` | `/cv4-recap`: the cross-session recap from CV4's files (`main/current-session.md`, reminders, newest log). Claude Code's built-in `/recap` covers the live session; this one covers everything before it |
+
+`cv4-recap` retired in 0.9.3: Claude Code's built-in `/recap` covers the live session and the session-start load covers everything before it, so the extra command earned its deletion. Leftover copies from older installs get removed at uninstall.
 
 ## Rules
 
