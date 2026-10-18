@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 - 2026-10-18
+- Team forks, paved: the README's For teams section plus a house rule. The owner asks "Fork CV4 for my team, call it <name>": the agent forks (+ renames to the chosen name), updates the fork's Start-here line to the fork URL, pushes, and prints the line to share; members clone it and answer `team member`; the owner keeps it fresh with `gh repo sync` or the Sync fork button. No gh? The web fork path plus your agent finishing the README.
+- `update.sh` knows the difference now: clones of the canonical repo pull from the original; clones of a team fork pull from the fork's own main, so exactly what the owner merges is what the team receives. `CV4_UPSTREAM` still overrides.
+
 ## 0.9.8 - 2026-10-18
 - Hand-back is work-only: working preferences and the hotlist's never-again rules go back to the old setup; the persona (name, voice, emoji habits) and personal details stay behind. Leaving CV4 leaves the knowledge, not the companion.
 - Backups decluttered: one rolling `<file>.cv4bak` per file, written only when missing so it always holds the true pre-CV4 original; no dated confetti, no seconds. Uninstall restores, verifies, deletes what it consumed, and sweeps the rest; older dated leftovers on managed files (no CV4 markers inside) get absorbed or cleaned.

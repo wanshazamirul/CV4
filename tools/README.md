@@ -3,7 +3,7 @@
 | Tool | What |
 |---|---|
 | `fts.py` | the search index (stdlib only). Rebuild: `python3 tools/fts.py --build` |
-| `update.sh` | session-start safe auto-update; never touches personal zones; re-wires the engine + tops up the shelf after updates |
+| `update.sh` | session-start safe auto-update: pulls engine files from your fork's main when cloned from a team fork, else from the original (`CV4_UPSTREAM` overrides); never touches personal zones; re-wires the engine + tops up the shelf |
 | `install-skills.sh` | wire the bank into each agent (`.opencode/skills/`, `.claude/skills/`, `.agents/skills/`) and refresh the router block in repo agent files that carry its markers (bare `@...` pointers and marker-less files are left alone); `--check` to inspect, `--copy` for filesystems without symlinks |
 | `session-load.sh` | the session-start load in one call: runs the updater, then prints `main/` + `memory/` files with headers; `--no-update` to skip the updater |
 | `trust-home.sh` | user-run once: marks this CV4 folder as trusted in Claude Code (the documented fix for the repeating "do you trust this folder?" prompt). Run it yourself in a terminal; the trust flag is consent-shaped, so agents do not set it |

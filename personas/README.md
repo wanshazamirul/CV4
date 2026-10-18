@@ -24,7 +24,7 @@ The claim lives in `personas/.machine` (gitignored). The persona reads it and be
 
 ## Powers and lanes
 
-- **DOWN (engine)**: updates flow from the fork's main via `tools/update.sh`.
+- **DOWN (engine)**: updates flow from the fork's main via `tools/update.sh` (the owner syncs the fork from the original: the "Sync fork" button or `gh repo sync`; members pull from the fork automatically).
 - **UP (knowledge, team mode)**: memory and library changes flow up via PRs; the companion drafts a memory-sync digest the owner can review in minutes.
 - **NEVER (personal)**: filled cups, scratch files, `personas/.machine` stay local; they never travel and never conflict.
 

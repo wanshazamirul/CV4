@@ -237,6 +237,30 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.
 
+## For teams
+
+One owner, one fork, everyone else clones it.
+
+**Owner, once.** Ask your agent:
+
+```
+Fork CV4 for my team, call it <name>.
+```
+
+It forks `wanshazamirul/CV4` to your account (`gh` signed in; it asks the name you want, default `CV4`), updates the Start-here line in your fork's README to your fork's URL, pushes, and prints the line to share:
+
+```
+Clone https://github.com/<you>/<name> into your home folder, then run the setup in BOOT.md.
+```
+
+No `gh`? Run `gh auth login` once, or click Fork on the original repo page and tell your agent the fork URL; it finishes the README and pushes. GitLab or Gitea? Import or push the repo into a new project named what you want; everything below is identical.
+
+**Members, once each.** Clone your team's repo with the shared line, run the setup, answer Q4 with `team member`. Engine changes then ride `dev` + pull requests (the pre-push guard is the courtesy; the owner's review is the gate). Memory and personal zones never travel; filled persona cups stay on each machine.
+
+**Keeping the fork fresh (owner).** The original keeps improving: sync it into your fork whenever you like, `gh repo sync` from your fork clone or the "Sync fork" button on the repo page. If the sync asks about your customized README, keep your Start-here line.
+
+**How updates reach the team:** member sessions run `tools/update.sh`, which pulls engine files from the fork's main (not the original), so what the owner merges is exactly what the team gets.
+
 ## Uninstalling
 
 Almost everything lives inside this folder. The machine-level traces: the companion block in your global config, an `instructions` entry if an older setup added one, and the agent settings applied at setup (if any). The repo itself never installs globally: memory stays a plain versioned folder; only the companion block goes into your global config. A clean exit is small:
