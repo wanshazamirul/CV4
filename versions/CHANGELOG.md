@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 - 2026-10-18
+- The install model, one level simpler: the manual lives in your tool's GLOBAL config (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), written as the actual content, not a pointer or a signpost stub. The global config loads in every session anywhere, so launch your agent wherever you are: your companion is simply there. No folder habits, no start-inside-Home primary path.
+- One install card: role + the companion install + clean Claude defaults; one approval, backups first. Declined, or a tool with no global config? The fallback is the same marked block in a repo file in Home.
+- `/remove-cv4` ships in `commands/`: the setup installs it into your tool's global commands directory (Claude Code `~/.claude/commands/`, opencode `~/.config/opencode/commands/`), so any session anywhere can run the full uninstall: blocks off, settings offered back (keep or restore the install backup), persona marker off, natural-language close, and the command removes its own copies.
+- Re-boot safety: reading BOOT.md again on an already-set-up machine triggers a one-question reset (Reinstall fresh / Cancel) before anything else. Reinstall removes the old config (fresh backups first), keeps the memory, and reruns the setup.
+- The generated router table retires from the manual: native skill lists plus the catalogs (`skills/README.md`, the registries) carry triggers; G0 stays verbatim in the manual. `install-skills.sh` refreshes markers only; bare pointer files and marker-less files are never touched.
+
 ## 0.6.9 - 2026-10-18
 - Native agent files: the pointer is gone. BOOT writes the full manual into your tool's own file (`CLAUDE.md` / `AGENTS.md` / `GEMINI.md`); every tool reads it natively, no imports. One template serves all three; refreshes regenerate whichever files the machine carries, and a one-line `@...` import from an older setup gets an offer to go native.
 - One setup card: the interview is the only question-heavy moment; role plus signpost plus clean Claude defaults ride a single recommended card. No per-item questions, no second asks.

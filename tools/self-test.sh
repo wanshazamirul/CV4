@@ -46,14 +46,18 @@ if [ -d "$ROOT/library" ]; then
   done
   [ "$missing_book" = 0 ] && ok "every library book carries a README key"
 fi
+if [ -d "$ROOT/commands" ]; then
+  [ -f "$ROOT/commands/remove-cv4.md" ] && ok "remove-cv4 command template present" || fail "commands/remove-cv4.md missing"
+fi
 
 # --- 2. skills engine: router current, wiring complete -----------------------
 if [ -f "$ROOT/tools/install-skills.sh" ]; then
   if [ -f "$ROOT/AGENTS.md" ] || [ -f "$ROOT/CLAUDE.md" ] || [ -f "$ROOT/GEMINI.md" ]; then
     out="$(bash "$ROOT/tools/install-skills.sh" --check 2>&1)"
     case "$out" in
-      *"router   up to date"*) ok "router block current" ;;
-      *) fail "router block missing or stale (run: bash tools/install-skills.sh)" ;;
+      *"router   differs"*) fail "router block stale (markers present; run: bash tools/install-skills.sh)" ;;
+      *"router   up to date"*|*"router   nothing to stamp"*) ok "router state clean (marker files refreshed; plain files left alone)" ;;
+      *) fail "router check unexpected output" ;;
     esac
     if [ -d "$ROOT/.opencode/skills" ]; then
       miss="$(printf '%s\n' "$out" | grep -c '^missing' || true)"
@@ -120,6 +124,15 @@ if [ "$QUICK" = 0 ]; then
       case "$out3" in
         *"up to date (2 file(s))"*) ok "bare pointer files stay untouched" ;;
         *) fail "pointer file disturbed the router check: $out3" ;;
+      esac
+      printf '# plain notes\nno markers here\n' > "$SCR/GEMINI.md"
+      before="$(md5sum "$SCR/GEMINI.md" | cut -d' ' -f1)"
+      out4="$(bash "$SCR/tools/install-skills.sh" 2>&1 || true)"
+      after="$(md5sum "$SCR/GEMINI.md" | cut -d' ' -f1)"
+      case "$out4" in
+        *"plain GEMINI.md"*)
+          [ "$before" = "$after" ] && ok "marker-less agent files stay untouched" || fail "installer grew a marker-less file" ;;
+        *) fail "installer did not report the plain-file skip: $out4" ;;
       esac
       [ "$pz1" = "$pz2" ] && ok "personal zones untouched by the engine" || fail "engine touched a personal zone"
     fi
