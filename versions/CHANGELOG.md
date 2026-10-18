@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.2 - 2026-10-18
+- The load goes fully silent: zero text before the greeting, with the usual suspects banned by name ("loading memory", "let me check", "one sec", "before I reply"). Tool activity stays visible (that is the harness), but the first words of a session are the greeting. Backed by a house-rule line for good measure.
+
 ## 0.10.1 - 2026-10-18
 - Shell reality, handled: Windows cmd/PowerShell get paved paths - `tools\trust-home.cmd` (finds Git Bash itself), a `.cmd` launcher for the name shortcut, and native delete commands for the folder step - while Git Bash stays the happy path. No-bash machines skip the scripted bits with one note; the core install needs no bash at all.
 - macOS, confirmed first-class: scripts run as-is on the system bash, and the self-test's hashing falls back to BSD `md5`, so it passes there too.
