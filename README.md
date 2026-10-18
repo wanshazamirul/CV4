@@ -247,7 +247,7 @@ Almost everything lives inside this folder. The machine-level traces: the compan
 3. **Hand back, prefilled**: what CV4 learned flows back automatically as a short dated distillation (`main/relationship-memory.md` essentials + `main/hotlist.md` rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file.
 4. **Delete this folder.** Memory, logs, skills, and history all live inside it.
 
-Want it handled for you? In a session inside this folder, say "uninstall", or run `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup, works from any folder). It saves the session first, then does the whole exit without asking: blocks off, settings restored, the trust entry dropped when possible, memory handed back, commands gone, and the folder itself deleted (only once the hand-back has landed; if a file is held open, it gets one retry and an honest note). Nothing left to do. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+Want it handled for you? In a session inside this folder, say "uninstall", or run `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup, works from any folder). It saves the session first, then does the whole exit without asking: blocks off, settings restored, the trust entry dropped when possible, the launch shortcut removed, memory handed back, commands gone, and the folder itself deleted (only once the hand-back has landed; if a file is held open, it gets one retry and an honest note). Nothing left to do. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
 
 ## Roadmap
 
@@ -261,7 +261,7 @@ Want it handled for you? In a session inside this folder, say "uninstall", or ru
 
 **Where do I start my agent from now on?** Anywhere: the setup installs the manual into your tool's global config, so every session in every folder wakes with memory. Declined the install (or your tool has no global config)? Then start inside this folder: the fallback file lives here; started elsewhere, your agent greets you like a stranger.
 
-**How do I wake my companion?** Type its name as the first message in any session ("shu", "Nasuha"): that is the wake word. Full load, then a greeting with the time of day and what you were last doing. "hi" triggers the same load; the name is the habit.
+**How do I wake my companion?** Type its name as the first message in any session ("shu", "Nasuha"): that is the wake word. Full load, then a greeting with the time of day and what you were last doing. "hi" triggers the same load; the name is the habit. Where the machine allowed it, setup also adds a terminal shortcut: typing the name at a fresh prompt launches the agent with the wake word already sent (locked company machines skip this with a note).
 
 **What about Claude asking "do you trust this folder?" for CV4?** Click Yes once when it appears; that is the consent flow, and setup deliberately does not touch trust flags (agent edits there hit safety classifiers, and rightly so). If it keeps asking (a known Claude Code repeat-prompt bug), run `bash "<HOME>/tools/trust-home.sh"` once in your own terminal: the documented fix, your hands on the keyboard. Uninstall removes the entry when tooling allows.
 

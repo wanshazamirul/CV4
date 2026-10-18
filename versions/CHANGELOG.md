@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.2 - 2026-10-18
+- Time aware, properly: the greeting matches the clock (morning 05-12, afternoon 12-17, evening 17-22, getting late 22-24, small hours 00-05) and late greetings carry one short note of care ("it is getting late"), never a lecture, never twice. House rule added: care is concrete and sparing.
+- Recency pinned harder: reference time from `current-session.md` or the newest log, subtracted with `date`; minutes never upgrade to "earlier today"; no usable timestamp means no invented recency.
+- Terminal launch shortcut, where the machine allows: setup teaches bash / zsh / PowerShell so typing the companion's name at a fresh prompt launches the agent with the wake word. Locked company machines get skipped with one honest line; profiles are backed up; uninstall removes the block.
+
 ## 0.9.1 - 2026-10-18
 - Trust flags are hands-off now: setup no longer edits `~/.claude.json` (safety classifiers block agent edits to consent flags, correctly, and there is still no official setting or flag for it). Instead it teaches the one-click path and ships `tools/trust-home.sh`, the documented user-run fix for the repeating trust prompt: run it yourself, it backs the file up and matches the path format Claude already uses.
 - Uninstall drops the Home trust entry when tooling allows, and says so honestly when it cannot.
