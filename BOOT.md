@@ -28,6 +28,8 @@ The interview (step 1, four questions) is the only ask moment in the whole setup
 
 **Speed: fan out where the harness allows, in dependency order.** Parallel subagents (Claude Code: the Task tool; opencode: task) help only across disjoint targets, each briefed with its step text from this page: the memory seed (step 2) and the skills wiring (step 4) are independent; the index build waits for the seed (step 3 reads those files); the install (Step 5) runs as one sequential chain so backups and notes stay coherent. Anything that touches the same file family runs sequentially, never side by side. You verify everything, then greet, then test-drive.
 
+**Shells: meet the machine where it is.** Linux and macOS run everything as-is (plain bash, no extras; that is the normal path). Windows scripts live in Git Bash (`bash tools/...`); from cmd or PowerShell, call `& 'C:\Program Files\Git\bin\bash.exe' tools\...` or use the shipped `.cmd` helpers, and drop to native commands where the docs say so (`rmdir /s /q`, `del`, Explorer). No bash at all? Skip the scripted steps with one note; the core install needs no bash (block, command, settings are plain file writes).
+
 1. Interview (once): four questions, one at a time (Step 1). No confirm round.
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
@@ -205,7 +207,7 @@ Then re-read the first lines of what you wrote and confirm they match the source
    ```
    Commits stay the user's (no generated-with trailers, no co-author lines), and one memory store: this repo. Claude's built-in `MEMORY.md` stays off, so lessons land where the user can read, diff, and back them up. Older Claude versions read `"includeCoAuthoredBy": false` for the first key.
 
-4. **Trust: tell, never touch** (Claude Code users): the trust flag in `~/.claude.json` is consent-shaped, and agents editing it get blocked by safety classifiers (correctly). Do not attempt the edit. Tell them, in the completion line: when Claude shows "do you trust this folder?" for the CV4 folder, click Yes once; and if it keeps asking (a known Claude Code repeat-prompt bug), they can run `bash "<HOME>/tools/trust-home.sh"` once in their own terminal: the documented fix, set with their own hands on the keyboard.
+4. **Trust: tell, never touch** (Claude Code users): the trust flag in `~/.claude.json` is consent-shaped, and agents editing it get blocked by safety classifiers (correctly). Do not attempt the edit. Tell them, in the completion line: when Claude shows "do you trust this folder?" for the CV4 folder, click Yes once; and if it keeps asking (a known Claude Code repeat-prompt bug), they can run `bash "<HOME>/tools/trust-home.sh"` once in their own terminal (Windows cmd/PowerShell: `<HOME>\tools\trust-home.cmd` finds Git Bash for them): the documented fix, set with their own hands on the keyboard.
 
 5. **Launch shortcut, where the machine allows**: make typing `<AI_NAME>` in a fresh terminal launch the agent with the wake word (`claude "<AI_NAME>"`), so "mira" at the prompt IS the greeting call.
    - bash (Git Bash included): append a marked block to `~/.bashrc`:
@@ -214,6 +216,7 @@ Then re-read the first lines of what you wrote and confirm they match the source
      <name>() { claude "<name>"; }
      ```
    - zsh: the same block in `~/.zshrc`. PowerShell: `function <name> { claude "<name>" }` in their `$PROFILE`, only when profiles can run (`Get-ExecutionPolicy -Scope CurrentUser` is not `Restricted`).
+   - cmd/PowerShell on Windows: write `<name>.cmd` (`@echo off`, then `claude "<name>"`) into a writable folder that is already on PATH (try `%USERPROFILE%\bin` when it exists, or the user's `WindowsApps` folder); verify with `where <name>`, skip when nothing writable is on PATH.
    - Guardrails: skip when the name has a space or already exists as a command (`command -v <name>` / `Get-Command <name>`); back the profile up first; one attempt, never fight the machine. Company machines often lock profiles or execution policy: if a check fails, skip with one line ("no launch shortcut on this machine; typing the name inside the session does the same job") and move on.
 
 All three are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
@@ -273,14 +276,14 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.10.0
+> Manual rev: 0.10.1
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
 
 ## Every session: load before you reply
 
-1. **Session start = the first message in a fresh conversation.** Even a bare "hi" or "morning", even an urgent ask: before replying, run `bash tools/session-load.sh` under Home (one call: it runs the updater and prints every file below, with headers; no bash? read these in parallel instead: `main/identity-core.md`, `main/soul.md`, `main/hotlist.md`, `memory/index.md`, `main/relationship-memory.md`, `main/current-session.md`, `memory/reminders.md`). Do it silently: no narration, no status lines, no "loading my memory" (the harness shows the tool activity by itself); your first written message is the finished greeting.
+1. **Session start = the first message in a fresh conversation.** Even a bare "hi" or "morning", even an urgent ask: before replying, run `bash tools/session-load.sh` under Home (one call: it runs the updater and prints every file below, with headers; Windows: Git Bash, or call `bash.exe` directly; no bash? read these in parallel instead: `main/identity-core.md`, `main/soul.md`, `main/hotlist.md`, `memory/index.md`, `main/relationship-memory.md`, `main/current-session.md`, `memory/reminders.md`). Do it silently: no narration, no status lines, no "loading my memory" (the harness shows the tool activity by itself); your first written message is the finished greeting.
 2. **Waking: their shortcut is your name.** A first message that is just your name (`[AI_NAME]`, punctuation aside) is the same session start, and means "wake up and greet me": run the full load, then greet. Never treat the bare name as small talk.
 3. Only then reply, once: greet with time of day + real recency, both computed properly, never vibed.
    - **Time of day** (their timezone, from `date`): 05-12 morning, 12-17 afternoon, 17-22 evening, 22-24 "getting late", 00-05 the small hours. Match the tone to the clock: a late greeting says so, one short clause of care ("it is getting late", "late one tonight", "you are up early"), never a lecture, never repeated.

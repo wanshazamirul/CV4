@@ -1,2 +1,4 @@
 # Keep shell scripts LF-only so bash never chokes on Windows checkouts.
 *.sh text eol=lf
+# Windows batch wrappers want CRLF.
+*.cmd text eol=crlf

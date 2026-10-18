@@ -298,7 +298,9 @@ Want it handled for you? In a session inside this folder, say "uninstall", or ru
 
 **What if I delete `tools/.fts.db`?** Nothing. It rebuilds with one command. Files are the truth; the index is a cache.
 
-**Anything Windows-specific?** Where docs say `python3`, use `python` (`python tools/fts.py --build`). And if `tools/update.sh` ever throws `$'\r'` errors, that checkout has CRLF endings: heal once with `sed -i 's/\r$//' tools/update.sh`. Fresh clones ship LF.
+**Anything Windows-specific?** Where docs say `python3`, use `python` (`python tools/fts.py --build`). Scripts live in Git Bash (`bash tools/...`); from cmd or PowerShell call `& 'C:\Program Files\Git\bin\bash.exe' tools\...` or use the shipped `.cmd` helpers, and native commands where docs say so (`rmdir /s /q`, `del`). And if `tools/update.sh` ever throws `$'\r'` errors, that checkout has CRLF endings: heal once with `sed -i 's/\r$//' tools/update.sh`. Fresh clones ship LF.
+
+**Does it work on macOS?** Yes, first-class: everything is plain bash and markdown, scripts run as-is on the system bash, and the self-test is portable (GNU or BSD hashing). Windows rides Git Bash; cmd and PowerShell get the shipped `.cmd` helpers (`tools\trust-home.cmd`) and native equivalents where docs say so.
 
 **Can I bring my own skills?** Yes: drop them in `my-skills/` and register them in `my-skills/registry.md`. They are never overwritten, and they win when triggers overlap the bank. `forge` checks them before generating anything new.
 

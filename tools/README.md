@@ -7,6 +7,7 @@
 | `install-skills.sh` | wire the bank into each agent (`.opencode/skills/`, `.claude/skills/`, `.agents/skills/`) and refresh the router block in repo agent files that carry its markers (bare `@...` pointers and marker-less files are left alone); `--check` to inspect, `--copy` for filesystems without symlinks |
 | `session-load.sh` | the session-start load in one call: runs the updater, then prints `main/` + `memory/` files with headers; `--no-update` to skip the updater |
 | `trust-home.sh` | user-run once: marks this CV4 folder as trusted in Claude Code (the documented fix for the repeating "do you trust this folder?" prompt). Run it yourself in a terminal; the trust flag is consent-shaped, so agents do not set it |
+| `trust-home.cmd` | Windows wrapper for cmd/PowerShell: finds Git Bash and runs `trust-home.sh` for you |
 | `scaffold-library.sh` | top up missing standard books (README keys included); never overwrites filled content |
 | `git-guard.sh` | team forks: pre-push hook so member machines push to `dev`, not `main`; `--install` |
 | `self-test.sh` | proves the engine end to end: layout, wiring, registries, then an integration pass (installer, scaffold, hook, guard) in a scratch copy; `--quick` skips the pass |

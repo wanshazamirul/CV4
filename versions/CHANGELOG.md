@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.1 - 2026-10-18
+- Shell reality, handled: Windows cmd/PowerShell get paved paths - `tools\trust-home.cmd` (finds Git Bash itself), a `.cmd` launcher for the name shortcut, and native delete commands for the folder step - while Git Bash stays the happy path. No-bash machines skip the scripted bits with one note; the core install needs no bash at all.
+- macOS, confirmed first-class: scripts run as-is on the system bash, and the self-test's hashing falls back to BSD `md5`, so it passes there too.
+
 ## 0.10.0 - 2026-10-18
 - Team forks, paved: the README's For teams section plus a house rule. The owner asks "Fork CV4 for my team, call it <name>": the agent forks (+ renames to the chosen name), updates the fork's Start-here line to the fork URL, pushes, and prints the line to share; members clone it and answer `team member`; the owner keeps it fresh with `gh repo sync` or the Sync fork button. No gh? The web fork path plus your agent finishing the README.
 - `update.sh` knows the difference now: clones of the canonical repo pull from the original; clones of a team fork pull from the fork's own main, so exactly what the owner merges is what the team receives. `CV4_UPSTREAM` still overrides.

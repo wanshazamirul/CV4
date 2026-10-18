@@ -25,6 +25,10 @@ ok()   { passes=$((passes+1)); [ "$QUIET" = 1 ] || echo "  ok    $1"; }
 info() { [ "$QUIET" = 1 ] || echo "  info  $1"; }
 fail() { fails=$((fails+1)); echo "  FAIL  $1"; }
 have() { command -v "$1" >/dev/null 2>&1; }
+md5of() { # portable content hash: GNU md5sum, else BSD md5
+  if command -v md5sum >/dev/null 2>&1; then md5sum "$1" 2>/dev/null | cut -d' ' -f1
+  else md5 -q "$1" 2>/dev/null; fi
+}
 
 echo "== self-test: $ROOT =="
 
@@ -113,12 +117,12 @@ if [ "$QUICK" = 0 ]; then
     fi
 
     if [ -f "$SCR/tools/install-skills.sh" ] && [ -f "$SCR/AGENTS.md" ]; then
-      pz1="$(md5sum "$SCR/main/soul.md" 2>/dev/null | cut -d' ' -f1)"
+      pz1="$(md5of "$SCR/main/soul.md")"
       bash "$SCR/tools/install-skills.sh" --quiet >/dev/null 2>&1
-      md1="$(md5sum "$SCR/AGENTS.md" | cut -d' ' -f1)"
+      md1="$(md5of "$SCR/AGENTS.md")"
       bash "$SCR/tools/install-skills.sh" --quiet >/dev/null 2>&1
-      md2="$(md5sum "$SCR/AGENTS.md" | cut -d' ' -f1)"
-      pz2="$(md5sum "$SCR/main/soul.md" 2>/dev/null | cut -d' ' -f1)"
+      md2="$(md5of "$SCR/AGENTS.md")"
+      pz2="$(md5of "$SCR/main/soul.md")"
       [ "$md1" = "$md2" ] && ok "installer idempotent (router byte-stable)" || fail "installer not idempotent"
       wired="$(ls "$SCR/.opencode/skills" 2>/dev/null | wc -l)"
       [ "$wired" -gt 0 ] && ok "wired $wired skills in the scratch" || fail "no skills wired in the scratch"
@@ -136,9 +140,9 @@ if [ "$QUICK" = 0 ]; then
         *) fail "pointer file disturbed the router check: $out3" ;;
       esac
       printf '# plain notes\nno markers here\n' > "$SCR/GEMINI.md"
-      before="$(md5sum "$SCR/GEMINI.md" | cut -d' ' -f1)"
+      before="$(md5of "$SCR/GEMINI.md")"
       out4="$(bash "$SCR/tools/install-skills.sh" 2>&1 || true)"
-      after="$(md5sum "$SCR/GEMINI.md" | cut -d' ' -f1)"
+      after="$(md5of "$SCR/GEMINI.md")"
       case "$out4" in
         *"plain GEMINI.md"*)
           [ "$before" = "$after" ] && ok "marker-less agent files stay untouched" || fail "installer grew a marker-less file" ;;
