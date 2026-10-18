@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.6 - 2026-10-18
+- `/remove-cv4` finishes the job: after the hand-back lands, it deletes the CV4 folder itself (cd out first, rm -rf, one retry if a Windows file is held open, then an honest note instead of a silent half-failure). The guard: no folder deletion until the memory hand-back is written.
+- The manual's uninstall rule and the README follow: full exit means nothing left to do, the folder included.
+
 ## 0.8.5 - 2026-10-18
 - `/remove-cv4` asks nothing: it saves the session, removes the blocks, restores `settings.json` from the install backup (no backup? only CV4's two keys come out; the pre-uninstall state keeps its own backup), hands the learned memory back prefilled, and self-deletes. Removal means fully back to pre-CV4, as it was.
 - Hand-back routing follows the restored settings: auto memory back on -> the distillation lands in the auto-memory files (most recently used); otherwise into the global config file, created if missing.
