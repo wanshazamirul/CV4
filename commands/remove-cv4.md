@@ -4,7 +4,7 @@ description: Full CV4 removal - everything back to pre-CV4, memory handed back p
 
 # Remove CV4 from this machine
 
-Home: [HOME]. You are running the full uninstall. Full means full: everything ends back as it was before CV4, prefilled with what was learned. Do the steps in order without asking questions, then send one message back at the end.
+Home: [HOME]. You are running the full uninstall. Full means full: everything ends back as it was before CV4, prefilled with what was learned. Run the steps in order, sequentially, never in parallel: the edits overlap (the hand-back may write into the same global file the blocks came from), and the folder delete must stay last. No questions; one message back at the end.
 
 1. Final save: run the "save" ritual now (session log + memory + reminders sweep), quietly, then continue.
 2. Blocks off: in each file below that carries the marker pair `<!-- CV4 companion: start -->` ... `<!-- CV4 companion: end -->`, delete the block between the markers, markers included. Fresh `.bak-<YYYYMMDD>` copy of the file before each edit.

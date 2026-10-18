@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.7 - 2026-10-18
+- Parallelism policy, written down explicitly: parallel where it is genuinely safe (disjoint targets, no dependencies), sequential the moment a step blocks another or touches the same files. Setup follows dependency order (memory seed and skills wiring can pair up; the index build waits for the seed; the install stays one chain). Removal is strictly sequential: its edits overlap (the hand-back may write into the same global file the blocks came from) and the folder delete must stay last.
+
 ## 0.9.6 - 2026-10-18
 - Seeding miss fixed: first boot now writes a real `Last updated` stamp into `main/current-session.md` (the template placeholder was never replaced, which starved the greeting's recency math and produced "no timestamp"), and the first log block carries a local date+time. A placeholder stamp is now explicitly a seeding miss to fix on the spot, not a reason to skip recency.
 

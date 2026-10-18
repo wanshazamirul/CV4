@@ -26,7 +26,7 @@ Before step 1, one sanity pass: **stand in the folder that holds this file**. Th
 
 The interview (step 1, four questions) is the only ask moment in the whole setup. Everything after it runs on its own; no setup question ever appears twice.
 
-**Speed: fan out where the harness allows.** Steps 2 to 4 are independent: with parallel subagents (Claude Code: the Task tool; opencode: task) let each numbered step run in its own subagent, briefed with that step's text from this page. The install (Step 5) runs as one unit (main thread or a single subagent) so backups and notes stay coherent. You verify everything, then greet, then test-drive.
+**Speed: fan out where the harness allows, in dependency order.** Parallel subagents (Claude Code: the Task tool; opencode: task) help only across disjoint targets, each briefed with its step text from this page: the memory seed (step 2) and the skills wiring (step 4) are independent; the index build waits for the seed (step 3 reads those files); the install (Step 5) runs as one sequential chain so backups and notes stay coherent. Anything that touches the same file family runs sequentially, never side by side. You verify everything, then greet, then test-drive.
 
 1. Interview (once): four questions, one at a time (Step 1). No confirm round.
 2. Seed memory.
@@ -273,7 +273,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.9.6
+> Manual rev: 0.9.7
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -334,6 +334,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
 - Team fork? Your role comes from `personas/.machine` (personal / member; older machines may say owner or just-me, both behave as personal). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
-- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), try dropping the Home trust entry in `~/.claude.json` (backup first; if tooling blocks the edit, note it instead of forcing it), remove the launch-shortcut block from the shell profile if one was added (`.bashrc` / `.zshrc` / `$PROFILE`; backup first, note it if blocked), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
+- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions, strictly sequential (the steps overlap; nothing runs in parallel): run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), try dropping the Home trust entry in `~/.claude.json` (backup first; if tooling blocks the edit, note it instead of forcing it), remove the launch-shortcut block from the shell profile if one was added (`.bashrc` / `.zshrc` / `$PROFILE`; backup first, note it if blocked), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````
