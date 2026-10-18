@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 CFG="$HOME/.claude.json"
 [ -f "$CFG" ] || { echo "trust-home: no ~/.claude.json yet; launch Claude Code once first, then rerun this."; exit 0; }
-cp "$CFG" "$CFG.bak-$(date +%Y%m%d)" 2>/dev/null || true
+[ -f "$CFG.cv4bak" ] || cp "$CFG" "$CFG.cv4bak" 2>/dev/null || true
 
 py=""
 command -v python3 >/dev/null 2>&1 && py=python3
@@ -41,5 +41,5 @@ projects.setdefault(key, {})["hasTrustDialogAccepted"] = True
 with open(cfg, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2)
 print(f"trust-home: trusted {key}")
-print(f"trust-home: backup kept at {cfg}.bak-*")
+print(f"trust-home: original kept at {cfg}.cv4bak (first run only)")
 PY

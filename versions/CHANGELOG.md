@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.8 - 2026-10-18
+- Hand-back is work-only: working preferences and the hotlist's never-again rules go back to the old setup; the persona (name, voice, emoji habits) and personal details stay behind. Leaving CV4 leaves the knowledge, not the companion.
+- Backups decluttered: one rolling `<file>.cv4bak` per file, written only when missing so it always holds the true pre-CV4 original; no dated confetti, no seconds. Uninstall restores, verifies, deletes what it consumed, and sweeps the rest; older dated leftovers on managed files (no CV4 markers inside) get absorbed or cleaned.
+- The folder delete is graceful now: try once, and if the machine gates it (destructive deletes are rightly gated), hand over the exact one-liner instead of fighting.
+
 ## 0.9.7 - 2026-10-18
 - Parallelism policy, written down explicitly: parallel where it is genuinely safe (disjoint targets, no dependencies), sequential the moment a step blocks another or touches the same files. Setup follows dependency order (memory seed and skills wiring can pair up; the index build waits for the seed; the install stays one chain). Removal is strictly sequential: its edits overlap (the hand-back may write into the same global file the blocks came from) and the folder delete must stay last.
 
