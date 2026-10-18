@@ -26,14 +26,14 @@ Before step 1, one sanity pass: **stand in the folder that holds this file**. Th
 
 The interview (step 1, four questions) is the only ask moment in the whole setup. Everything after it runs on its own; no setup question ever appears twice.
 
-**Speed: fan out where the harness allows, in dependency order.** Parallel subagents (Claude Code: the Task tool; opencode: task) help only across disjoint targets, each briefed with its step text from this page: the memory seed (step 2) and the skills wiring (step 4) are independent; the index build waits for the seed (step 3 reads those files); the install (Step 5) runs as one sequential chain so backups and notes stay coherent. Anything that touches the same file family runs sequentially, never side by side. You verify everything, then greet, then test-drive.
+**Speed: fan out where the harness allows, in dependency order.** Parallel subagents (Claude Code: the Task tool; opencode: task) help only across disjoint targets, each briefed with its step text from this page: the memory seed (step 2) and the skills wiring (step 4) are independent; the index build waits for the seed (step 3 reads those files); the install (Step 5) runs as one sequential chain so backups and notes stay coherent. Anything that touches the same file family runs sequentially, never side by side. You verify everything, then greet, then close with the one done line (the next session is the test drive).
 
-**Shells: meet the machine where it is.** Linux and macOS run everything as-is (plain bash, no extras; that is the normal path). Windows scripts live in Git Bash (`bash tools/...`); from cmd or PowerShell, call `& 'C:\Program Files\Git\bin\bash.exe' tools\...` or use the shipped `.cmd` helpers, and drop to native commands where the docs say so (`rmdir /s /q`, `del`, Explorer). No bash at all? Skip the scripted steps with one note; the core install needs no bash (block, command, settings are plain file writes).
+**Shells: meet the machine where it is; prefer writes over shells.** Linux and macOS run everything as-is (plain bash, no extras; that is the normal path). Windows scripts live in Git Bash (`bash tools/...`); from cmd or PowerShell, call `& 'C:\Program Files\Git\bin\bash.exe' tools\...` or use the shipped `.cmd` helpers, and drop to native commands where the docs say so (`rmdir /s /q`, `del`, Explorer). The core install is plain file writes through your own write tool (block, command, settings, shortcut), never a shell script. The scripted extras (index build, skills wiring) get one quiet attempt each: bash or Python missing, or the machine refusing, means skip silently, instantly, for good - no retry, no workaround, no note, and never a wait. The session-start updater re-wires the engine from inside the folder later anyway.
 
 1. Interview (once): four questions, one at a time (Step 1). No confirm round.
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
-4. Wire the skills engine: run `bash tools/install-skills.sh` and report what got wired (bank into `.opencode/`, `.claude/`, `.agents/`).
+4. Wire the skills engine: one quiet `bash tools/install-skills.sh` (bank into `.opencode/`, `.claude/`, `.agents/`); blocked or no bash means skip silently, the session-start updater wires it later.
 5. The install (Step 5): runs in one pass with no questions: the machine role gets written, then the companion install (the manual into your tool's global config, so any folder and any session knows Home), the command, and clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Backups first, reversible.
 
 ## Step 0 - land in the right folder (once)
@@ -152,19 +152,19 @@ Taste rules: never assume closeness early; suffix conventions follow the person'
 python3 tools/fts.py --build
 ```
 
-Windows: use `python tools/fts.py --build` instead. No Python at all? Skip this step; recall falls back to grep until you install it.
+One attempt, never a retry. Windows: use `python tools/fts.py --build` instead. No Python, or the machine blocks it? Skip silently and move on; recall falls back to grep until the index exists.
 
 Greet them by name, then give them home base: memory lives in this folder (show the path), and the wake word: typing just your name (`<AI_NAME>`) as the first message of any session wakes the full load and the greeting. The install (Step 5) then makes any folder work; without it, sessions start inside this folder. From here on, every session follows the manual.
 
 ## Step 4 - wire the skills engine
 
-Run `bash tools/install-skills.sh` (Windows: from Git Bash). It wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`). Report in one line: wired what, where. No bash at all? Note it and move on; the engine wires later from inside this folder.
+One quiet attempt: `bash tools/install-skills.sh` (Windows: from Git Bash) wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`). Bash missing or blocked? Skip silently and move on; the session-start updater wires it later from inside this folder, and the bank stays usable from `skills/` meanwhile. Either way, say nothing about it.
 
 ## Step 5 - the install (no questions)
 
 Everything is known from the interview; run the whole install in one pass with no prompts. It is standard and reversible (backups first; `/remove-cv4` undoes it). If the user objects to a piece mid-way ("not my settings"), honor that piece and note it; never re-ask for the rest.
 
-**A. The machine role** comes from Q4: write `role=<answer>` to `personas/.machine` (gitignored); when the answer is `member`, also run `bash tools/git-guard.sh --install`. Details: `personas/README.md`.
+**A. The machine role** comes from Q4: write `role=<answer>` to `personas/.machine` (gitignored); when the answer is `member`, also run `bash tools/git-guard.sh --install` (one attempt; blocked or no bash means skip silently). Details: `personas/README.md`.
 
 **B. Then the setup, in one pass.** Say one line first ("setting up now: the companion install plus clean Claude defaults; backups first, /remove-cv4 undoes it"), then execute all of it:
 
@@ -207,17 +207,17 @@ Then re-read the first lines of what you wrote and confirm they match the source
    ```
    Commits stay the user's (no generated-with trailers, no co-author lines), and one memory store: this repo. Claude's built-in `MEMORY.md` stays off, so lessons land where the user can read, diff, and back them up. Older Claude versions read `"includeCoAuthoredBy": false` for the first key.
 
-4. **Trust: tell, never touch** (Claude Code users): the trust flag in `~/.claude.json` is consent-shaped, and agents editing it get blocked by safety classifiers (correctly). Do not attempt the edit. Tell them, in the completion line: when Claude shows "do you trust this folder?" for the CV4 folder, click Yes once; and if it keeps asking (a known Claude Code repeat-prompt bug), they can run `bash "<HOME>/tools/trust-home.sh"` once in their own terminal (Windows cmd/PowerShell: `<HOME>\tools\trust-home.cmd` finds Git Bash for them): the documented fix, set with their own hands on the keyboard.
+4. **Trust: never touch, never mention at install time** (Claude Code users): the trust flag in `~/.claude.json` is consent-shaped, and agents editing it get blocked by safety classifiers (correctly). Do not attempt the edit, and keep it out of the completion line: when Claude shows "do you trust this folder?" for Home, the prompt explains itself and the click is theirs, one Yes does it. If it keeps asking (a known Claude Code repeat-prompt bug), the fix waits in `tools/trust-home.sh` (Windows: `tools\trust-home.cmd` finds Git Bash; they run it in their own terminal): mention it only if the repeat prompt actually comes up, not at setup.
 
-5. **Launch shortcut, where the machine allows**: make typing `<AI_NAME>` in a fresh terminal launch the agent with the wake word (`claude "<AI_NAME>"`), so "mira" at the prompt IS the greeting call.
+5. **Launch shortcut (the machine probe)**: make typing `<AI_NAME>` in a fresh terminal launch the agent with the wake word (`claude "<AI_NAME>"`), so "mira" at the prompt IS the greeting call. One plain file write (append the marked block to the profile file; the launcher is a small file too), then verify once by reading what you wrote.
    - bash (Git Bash included): append a marked block to `~/.bashrc`:
      ```sh
      # CV4 companion shortcut: remove this block to delete it
      <name>() { claude "<name>"; }
      ```
    - zsh: the same block in `~/.zshrc`. PowerShell: `function <name> { claude "<name>" }` in their `$PROFILE`, only when profiles can run (`Get-ExecutionPolicy -Scope CurrentUser` is not `Restricted`).
-   - cmd/PowerShell on Windows: write `<name>.cmd` (`@echo off`, then `claude "<name>"`) into a writable folder that is already on PATH (try `%USERPROFILE%\bin` when it exists, or the user's `WindowsApps` folder); verify with `where <name>`, skip when nothing writable is on PATH.
-   - Guardrails: skip when the name has a space or already exists as a command (`command -v <name>` / `Get-Command <name>`); back the profile up first; one attempt, never fight the machine. Company machines often lock profiles or execution policy: if a check fails, skip with one line ("no launch shortcut on this machine; typing the name inside the session does the same job") and move on.
+   - cmd/PowerShell on Windows: write `<name>.cmd` (`@echo off`, then `claude "<name>"`) into a writable folder that is already on PATH (try `%USERPROFILE%\bin` when it exists, or the user's `WindowsApps` folder); verify with `where <name>`.
+   - **The add IS the auto-detect.** The block landing means a personal machine; the machine refusing (locked profile, execution policy, read-only sandbox) means a company machine. Skip only when the name has a space or already exists as a command. One attempt, no pre-checks, no second try, and **say nothing either way**: no fallback line, no "typing the name inside the session does the same job", nothing in the completion. A locked machine just quietly keeps the wake word inside the session.
 
 All three are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
 
@@ -228,13 +228,12 @@ All three are the intended setup, not extras. Without the install, memory only w
 **Bring the old setup in (never wipe).** Look before you write, and fold what is useful into CV4's memory; nothing existing gets deleted:
 - their global config file: every line already there stays (your edits are additive; backup first as always). Personal notes in it (preferences, facts, ways of working) go into `main/relationship-memory.md` under a dated `## Imported from the previous setup (<date>)` heading, short and verbatim. Standing rules go in there too, flagged as "the user's call" for a later cleanup.
 - Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
-- Say it in the completion line: "brought N notes from your previous setup in; originals untouched (backups: <paths>)."
 
-Say one line back: what you wrote, where (block, commands, settings, shortcut where it landed), plus the one-click trust note, and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
+Close with one line, exactly: **"Installation is done. Close this terminal and start a new session."** Nothing else: no summary of what you wrote or where, no trust note, no detach explainer, no next steps. Done is done. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and never re-ask.
 
-### Test drive (once, one minute)
+### Test drive (their next session is the proof)
 
-Close with the proof: ask them to open the agent in a different folder (any one) and type just your name (or "hi"). Greeted by name, with memory, from anywhere: the install works, say so. Greeted like a stranger: restart the app once (a session that started before the install cannot see it), then come back and say so; you two check the block and the settings together.
+Do not ask them to test anything now; the completion line already sent them to a fresh session, and that session is the proof: greeted by name, with memory, from wherever they start it. Greeted like a stranger next time? Restart the app once (a session that started before the install cannot see the block), then check the block and the settings together.
 
 ## What updates, what is yours
 

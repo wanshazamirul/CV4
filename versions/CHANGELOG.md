@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 - 2026-10-18
+- The install is write-first: every core step is a plain file write through the agent's own write tool (companion block, command, settings, shortcut). The scripted extras - index build, skills wiring - are one quiet attempt that skips silently, instantly, and without notes where bash, Python, or the machine says no. No retries, no workarounds, no waiting on a shell.
+- The launch shortcut is the machine probe: the block landing means a personal machine, the machine refusing means a company machine. Either way it is silent - no fallback line, no "typing the name inside the session does the same job".
+- The finish is one line: "Installation is done. Close this terminal and start a new session." No summary of what was written where, no trust note, no detach explainer; the next session is the test drive, not a to-do handed to the user.
+
 ## 0.10.3 - 2026-10-18
 - Copy-clean share lines: the Start-here line and the team-fork share line no longer end with a stray period inside the copyable block, so "BOOT.md" pastes exactly. A pointer to the For teams section now sits right under the start-here block.
 - Fork-name awareness in BOOT Step 0: the path check accepts the fork's own folder name instead of assuming CV4.
