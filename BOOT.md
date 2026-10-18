@@ -26,7 +26,9 @@ Before step 1, one sanity pass: **stand in the folder that holds this file**. Th
 
 The interview (step 1) plus one role question (step 5) are the only asks in the whole setup. Everything else is machinery and installs itself. No setup question ever appears twice.
 
-1. Interview (once): the three questions + one confirm card (Step 1).
+**Speed: fan out where the harness allows.** Steps 2 to 4 are independent: with parallel subagents (Claude Code: the Task tool; opencode: task) let each numbered step run in its own subagent, briefed with that step's text from this page. The install (Step 5) runs as one unit (main thread or a single subagent) so backups and notes stay coherent. You verify everything, then greet, then test-drive.
+
+1. Interview (once): the three questions (Step 1). No confirm round.
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
 4. Wire the skills engine: run `bash tools/install-skills.sh` and report what got wired (bank into `.opencode/`, `.claude/`, `.agents/`).
@@ -109,7 +111,7 @@ What it looks like:
 - **Emoji**: `none` · `light` · `generous`
 - **Answers**: `short` · `balanced` · `detailed`
 
-Then detect the region yourself. Silently means silently: run the detection, do not announce it, do not narrate the steps; fold the result into the summary card below. Sources: `date +%Z`, the `TZ` env, the OS locale (Windows fallback: `tzutil /g`). No more questions.
+Then detect the region yourself. Silently means silently: run the detection, do not announce it, do not narrate the steps; fold the result into the greeting's summary line. Sources: `date +%Z`, the `TZ` env, the OS locale (Windows fallback: `tzutil /g`). No more questions.
 
 **Language: English by default, user-led underneath.**
 - Start in English, whatever the region.
@@ -129,9 +131,7 @@ The region only changes how you address them:
 
 Taste rules: never assume closeness early; suffix conventions follow the person's lead; when unsure, mirror how they address you.
 
-**Confirm once, with a summary card:**
-> "You are <name>. I am <ai-name>. I will be <voice>, <emoji> emoji, <answers> answers. In <region>, I will address you as <style>. Ready?"
-> Options: [Looks right] [Adjust behavior] [Start over]
+**No confirm round.** The answers are in; announce them once in the greeting, as a statement, not a question: "You are <name>. I am <ai-name>. <voice>, <emoji> emoji, <answers> answers. In <region>, I will address you as <style>." Adjustments happen on request, any time (update `main/identity-core.md` then).
 
 ## Step 2 - seed memory
 

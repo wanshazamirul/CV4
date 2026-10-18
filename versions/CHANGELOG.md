@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.4 - 2026-10-18
+- No confirm round: the interview answers are announced once in the greeting, as a statement ("You are Wan. I am Mira. playful, light, balanced."), and the setup carries straight on. Dials stay adjustable on request.
+- Setup fanned out: steps 2 to 4 are independent, so harnesses with parallel subagents (Claude Code: Task; opencode: task) run one subagent per step and finish in a burst; the install stays in one unit so backups and notes remain coherent, and the main session still verifies, greets, and test-drives.
+
 ## 0.9.3 - 2026-10-18
 - `/cv4-recap` retired: the built-in `/recap` covers the live session and the session-start load covers everything before it, so the extra command was earning nothing. One command total now, which also kills the failure mode where two filled command files crossed and remove wore the recap's name.
 - The install step verifies what it wrote (the command must open with the removal procedure), and leftover `cv4-recap.md` copies from older installs get deleted at install and uninstall.

@@ -1,6 +1,6 @@
 {
   "name": "cv4-skills",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "CV4 skill bank: the template's rituals (save, recall, build, forge, reminders, decisions). This repo is the plugin.",
   "author": {
     "name": "Wan"
