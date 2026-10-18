@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.6 - 2026-10-18
+- Seeding miss fixed: first boot now writes a real `Last updated` stamp into `main/current-session.md` (the template placeholder was never replaced, which starved the greeting's recency math and produced "no timestamp"), and the first log block carries a local date+time. A placeholder stamp is now explicitly a seeding miss to fix on the spot, not a reason to skip recency.
+
 ## 0.9.5 - 2026-10-18
 - One ask moment, truly: the machine role (personal / team member) joined the interview as Q4, so the whole setup asks four questions once and then runs on its own - role written, guard installed for members, everything else in the same pass. Zero mid-setup prompts.
 
