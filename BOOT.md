@@ -148,7 +148,7 @@ python3 tools/fts.py --build
 
 Windows: use `python tools/fts.py --build` instead. No Python at all? Skip this step; recall falls back to grep until you install it.
 
-Greet them by name, then give them home base: memory lives in this folder (show the path), and the wake word: typing just your name (`<AI_NAME>`) as the first message of any session wakes the full load and the greeting. The install card (Step 5) then makes any folder work; without it, sessions start inside this folder. From here on, every session follows the manual.
+Greet them by name, then give them home base: memory lives in this folder (show the path), and the wake word: typing just your name (`<AI_NAME>`) as the first message of any session wakes the full load and the greeting. The install (Step 5) then makes any folder work; without it, sessions start inside this folder. From here on, every session follows the manual.
 
 ## Step 4 - wire the skills engine
 
