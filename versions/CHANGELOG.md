@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1 - 2026-10-18
+- Clone path, settled for good: the start-here instruction names the target (your home folder), and on a terminal it is `cd ~` first then `git clone <url>`: git names the folder itself, so no path string gets typed, so nothing can get mangled.
+- BOOT Step 0 is evidence-first now: run the `pwd` + `ls` check, then speak only about what it shows. A healthy Home gets zero path talk; a genuinely mangled folder name gets one quoted move command, then a re-check. Speculative mangling warnings are called out as wrong behavior.
+
 ## 0.7.0 - 2026-10-18
 - The install model, one level simpler: the manual lives in your tool's GLOBAL config (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), written as the actual content, not a pointer or a signpost stub. The global config loads in every session anywhere, so launch your agent wherever you are: your companion is simply there. No folder habits, no start-inside-Home primary path.
 - One install card: role + the companion install + clean Claude defaults; one approval, backups first. Declined, or a tool with no global config? The fallback is the same marked block in a repo file in Home.

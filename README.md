@@ -4,8 +4,10 @@
 **Start here:** give your AI agent this link and one instruction:
 
 ```
-Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
+Clone https://github.com/wanshazamirul/CV4 into your home folder, and read BOOT.md.
 ```
+
+That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled.
 
 It clones the repo to its home (`CV4` in your home folder), runs the 3-question enrollment, installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. One card, one approval: the install plus clean Claude defaults. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
 

@@ -19,7 +19,7 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 
 ## Execute this file, top to bottom
 
-Before step 1, one sanity pass: **stand in the folder that holds this file**. That folder is the companion's Home (Step 0). A mangled clone path gets fixed now, before anything downstream bakes it in. Re-reading this file on a machine that already ran it? Step 0 catches the old install and offers a fresh reset first, never a silent double-install.
+Before step 1, one sanity pass: **stand in the folder that holds this file**. That folder is the companion's Home (Step 0). Step 0 verifies the path too: a healthy Home gets no path talk, a clone that landed wrong gets fixed there, before anything downstream bakes the path in. Re-reading this file on a machine that already ran it? Step 0 catches the old install and offers a fresh reset first, never a silent double-install.
 
 The interview (step 1) is the only question-heavy moment. Steps 2 to 4 are machinery. Step 5 is the only setup card. No setup question ever appears twice.
 
@@ -36,9 +36,24 @@ Home is the folder that holds this file: `CV4` under the user's home folder.
 - Windows: `C:\Users\<you>\CV4` in Explorer; write it as `C:/Users/<you>/CV4` everywhere else (configs, scripts, docs: forward slashes survive JSON and shell). Quote paths in shell commands.
 - macOS / Linux: `~/CV4`.
 
-If the clone landed on a mangled path (for example `UsersshazwanamiCV4`: a backslash escape eaten somewhere), move it to Home now. The companion block, the persona marker, and every path baked into them start from this Home; fixing it later is a chore.
+**Verify once, then trust it.** Run the check, and report only what you see:
 
-Sanity check: `pwd` shows Home, and `BOOT.md` plus `tools/install-skills.sh` are both right there.
+```
+pwd                                      # expect: /c/Users/<you>/CV4 (Git Bash), C:/Users/<you>/CV4, or ~/CV4
+ls BOOT.md tools/install-skills.sh
+```
+
+Both files present and `pwd` matches Home? Correct: proceed, and say nothing about paths.
+
+Only a wrong folder name (for example `C:UsersshazwanamiCV4`: an unquoted backslash path lost its separators) means a clone mistake. Fix it before anything downstream bakes the path in:
+
+```
+cd ~ && mv 'UsersshazwanamiCV4' ./CV4     # quoted path, forward slashes; or move it in Explorer
+```
+
+Then run the check again (if `~/CV4` already exists, ask the user which copy to keep first). Cloning fresh? `cd ~` first, then `git clone <url>`: git names the folder itself, so nothing path-shaped gets typed, so nothing gets mangled.
+
+Never speculate about path mangling: either the check shows a weird folder name and you fix it, or Home is healthy and there is nothing to say.
 
 ### Already installed? (the re-boot check)
 
