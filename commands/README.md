@@ -13,7 +13,7 @@ Template-owned command files. The setup copies them into your tool's **global** 
 ## Rules
 
 - These files are templates: `[HOME]` fills with your Home path at install time.
-- Back up an existing copy before overwriting (`<file>.bak-<YYYYMMDD>`), same as any global edit.
+- One rolling backup per target (`<file>.cv4bak`, written only when missing), same as any global edit; no dated copies.
 - Auto-updated with new versions (`tools/update.sh` pulls this folder); installed copies refresh on your word, like the manual.
 - Natural-language uninstall ("uninstall") still works in every tool; the command is the shortcut.
 - Gemini CLI / Codex: no command copy is installed (different command formats); say "uninstall" there.

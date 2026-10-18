@@ -76,7 +76,7 @@ CV4 is already set up on this machine (Home: <path seen>).
   [Cancel]                         stop here; the existing companion keeps working
 ```
 
-**Reinstall fresh**: remove the old companion blocks (fresh `<file>.bak-<YYYYMMDD>` first), the fallback files, and `personas/.machine`; then continue from Step 1 like a fresh boot. Memory, logs, and library stay untouched. Say one line: what was reset, what was kept.
+**Reinstall fresh**: remove the old companion blocks (rolling `.cv4bak` per the backup rule), the fallback files, and `personas/.machine`; then continue from Step 1 like a fresh boot. Memory, logs, and library stay untouched. Say one line: what was reset, what was kept.
 
 **Cancel**: stop the boot entirely; change nothing.
 
