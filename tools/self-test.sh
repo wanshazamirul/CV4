@@ -49,7 +49,7 @@ fi
 
 # --- 2. skills engine: router current, wiring complete -----------------------
 if [ -f "$ROOT/tools/install-skills.sh" ]; then
-  if [ -f "$ROOT/AGENTS.md" ]; then
+  if [ -f "$ROOT/AGENTS.md" ] || [ -f "$ROOT/CLAUDE.md" ] || [ -f "$ROOT/GEMINI.md" ]; then
     out="$(bash "$ROOT/tools/install-skills.sh" --check 2>&1)"
     case "$out" in
       *"router   up to date"*) ok "router block current" ;;
@@ -62,7 +62,7 @@ if [ -f "$ROOT/tools/install-skills.sh" ]; then
       info "skills not wired yet (run: bash tools/install-skills.sh)"
     fi
   else
-    info "no AGENTS.md yet (fresh clone: run BOOT first)"
+    info "no agent file yet (fresh clone: run BOOT first)"
   fi
 fi
 
@@ -109,6 +109,18 @@ if [ "$QUICK" = 0 ]; then
       wired="$(ls "$SCR/.opencode/skills" 2>/dev/null | wc -l)"
       [ "$wired" -gt 0 ] && ok "wired $wired skills in the scratch" || fail "no skills wired in the scratch"
       grep -q "G0" "$SCR/AGENTS.md" && ok "G0 present in the router" || fail "G0 missing from the router"
+      cp "$SCR/AGENTS.md" "$SCR/CLAUDE.md"
+      out2="$(bash "$SCR/tools/install-skills.sh" --check 2>&1)"
+      case "$out2" in
+        *"up to date (2 file(s))"*) ok "router spans every agent file present" ;;
+        *) fail "router check missed a present agent file: $out2" ;;
+      esac
+      printf '@AGENTS.md\n' > "$SCR/GEMINI.md"
+      out3="$(bash "$SCR/tools/install-skills.sh" --check 2>&1)"
+      case "$out3" in
+        *"up to date (2 file(s))"*) ok "bare pointer files stay untouched" ;;
+        *) fail "pointer file disturbed the router check: $out3" ;;
+      esac
       [ "$pz1" = "$pz2" ] && ok "personal zones untouched by the engine" || fail "engine touched a personal zone"
     fi
 

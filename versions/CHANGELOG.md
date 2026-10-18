@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.9 - 2026-10-18
+- Native agent files: the pointer is gone. BOOT writes the full manual into your tool's own file (`CLAUDE.md` / `AGENTS.md` / `GEMINI.md`); every tool reads it natively, no imports. One template serves all three; refreshes regenerate whichever files the machine carries, and a one-line `@...` import from an older setup gets an offer to go native.
+- One setup card: the interview is the only question-heavy moment; role plus signpost plus clean Claude defaults ride a single recommended card. No per-item questions, no second asks.
+- Clean Claude defaults bundled (`"attribution": false` + `"autoMemoryEnabled": false`): the intended setup, because CV4 is the one memory store.
+- Backups before every global-file edit (`<file>.bak-<YYYYMMDD>`); uninstall offers keep-or-restore and returns the machine closer to its pre-setup state.
+- Clone sanity (Step 0): verify Home before anything; mangled paths get fixed up front. Windows paths canonical as `C:/Users/<you>/CV4` in configs.
+- Interview: Q1/Q2 are plain-text free entry (option tools reject free entry); question-tool failures fall back to text at once. Region detection runs silently, with a Windows `tzutil /g` fallback.
+- Launch anywhere: with the signpost, any folder works (that is its point); folder-start is the fallback for signpost-less sessions. The repo itself never installs globally.
+- Engine: the router stamps every present agent file and skips bare `@...` pointers (older setups and CV3 stay untouched); self-test proves both.
+
 ## 0.6.8 - 2026-10-17
 - "Put it in the docs" is house law: chat diagrams get enshrined in the right doc (README, book chapter, bridge doc, `docs/`), ASCII, mechanically aligned.
 - Two keepers promoted: the compaction before/after diagram (README FAQ) and the ownership table (spec-kit bridge doc).

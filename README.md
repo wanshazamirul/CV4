@@ -7,7 +7,7 @@
 Clone https://github.com/wanshazamirul/CV4 and read BOOT.md.
 ```
 
-It clones the repo, runs the 3-question enrollment, creates its own agent files, seeds the memory, and says hello. From then on, open your agent in that folder: the manual loads with the session. Onboarding also offers the signpost, so any folder on the machine wakes with memory. No terminals, no config. This README is the map.
+It clones the repo to its home (`CV4` in your home folder), runs the 3-question enrollment, writes the manual into your tool's own file, seeds the memory, and says hello. One card hooks it up: the signpost so any folder wakes with memory, plus clean Claude defaults on Claude Code. From then on, open your agent anywhere. No terminals, no config. This README is the map.
 
 **Spec-driven by design:** pairs with spec-kit (constitution -> specify -> plan -> tasks -> implement -> converge); the bridge ships in `spec-kit/` and the lessons land in `memory/`.
 
@@ -198,7 +198,7 @@ CV4/
     └── self-test.sh               prove the engine end to end (scratch integration pass)
 
 Created locally at first boot (yours forever):
-    AGENTS.md (the manual) · CLAUDE.md / GEMINI.md (one-line pointers, if needed)
+    Your tool's agent file (AGENTS.md, CLAUDE.md, or GEMINI.md) carrying the full manual
 ```
 
 ## The rituals (skills)
@@ -231,12 +231,13 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 
 ## Uninstalling
 
-Almost everything lives inside this folder; the only machine-level traces are the signpost block and the `instructions` entry. A clean exit is small:
+Almost everything lives inside this folder. The machine-level traces: the signpost block, the `instructions` entry, and the agent settings applied at setup (if any). The repo itself never installs globally: memory stays a plain versioned folder on purpose; only the signpost points at it. A clean exit is small:
 
 1. **Remove the signpost** (if installed): delete the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->` in whichever global files have it (`~/.config/opencode/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), and remove the `<HOME>/AGENTS.md` entry from `instructions` in `~/.config/opencode/opencode.json` if you added it. If that config file only existed for this, deleting the file is fine too.
-2. **Delete this folder.** Memory, logs, skills, and history all live inside it.
+2. **Settings** (if applied at setup): every global file edited at setup was backed up to `<file>.bak-<YYYYMMDD>` first. Keep the clean defaults, or restore the backup: `cp ~/.claude/settings.json.bak-20261018 ~/.claude/settings.json`.
+3. **Delete this folder.** Memory, logs, skills, and history all live inside it.
 
-Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the signpost, says what remains, and you delete the folder when you are done. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the signpost, offers keep-or-restore for the settings it applied, says what remains, and you delete the folder when you are done. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
 
 ## Roadmap
 
@@ -246,15 +247,15 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 
 ## FAQ
 
-**Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. `git log` is your full history.
+**Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. `git log` is your full history. Nothing installs globally: the only trace outside the folder is the signpost reference.
 
-**Where do I start my agent from now on?** Inside this folder (or any folder within it): the manual loads when the session starts here, and that is what wakes the memory. If you accepted the signpost at onboarding, any folder works. Without it, start elsewhere and it greets you like a stranger.
+**Where do I start my agent from now on?** Anywhere, once the setup applied the signpost: that is its whole point. Without the signpost, start inside this folder (or any folder within it), where the manual loads on its own. No signpost and started elsewhere? It greets you like a stranger.
 
 **What is the signpost, and how do I remove it?** One marked block, offered at onboarding, in your agent's global rules (`~/.config/opencode/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, or `~/.codex/AGENTS.md`): it points every session back to this repo. It is the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->`. Delete the block to detach; nothing else is touched.
 
 **How do I uninstall CV4 completely?** See [Uninstalling](#uninstalling): remove the signpost, delete the folder. Nothing else on the machine is touched.
 
-**Which agents work?** Anything that reads files. BOOT creates `AGENTS.md` plus a `CLAUDE.md` / `GEMINI.md` pointer when needed, so every tool reads the same manual.
+**Which agents work?** Anything that reads files. BOOT writes the manual into your tool's own file (`AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`), so every tool reads it natively: no imports, no pointers. One template in BOOT serves all three, and refreshes regenerate whichever files your machine carries.
 
 **Can I use it on two machines?** Yes: put the folder in a git repo, push and pull. One session per copy at a time (the daemon tier will lift this).
 
@@ -270,7 +271,7 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 { "attribution": false }
 ```
 
-That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead. Your companion can set this up for you: ask it, and it applies the change to your settings file with your approval.
+That hides the commit trailer, the PR attribution line, and the session link. Older versions read `"includeCoAuthoredBy": false` instead. At setup the companion bundles it with the one-memory-store default in a single recommended card, backs your settings file up first, and merges the keys with your approval.
 
 **Why are all illustrations ASCII?** Docs live in git and get read by agents; ASCII diffs cleanly, never breaks, and renders everywhere. House rule: every diagram in every README is ASCII, no images.
 
@@ -283,7 +284,7 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
           rules auto-reload; memory files reload via the manual's rule
 ```
 
-**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At boot the companion offers to apply both settings (commits + memory) to your agent for you.
+**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys ride one recommended card; the companion backs the file up first (`.bak-<date>`) and merges with your approval.
 
 **How do I know my setup is healthy?** Run `bash tools/self-test.sh`: it checks the layout and README keys, the engine wiring and router, the registries, then runs the integration pass (installer, scaffold, converge hook, git-guard) in a scratch copy. `RESULT: PASS` means the engine is sound; `--quick` skips the scratch pass.
 
