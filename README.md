@@ -136,7 +136,7 @@ CV4/
 │
 ├── commands/                    SLASH COMMANDS (installed to your tool; work everywhere)
 │   ├── README.md                  the key
-│   ├── remove-cv4.md              /remove-cv4: full uninstall, settings offered back
+│   ├── remove-cv4.md              /remove-cv4: full exit, settings restored, memory handed back
 │   └── cv4-recap.md               /cv4-recap: cross-session recap from the files
 │
 ├── docs/                        TEMPLATE DOCS (about CV4 itself)
@@ -242,11 +242,11 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 Almost everything lives inside this folder. The machine-level traces: the companion block in your global config, an `instructions` entry if an older setup added one, and the agent settings applied at setup (if any). The repo itself never installs globally: memory stays a plain versioned folder; only the companion block goes into your global config. A clean exit is small:
 
 1. **Remove the companion block** (if installed): delete the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->` in whichever global files have it (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), plus a repo-file fallback if you chose it. An older setup may also have added an `instructions` entry in `~/.config/opencode/opencode.json`: remove it too.
-2. **Settings** (if applied at setup): every global file edited at setup was backed up to `<file>.bak-<YYYYMMDD>` first. Keep the clean defaults, or restore the backup: `cp ~/.claude/settings.json.bak-20261018 ~/.claude/settings.json`.
-3. **Hand back** (optional): what CV4 learned can flow back to your old setup as a short dated distillation (`main/relationship-memory.md` essentials + `main/hotlist.md` rules), written into an auto-memory file when one exists, else the global config file.
+2. **Settings, restored automatically**: every global file edited at setup was backed up to `<file>.bak-<YYYYMMDD>`, and uninstall copies the install backups back (a fresh backup of the pre-uninstall state is kept). If no backup exists, only the two keys CV4 added come out. Want to keep the clean defaults instead? Re-add the keys after; uninstall goes back to pre-CV4 by definition.
+3. **Hand back, prefilled**: what CV4 learned flows back automatically as a short dated distillation (`main/relationship-memory.md` essentials + `main/hotlist.md` rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file.
 4. **Delete this folder.** Memory, logs, skills, and history all live inside it.
 
-Want it handled for you? In a session inside this folder, say "uninstall": your companion removes the block, offers keep-or-restore for the settings it applied, offers the hand-back of what it learned, says what remains, and you delete the folder when you are done. The shortcut: `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup) does the same from any folder, and removes the command itself. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+Want it handled for you? In a session inside this folder, say "uninstall", or run `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup, works from any folder). It saves the session first, then does the whole exit without asking: blocks off, settings restored, memory handed back, command self-deleted. You delete the folder when you are done. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
 
 ## Roadmap
 
@@ -262,7 +262,7 @@ Want it handled for you? In a session inside this folder, say "uninstall": your 
 
 **What is the companion block, and how do I remove it?** One marked block in your tool's global config (`~/.claude/CLAUDE.md` for Claude Code, `~/.config/opencode/AGENTS.md` for opencode, `~/.gemini/GEMINI.md` for Gemini, `~/.codex/AGENTS.md` for Codex) carrying the full manual and your Home path, written at setup: it is why every session, in every folder, knows your companion. It sits between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->`. Delete the block to detach; nothing else is touched.
 
-**How do I uninstall CV4 completely?** Say "uninstall" in a session inside the folder, or run `/remove-cv4` (Claude Code / opencode; installed globally, works from any folder). See [Uninstalling](#uninstalling): blocks off, settings offered back, then delete the folder. Nothing else on the machine is touched.
+**How do I uninstall CV4 completely?** Say "uninstall" in a session inside the folder, or run `/remove-cv4` (Claude Code / opencode; installed globally, works from any folder). See [Uninstalling](#uninstalling): it saves first, then blocks off, settings restored, memory handed back, all without asking. Nothing else on the machine is touched.
 
 **Which agents work?** Anything that reads files. BOOT installs the manual into your tool's global config (Claude Code `~/.claude/CLAUDE.md`, opencode `~/.config/opencode/AGENTS.md`, Gemini `~/.gemini/GEMINI.md`, Codex `~/.codex/AGENTS.md`), so it loads natively in every session, everywhere: no imports, no pointers. Tools without a global config use a repo-file fallback in Home.
 

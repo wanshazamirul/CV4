@@ -197,7 +197,7 @@ The fallback (a tool without global config, or the user opting out mid-way): wri
 | Claude Code | `~/.claude/commands/remove-cv4.md` · `~/.claude/commands/cv4-recap.md` |
 | opencode | `~/.config/opencode/commands/remove-cv4.md` · `~/.config/opencode/commands/cv4-recap.md` |
 
-`/remove-cv4` undoes this whole install from any session (settings included, offered back); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
+`/remove-cv4` undoes this whole install from any session without asking questions (settings restored from the install backup, memory handed back prefilled, the command itself removes its copies); `/cv4-recap` rebuilds the cross-session recap from the files on demand. Claude Code's built-in `/recap` stays as it is: it covers the live session; the durable cross-session recap is CV4's, and the two pair.
 
 3. **Clean Claude defaults** (Claude Code users): two keys in `~/.claude/settings.json`:
    ```json
@@ -262,7 +262,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.8.4
+> Manual rev: 0.8.5
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -318,6 +318,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
 - Team fork? Your role comes from `personas/.machine` (personal / member; older machines may say owner or just-me, both behave as personal). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
-- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Offer a final save, then remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one). For `settings.json` offer two lanes: keep the clean defaults, or restore the pre-setup backup (`.bak-<date>`, say which file). Then offer the hand-back: a short dated distillation of what this companion learned (relationship essentials plus the never-again rules) written into the old setup's memory home (an auto-memory file when one exists, else the global config file). Confirm one line, and tell them to delete this folder when the session is done.
+- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), then hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing). Confirm one line; the folder stays for the user to delete.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````
