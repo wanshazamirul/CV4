@@ -24,15 +24,15 @@ No database, no cloud, no services. Markdown + git is the whole stack.
 
 Before step 1, one sanity pass: **stand in the folder that holds this file**. That folder is the companion's Home (Step 0). Step 0 verifies the path too: a healthy Home gets no path talk, a clone that landed wrong gets fixed there, before anything downstream bakes the path in. Re-reading this file on a machine that already ran it? Step 0 catches the old install and offers a fresh reset first, never a silent double-install.
 
-The interview (step 1) plus one role question (step 5) are the only asks in the whole setup. Everything else is machinery and installs itself. No setup question ever appears twice.
+The interview (step 1, four questions) is the only ask moment in the whole setup. Everything after it runs on its own; no setup question ever appears twice.
 
 **Speed: fan out where the harness allows.** Steps 2 to 4 are independent: with parallel subagents (Claude Code: the Task tool; opencode: task) let each numbered step run in its own subagent, briefed with that step's text from this page. The install (Step 5) runs as one unit (main thread or a single subagent) so backups and notes stay coherent. You verify everything, then greet, then test-drive.
 
-1. Interview (once): the three questions (Step 1). No confirm round.
+1. Interview (once): four questions, one at a time (Step 1). No confirm round.
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
 4. Wire the skills engine: run `bash tools/install-skills.sh` and report what got wired (bank into `.opencode/`, `.claude/`, `.agents/`).
-5. The install (Step 5): one question (the machine role), then the whole setup runs in one pass: the companion install (the manual into your tool's global config, so any folder and any session knows Home), the commands, and clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Backups first, reversible.
+5. The install (Step 5): runs in one pass with no questions: the machine role gets written, then the companion install (the manual into your tool's global config, so any folder and any session knows Home), the command, and clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Backups first, reversible.
 
 ## Step 0 - land in the right folder (once)
 
@@ -80,7 +80,7 @@ CV4 is already set up on this machine (Home: <path seen>).
 
 **Cancel**: stop the boot entirely; change nothing.
 
-## Step 1 - the interview (3 questions, once)
+## Step 1 - the interview (4 questions, once)
 
 Open with one short line, not a speech: three quick questions, then the companion is set up everywhere you work. Then ask Q1 and wait.
 
@@ -98,6 +98,7 @@ What it looks like:
   ? How should I behave?           voice:   warm · playful · blunt · dry
                                    emoji:   none · light · generous
                                    answers: short · balanced · detailed
+  ? This machine?                  personal / team member
 ```
 
 **Q1 - their name** (question prompt, free entry, no suggestions):
@@ -110,6 +111,8 @@ What it looks like:
 - **Voice** (single pick): `warm` · `playful` · `blunt` · `dry` (the tool adds a type-your-own field for the rest, `formal` included)
 - **Emoji**: `none` · `light` · `generous`
 - **Answers**: `short` · `balanced` · `detailed`
+
+**Q4 - this machine** (single pick): `personal` (just me; my own instance, or the team's owner machine) / `member` (an engineer on a team's fork). It sets the guard: members push engine changes to `dev` + PR. Written to `personas/.machine` at install (Step 5), so nothing asks about it later.
 
 Then detect the region yourself. Silently means silently: run the detection, do not announce it, do not narrate the steps; fold the result into the greeting's summary line. Sources: `date +%Z`, the `TZ` env, the OS locale (Windows fallback: `tzutil /g`). No more questions.
 
@@ -154,15 +157,11 @@ Greet them by name, then give them home base: memory lives in this folder (show 
 
 Run `bash tools/install-skills.sh` (Windows: from Git Bash). It wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`). Report in one line: wired what, where. No bash at all? Note it and move on; the engine wires later from inside this folder.
 
-## Step 5 - the install (one question, then do it)
+## Step 5 - the install (no questions)
 
-Ask the machine role once, then run the whole install in one pass with no further prompts. It is standard and reversible (backups first; `/remove-cv4` undoes it), and nobody re-reads BOOT.md to be asked more questions. If the user objects to a piece mid-way ("not my settings"), honor that piece and note it; never re-ask for the rest.
+Everything is known from the interview; run the whole install in one pass with no prompts. It is standard and reversible (backups first; `/remove-cv4` undoes it). If the user objects to a piece mid-way ("not my settings"), honor that piece and note it; never re-ask for the rest.
 
-**A. Ask once: this machine.** `personal` (just me; my own instance, or the team's owner machine) / `member` (an engineer on a team's fork). This is the one thing that cannot be guessed, and it changes the guard: members push engine changes to `dev` + PR, never straight to main. Write `role=<answer>` to `personas/.machine` (gitignored); when the answer is `member`, also run `bash tools/git-guard.sh --install`. Details: `personas/README.md`.
-
-```
-This machine:  [personal] [team member]
-```
+**A. The machine role** comes from Q4: write `role=<answer>` to `personas/.machine` (gitignored); when the answer is `member`, also run `bash tools/git-guard.sh --install`. Details: `personas/README.md`.
 
 **B. Then the setup, in one pass.** Say one line first ("setting up now: the companion install plus clean Claude defaults; backups first, /remove-cv4 undoes it"), then execute all of it:
 

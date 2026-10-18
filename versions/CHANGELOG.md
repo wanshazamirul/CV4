@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.5 - 2026-10-18
+- One ask moment, truly: the machine role (personal / team member) joined the interview as Q4, so the whole setup asks four questions once and then runs on its own - role written, guard installed for members, everything else in the same pass. Zero mid-setup prompts.
+
 ## 0.9.4 - 2026-10-18
 - No confirm round: the interview answers are announced once in the greeting, as a statement ("You are Wan. I am Mira. playful, light, balanced."), and the setup carries straight on. Dials stay adjustable on request.
 - Setup fanned out: steps 2 to 4 are independent, so harnesses with parallel subagents (Claude Code: Task; opencode: task) run one subagent per step and finish in a burst; the install stays in one unit so backups and notes remain coherent, and the main session still verifies, greets, and test-drives.

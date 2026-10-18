@@ -9,7 +9,7 @@ Clone https://github.com/wanshazamirul/CV4 into your home folder, then run the s
 
 That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled.
 
-It clones the repo to its home (`CV4` in your home folder), runs the 3-question enrollment, installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. One question marks the machine (personal or team member), then the install runs itself: companion, commands, clean Claude defaults. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
+It clones the repo to its home (`CV4` in your home folder), runs the 4-question enrollment (you, its name, behavior, this machine), installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. Then the install runs in one pass, no further questions: companion, command, clean Claude defaults. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
 
 **Spec-driven by design:** pairs with spec-kit (constitution -> specify -> plan -> tasks -> implement -> converge); the bridge ships in `spec-kit/` and the lessons land in `memory/`.
 
