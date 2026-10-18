@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 - 2026-10-18
+- Wake word: the companion's name alone as a first message (for example "shu") is the session-start shortcut - full load, then the time-aware greeting in one reply. Explained at the hello and in the README; it goes away with the block, nothing extra to clean on removal.
+- Trust, pre-accepted: setup adds Home to `~/.claude.json` (`projects["<HOME>"].hasTrustDialogAccepted: true`, merged, path format matched) so the "do you trust this folder?" prompt stops nagging for the companion folder (a known Windows bug repeats it). Uninstall removes exactly that entry.
+- Both ride the existing one-pass install and the no-questions removal.
+
 ## 0.8.6 - 2026-10-18
 - `/remove-cv4` finishes the job: after the hand-back lands, it deletes the CV4 folder itself (cd out first, rm -rf, one retry if a Windows file is held open, then an honest note instead of a silent half-failure). The guard: no folder deletion until the memory hand-back is written.
 - The manual's uninstall rule and the README follow: full exit means nothing left to do, the folder included.

@@ -148,7 +148,7 @@ python3 tools/fts.py --build
 
 Windows: use `python tools/fts.py --build` instead. No Python at all? Skip this step; recall falls back to grep until you install it.
 
-Greet them by name, then give them home base: memory lives in this folder (show the path). The install card (Step 5) then makes any folder work; without it, sessions start inside this folder. From here on, every session follows the manual.
+Greet them by name, then give them home base: memory lives in this folder (show the path), and the wake word: typing just your name (`<AI_NAME>`) as the first message of any session wakes the full load and the greeting. The install card (Step 5) then makes any folder work; without it, sessions start inside this folder. From here on, every session follows the manual.
 
 ## Step 4 - wire the skills engine
 
@@ -205,9 +205,11 @@ The fallback (a tool without global config, or the user opting out mid-way): wri
    ```
    Commits stay the user's (no generated-with trailers, no co-author lines), and one memory store: this repo. Claude's built-in `MEMORY.md` stays off, so lessons land where the user can read, diff, and back them up. Older Claude versions read `"includeCoAuthoredBy": false` for the first key.
 
+4. **Trust, pre-accepted** (Claude Code users): add Home to `~/.claude.json` so the workspace-trust dialog stops asking about the companion folder: `projects["<HOME>"].hasTrustDialogAccepted: true`. Merge: keep every existing entry, and match the path format the file already uses for its other projects (Windows entries keep their backslashes). It is the documented fix for the repeated "do you trust this folder?" prompt (a known Windows bug makes it repeat).
+
 All three are the intended setup, not extras. Without the install, memory only wakes when a session starts inside Home; without the memory key, Claude grows a second memory outside the repo and lessons split across two stores.
 
-**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`, and the command files): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file.
+**Back up before every edit.** Before touching any global file (`~/.claude/CLAUDE.md`, `~/.claude/settings.json`, `~/.claude.json`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`, and the command files): copy it to `<file>.bak-<YYYYMMDD>` (skip when the file does not exist yet) and note the path in today's log plus `main/relationship-memory.md`. Merge, never rewrite: keep everything already in the file.
 
 **Writing the block.** Fill every `[PLACEHOLDER]` with the interview answers and `[HOME]` with Home's absolute path (forward slashes on Windows). Write the manual between the two marker lines; when the markers already exist, replace the text between them and nothing else. Markers present with a **different Home** baked in? Another CV4 instance lives there: say so, and offer to replace it with this one (one companion per machine is the model; two Homes in one file would fight).
 
@@ -216,11 +218,11 @@ All three are the intended setup, not extras. Without the install, memory only w
 - Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
 - Say it in the completion line: "brought N notes from your previous setup in; originals untouched (backups: <paths>)."
 
-Say one line back: what you wrote, where (block, commands, settings), and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
+Say one line back: what you wrote, where (block, commands, settings, trust), and that deleting the block detaches the companion. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and ask once, not twice.
 
 ### Test drive (once, one minute)
 
-Close with the proof: ask them to open the agent in a different folder (any one) and say hi. Greeted by name, with memory, from anywhere: the install works, say so. Greeted like a stranger: restart the app once (a session that started before the install cannot see it), then come back and say so; you two check the block and the settings together.
+Close with the proof: ask them to open the agent in a different folder (any one) and type just your name (or "hi"). Greeted by name, with memory, from anywhere: the install works, say so. Greeted like a stranger: restart the app once (a session that started before the install cannot see it), then come back and say so; you two check the block and the settings together.
 
 ## What updates, what is yours
 
@@ -262,7 +264,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.8.6
+> Manual rev: 0.9.0
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -270,9 +272,10 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 ## Every session: load before you reply
 
 1. **Session start = the first message in a fresh conversation.** Even a bare "hi" or "morning", even an urgent ask: before replying, run `bash tools/session-load.sh` under Home (one call: it runs the updater and prints every file below, with headers; no bash? read these in parallel instead: `main/identity-core.md`, `main/soul.md`, `main/hotlist.md`, `memory/index.md`, `main/relationship-memory.md`, `main/current-session.md`, `memory/reminders.md`). Do it silently: no narration, no status lines, no "loading my memory" (the harness shows the tool activity by itself); your first written message is the finished greeting.
-2. Only then reply, once: greet with time of day + real recency, computed against the actual clock in the user's timezone (check it if unsure; never guess). Buckets, smallest wins over calendar words: under 5 minutes = "just now"; under an hour = "N minutes ago"; under 6 hours = "N hours ago" (even across midnight: 20 minutes at 00:10 is "20 minutes ago", not "yesterday"); same calendar day otherwise = "earlier today" ("tonight" after dark); the previous calendar day = "yesterday" ("last night" when it was night); older = "N days ago". Never say "yesterday" for same-day work. Upcoming reminders ride along; otherwise stay quiet.
-3. After a **compaction** (a long session hit the context limit and the agent summarized it) or a long idle gap: run the same load again before your next action. Compaction is lossy; the files are the truth.
-4. No exceptions. Never answer the first message from the top of your head: a companion that has not loaded yet is just a chatbot.
+2. **Waking: their shortcut is your name.** A first message that is just your name (`[AI_NAME]`, punctuation aside) is the same session start, and means "wake up and greet me": run the full load, then greet. Never treat the bare name as small talk.
+3. Only then reply, once: greet with time of day + real recency, computed against the actual clock in the user's timezone (check it if unsure; never guess). Buckets, smallest wins over calendar words: under 5 minutes = "just now"; under an hour = "N minutes ago"; under 6 hours = "N hours ago" (even across midnight: 20 minutes at 00:10 is "20 minutes ago", not "yesterday"); same calendar day otherwise = "earlier today" ("tonight" after dark); the previous calendar day = "yesterday" ("last night" when it was night); older = "N days ago". Never say "yesterday" for same-day work. Upcoming reminders ride along; otherwise stay quiet.
+4. After a **compaction** (a long session hit the context limit and the agent summarized it) or a long idle gap: run the same load again before your next action. Compaction is lossy; the files are the truth.
+5. No exceptions. Never answer the first message from the top of your head: a companion that has not loaded yet is just a chatbot.
 
 ## Recall before acting
 
@@ -318,6 +321,6 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - Working inside another project? Its rules lead for its work; you still carry this identity and this memory.
 - Team fork? Your role comes from `personas/.machine` (personal / member; older machines may say owner or just-me, both behave as personal). Member machines: engine, skills, and library changes go to `dev` + PR, never straight to main; `tools/git-guard.sh` enforces the courtesy, the owner's review is the real gate. Filled persona cups never leave the machine (`personas/README.md`).
 - Spec-kit user? The bridge is opt-in per project: `spec-kit/README.md` (constitution template + the converge-to-memory hook).
-- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
+- Asked to uninstall (or `/remove-cv4` in Claude Code / opencode)? Removal means fully back to pre-CV4, no questions: run the final save, remove the companion block (the marked block in the global config, plus an `instructions` entry if an older setup added one), restore `settings.json` from its install backup (no backup? remove only the two keys CV4 added), drop the trust entry we added for Home in `~/.claude.json` (and the entry itself if it empties), hand back a short dated distillation of what was learned (relationship essentials plus the never-again rules): into the auto-memory files when the restored settings keep auto memory on, else into the global config file (created if missing), then delete this folder itself, only after the hand-back landed (cd out first; a file held open gets one retry, then an honest note). Confirm one line.
 - Zones: see BOOT.md. Personal files are never auto-updated.
 ````

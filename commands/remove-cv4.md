@@ -18,14 +18,15 @@ Home: [HOME]. You are running the full uninstall. Full means full: everything en
    - an install backup exists (`~/.claude/settings.json.bak-*`)? Copy it back over the file.
    - no install backup? Remove only the keys CV4 added (`"attribution"`, `"autoMemoryEnabled"`; older setups may say `"includeCoAuthoredBy"`), keep everything else, and delete the file if nothing else remains.
 4. Legacy: if `instructions` in `~/.config/opencode/opencode.json` carries an entry that is exactly `[HOME]/AGENTS.md` (or its backslash variant), remove that entry and nothing else.
-5. Persona: delete `[HOME]/personas/.machine`.
-6. Hand back, prefilled: write a short dated distillation of what CV4 learned (the essentials from `[HOME]/main/relationship-memory.md` plus the never-again rules from `[HOME]/main/hotlist.md`, top five each) as a "From CV4 (<date>)" section, routed to match the restored setup:
+5. Trust: in `~/.claude.json`, delete `hasTrustDialogAccepted` from the `projects["<HOME>"]` entry that setup added (fresh `.bak-<YYYYMMDD>` copy of the file first); if that projects entry is then empty, remove the entry itself.
+6. Persona: delete `[HOME]/personas/.machine`.
+7. Hand back, prefilled: write a short dated distillation of what CV4 learned (the essentials from `[HOME]/main/relationship-memory.md` plus the never-again rules from `[HOME]/main/hotlist.md`, top five each) as a "From CV4 (<date>)" section, routed to match the restored setup:
    - auto memory is on after the restore (`autoMemoryEnabled` true or absent) and a memory file exists (`~/.claude/projects/*/memory/MEMORY.md`)? Append to the most recently modified one.
    - otherwise: append it to the global config file (`~/.claude/CLAUDE.md`, or the tool's global file) if it exists; create that file with just the section if it does not.
-7. Commands: delete the installed copies.
+8. Commands: delete the installed copies.
    - `~/.claude/commands/remove-cv4.md`
    - `~/.claude/commands/cv4-recap.md`
    - `~/.config/opencode/commands/remove-cv4.md`
    - `~/.config/opencode/commands/cv4-recap.md`
-8. The folder: delete [HOME] itself. Run it only after step 6 landed; if the hand-back did not land, STOP and say so instead of deleting. `cd ~` first (the session may be running inside it), then `rm -rf "[HOME]"` (Git Bash on Windows handles this; in Explorer, delete normally). If the delete fails because a file is held open (Windows), retry once; if it still resists, say plainly that the folder is the only thing left and it can go once the app closes.
-9. Confirm in one line: what was removed (blocks, settings restored, hand-back location, commands, folder), and that the machine is back to pre-CV4, prefilled.
+9. The folder: delete [HOME] itself. Run it only after step 7 landed; if the hand-back did not land, STOP and say so instead of deleting. `cd ~` first (the session may be running inside it), then `rm -rf "[HOME]"` (Git Bash on Windows handles this; in Explorer, delete normally). If the delete fails because a file is held open (Windows), retry once; if it still resists, say plainly that the folder is the only thing left and it can go once the app closes.
+10. Confirm in one line: what was removed (blocks, settings restored, trust entry, hand-back location, commands, folder), and that the machine is back to pre-CV4, prefilled. The wake word goes away with the block on its own; nothing else to clean.
