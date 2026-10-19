@@ -22,7 +22,7 @@ description: "MUST use when the user says 'save', 'save progress', 'save session
 3. **Skill usage** - tick `memory/skills.md` for the skills that fired this session (`uses` + `last`, one batch edit).
 4. **Reminders sweep** - completed out, stale pruned, new follow-ups into `memory/reminders.md` (caps: 200 open, 100 completed).
 5. **Library harvest** - if the session produced a reusable pattern, file it in `library/<section>/<slug>/<slug>.md`.
-6. **Rotation** - `main/current-session.md` keeps the last 3 sessions; the index stays small (hot 12 / warm 20; oldest folds into a cold summary).
+6. **Rotation** - `main/current-session.md` keeps the last 3 sessions; the index stays small (hot 12 / warm 20; oldest folds into a cold summary). Monthly (or when the folder grows heavy), move last month's `logs/current/` files into `logs/archived/YYYY-MM/`: cold storage, searchable, never rewritten.
 7. **Confirm** - one line: what was saved, where.
 
 ## Lite save (mid-session)
