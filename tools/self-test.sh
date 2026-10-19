@@ -149,6 +149,24 @@ if [ "$QUICK" = 0 ]; then
         *) fail "installer did not report the plain-file skip: $out4" ;;
       esac
       [ "$pz1" = "$pz2" ] && ok "personal zones untouched by the engine" || fail "engine touched a personal zone"
+
+      # --global: wires the harness folders that exist, refreshes what it owns, leaves real dirs
+      GH="$SB/fakehome"; mkdir -p "$GH/.claude" "$GH/.config/opencode"
+      outg="$(HOME="$GH" bash "$SCR/tools/install-skills.sh" --global --quiet 2>&1 || true)"
+      nglob="$(ls "$GH/.claude/skills" 2>/dev/null | wc -l)"
+      [ "$nglob" -gt 0 ] && ok "global wiring fills ~/.claude/skills ($nglob)" || fail "global wiring wrote nothing to ~/.claude/skills"
+      [ -d "$GH/.agents/skills" ] && fail "global wiring created a harness folder that did not exist" || ok "global wiring skips harnesses not installed"
+      if [ -e "$GH/.claude/skills/save" ]; then
+        if [ -L "$GH/.claude/skills/save" ]; then
+          ok "global copy is a symlink into Home"
+        else
+          [ -f "$GH/.claude/skills/save/.cv4-wired" ] && ok "global copy is marked for refresh" || fail "global copy has no owner marker"
+        fi
+        printf 'mine\n' > "$GH/.claude/skills/mine.md" 2>/dev/null || true
+        mkdir -p "$GH/.claude/skills/user-own"; printf 'x\n' > "$GH/.claude/skills/user-own/SKILL.md"
+        HOME="$GH" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        [ -f "$GH/.claude/skills/user-own/SKILL.md" ] && ok "re-wire leaves the user's own skill folder alone" || fail "re-wire deleted a user skill folder"
+      fi
     fi
 
     # scaffold restores a missing book key

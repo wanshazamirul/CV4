@@ -48,7 +48,7 @@ for f in tools/*.sh; do
 done
 
 # Re-wire the skills engine and top up the library shelf after updates (best effort; never fails the update).
-[ -f tools/install-skills.sh ] && bash tools/install-skills.sh --quiet >/dev/null 2>&1 || true
+[ -f tools/install-skills.sh ] && bash tools/install-skills.sh --global --quiet >/dev/null 2>&1 || true
 [ -f tools/scaffold-library.sh ] && bash tools/scaffold-library.sh --quiet >/dev/null 2>&1 || true
 
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")

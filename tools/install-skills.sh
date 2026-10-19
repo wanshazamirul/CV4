@@ -5,20 +5,27 @@
 # Works in both repos: CV3 (bank = plugins/cv3-skills/skills) and CV4 (bank = skills/).
 # Personal zone (my-skills/) is wired too and wins name overlaps.
 #
-# Usage: bash tools/install-skills.sh [--root DIR] [--check] [--copy] [--quiet]
+# Project targets always wire. --global also wires the harness's global skill folder
+# (~/.config/opencode/skills, ~/.claude/skills, ~/.agents/skills), but only where that
+# harness actually exists on the machine. CV4 boots with --global so its rituals (save,
+# recall, reminders) resolve from any folder, not just inside Home.
+#
+# Usage: bash tools/install-skills.sh [--root DIR] [--check] [--copy] [--global] [--quiet]
 #   --check   report wiring status only; change nothing
 #   --copy    copy instead of symlink (filesystems without symlinks, e.g. Windows without dev mode)
+#   --global  also wire the global per-harness skill folders
 #   --quiet   one-line summary
 set -u
 
-ROOT=""; CHECK=0; COPY=0; QUIET=0
+ROOT=""; CHECK=0; COPY=0; QUIET=0; GLOBAL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --root) ROOT="${2:-}"; shift ;;
     --check) CHECK=1 ;;
     --copy) COPY=1 ;;
+    --global) GLOBAL=1 ;;
     --quiet) QUIET=1 ;;
-    -h|--help) sed -n '2,11p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,19p' "$0"; exit 0 ;;
     *) echo "install-skills: unknown flag $1" >&2; exit 2 ;;
   esac
   shift
@@ -32,7 +39,17 @@ BANK=""
 [ -n "$BANK" ] || { echo "install-skills: no skill bank under $ROOT (expected skills/ or plugins/cv3-skills/skills)" >&2; exit 1; }
 PERSONAL=""; [ -d "$ROOT/my-skills" ] && PERSONAL="$ROOT/my-skills"
 
+# Project-local targets (relative to ROOT; relative symlinks).
 TARGETS=".opencode/skills .claude/skills .agents/skills"
+
+# Global targets: absolute, and only where that harness already lives on this machine.
+global_targets() {
+  [ "$GLOBAL" = 1 ] || return 0
+  [ -d "$HOME/.config/opencode" ] && printf '%s\n' "$HOME/.config/opencode/skills"
+  [ -d "$HOME/.claude" ] && printf '%s\n' "$HOME/.claude/skills"
+  [ -d "$HOME/.agents" ] && printf '%s\n' "$HOME/.agents/skills"
+  return 0
+}
 
 say() { [ "$QUIET" = 1 ] || echo "$@"; }
 count() { printf '%s' "$1" | grep -c '[^[:space:]]'; }
@@ -61,31 +78,55 @@ for d in "$ROOT/.opencode/skills"/*/; do
 "
 done
 
-wire_name() { # wire_name <src_dir> <name> <target_rel>
-  src="$1"; n="$2"; tdir="$ROOT/$3"
+# A wired copy we own carries .cv4-wired (written by the copy fallback). Refreshed on
+# every run; a real folder without the marker is the user's and is never touched.
+WIRE_MARK=".cv4-wired"
+
+wire_name() { # wire_name <src_dir> <name> <target_abs_dir> <absolute_symlink 0|1>
+  src="$1"; n="$2"; tdir="$3"; abs="${4:-0}"
   dest="$tdir/$n"
   if [ "$CHECK" = 1 ]; then
-    if [ -L "$dest" ]; then say "ok       $3/$n -> $(readlink "$dest")"
-    elif [ -d "$dest" ]; then say "present  $3/$n (real dir, left alone)"
-    else say "missing  $3/$n"; fi
+    if [ -L "$dest" ]; then say "ok       $tdir/$n -> $(readlink "$dest")"
+    elif [ -f "$dest/$WIRE_MARK" ]; then say "ok       $tdir/$n (wired copy)"
+    elif [ -d "$dest" ]; then say "present  $tdir/$n (real dir, left alone)"
+    else say "missing  $tdir/$n"; fi
     return 0
   fi
   mkdir -p "$tdir"
-  [ -e "$dest" ] && [ ! -L "$dest" ] && return 0   # never clobber real dirs
+  if [ -L "$dest" ]; then
+    rm -f "$dest"                                   # ours: refresh the link
+  elif [ -d "$dest" ]; then
+    [ -f "$dest/$WIRE_MARK" ] && rm -rf "$dest" || return 0   # never clobber real dirs
+  elif [ -e "$dest" ]; then
+    return 0
+  fi
   if [ "$COPY" = 1 ]; then
-    rm -rf "$dest"; cp -R "$src" "$dest"
+    cp -R "$src" "$dest" && : > "$dest/$WIRE_MARK"
+    return 0
+  fi
+  if [ "$abs" = 1 ]; then
+    ln -sfn "$src" "$dest" 2>/dev/null
   else
     rel="$(realpath --relative-to="$tdir" "$src" 2>/dev/null || printf '%s' "$src")"
-    ln -sfn "$rel" "$dest" 2>/dev/null || { rm -rf "$dest"; cp -R "$src" "$dest"; }
+    ln -sfn "$rel" "$dest" 2>/dev/null
   fi
+  # ln -s on Git Bash may "succeed" by copying; only a real symlink counts.
+  [ -L "$dest" ] || { rm -rf "$dest"; cp -R "$src" "$dest" && : > "$dest/$WIRE_MARK"; }
 }
 
 for t in $TARGETS; do
-  for n in $personal_names; do [ -n "$n" ] && wire_name "$PERSONAL/$n" "$n" "$t"; done
-  for n in $bank_names; do [ -n "$n" ] && wire_name "$BANK/$n" "$n" "$t"; done
+  for n in $personal_names; do [ -n "$n" ] && wire_name "$PERSONAL/$n" "$n" "$ROOT/$t" 0; done
+  for n in $bank_names; do [ -n "$n" ] && wire_name "$BANK/$n" "$n" "$ROOT/$t" 0; done
   if [ "$t" != ".opencode/skills" ]; then
-    for n in $real_names; do [ -n "$n" ] && wire_name "$ROOT/.opencode/skills/$n" "$n" "$t"; done
+    for n in $real_names; do [ -n "$n" ] && wire_name "$ROOT/.opencode/skills/$n" "$n" "$ROOT/$t" 0; done
   fi
+done
+
+GTARGETS="$(global_targets)"
+for t in $GTARGETS; do
+  for n in $personal_names; do [ -n "$n" ] && wire_name "$PERSONAL/$n" "$n" "$t" 1; done
+  for n in $bank_names; do [ -n "$n" ] && wire_name "$BANK/$n" "$n" "$t" 1; done
+  for n in $real_names; do [ -n "$n" ] && wire_name "$ROOT/.opencode/skills/$n" "$n" "$t" 1; done
 done
 
 # ---- router stamp: G0 + trigger table between SKILLS-ROUTER markers ----------
@@ -171,11 +212,12 @@ agent_files() { # present agent files that carry the manual (bare pointers never
 }
 
 if [ "$CHECK" = 1 ]; then
-  say "install-skills --check: root=$ROOT  bank=$(count "$bank_names")  personal=$(count "$personal_names")  dedicated=$(count "$real_names")"
+  say "install-skills --check: root=$ROOT  bank=$(count "$bank_names")  personal=$(count "$personal_names")  dedicated=$(count "$real_names")  global=$([ "$GLOBAL" = 1 ] && echo yes || echo no)"
   stamp_router
   exit 0
 fi
 
 say "install-skills: wired $(count "$bank_names") bank + $(count "$personal_names") personal + $(count "$real_names") dedicated skill(s)"
 say "    targets: $TARGETS   mode: $([ "$COPY" = 1 ] && echo copy || echo symlink-first)"
+[ -n "$GTARGETS" ] && say "    global:  $GTARGETS"
 stamp_router

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.2 - 2026-10-19
+- The rituals now work from any folder: the install wires the skill bank into the harness's global skill folder as well as the project folders (`install-skills.sh --global`). Before this, "save" only resolved when the session ran inside Home, which is exactly where sessions never run once the companion is installed globally.
+- Wired copies are refreshed on every update: a folder we own carries a `.cv4-wired` marker, so a re-wire upgrades it in place while a real folder you made yourself is still never touched.
+- Git Bash no longer silently falls back to copying: if `ln -s` does not produce a real symlink, the fallback copy is marked and refreshed next run instead of being mistaken for a folder of yours.
+- Uninstall is complete: `/remove-cv4` now un-wires the global skill folders too, deleting only folders that are symlinks into Home or carry the CV4 marker.
+
 ## 0.11.1 - 2026-10-19
 - The session load never waits on the network: the updater runs in the background while the memory files print right away, so the first message of a session is never blocked on a `git fetch`. A new version's one-line note surfaces at the top of the next session's load instead of stalling the current one.
 - Update notes tell the truth now: the "engine pulled" line appears only when the version actually changed (a quiet sync stays quiet), and offline exits silently as documented. The pending note lives in `logs/pending-update.tmp` (`*.tmp` is gitignored), so it never touches your git history.

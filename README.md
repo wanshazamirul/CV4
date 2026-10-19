@@ -198,7 +198,7 @@ CV4/
     ├── README.md                  the key: what each tool does
     ├── fts.py                     search index (stdlib only)
     ├── update.sh                  safe auto-update (session start)
-    ├── install-skills.sh          wire the bank into your agent (opencode · Claude · .agents)
+    ├── install-skills.sh          wire the bank into your agent (project + global skill folders)
     ├── session-load.sh            the session-start load in one call (files + background updater)
     ├── trust-home.sh              user-run: stop the repeating trust prompt (Claude Code)
     ├── scaffold-library.sh        restore any missing standard book

@@ -33,7 +33,7 @@ The interview (step 1, four questions) is the only ask moment in the whole setup
 1. Interview (once): four questions, one at a time (Step 1). No confirm round.
 2. Seed memory.
 3. Build the search index, then say hello: name + home base.
-4. Wire the skills engine: one quiet `bash tools/install-skills.sh` (bank into `.opencode/`, `.claude/`, `.agents/`); blocked or no bash means skip silently, the session-start updater wires it later.
+4. Wire the skills engine: one quiet `bash tools/install-skills.sh --global` (project targets `.opencode/`, `.claude/`, `.agents/` plus the harness's global skill folder, so the rituals resolve from any folder); blocked or no bash means skip silently, the session-start updater wires it later.
 5. The install (Step 5): runs in one pass with no questions: the machine role gets written, then the companion install (the manual into your tool's global config, so any folder and any session knows Home), the command, and clean Claude defaults (`"attribution": false`, `"autoMemoryEnabled": false`). Backups first, reversible.
 
 ## Step 0 - land in the right folder (once)
@@ -158,7 +158,7 @@ Greet them by name, then give them home base: memory lives in this folder (show 
 
 ## Step 4 - wire the skills engine
 
-One quiet attempt: `bash tools/install-skills.sh` (Windows: from Git Bash) wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`). Bash missing or blocked? Skip silently and move on; the session-start updater wires it later from inside this folder, and the bank stays usable from `skills/` meanwhile. Either way, say nothing about it.
+One quiet attempt: `bash tools/install-skills.sh --global` (Windows: from Git Bash) wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`) and into the harness's global skill folder where that tool exists, so a ritual like "save" resolves from any project folder, not only inside Home. Bash missing or blocked? Skip silently and move on; the session-start updater wires it later from inside this folder, and the bank stays usable from `skills/` meanwhile. Either way, say nothing about it.
 
 ## Step 5 - the install (no questions)
 
@@ -275,7 +275,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.11.1
+> Manual rev: 0.11.2
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
