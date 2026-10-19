@@ -22,7 +22,7 @@ else
 fi
 
 # Invariant: my-skills/ is deliberately NOT in this list. It is the user's zone: never fetched, never overwritten.
-TEMPLATE_PATHS="BOOT.md README.md skills tools commands versions .gitattributes .claude-plugin personas spec-kit"
+TEMPLATE_PATHS="BOOT.md README.md LICENSE skills tools commands versions .gitattributes .claude-plugin personas spec-kit"
 
 if [ "$SRC_REMOTE" = "upstream" ]; then
   git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$SRC_URL"

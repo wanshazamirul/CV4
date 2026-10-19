@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.5 - 2026-10-19
+- MIT license: the repo now carries a `LICENSE` file (template-owned, so forks and existing clones receive it on their next update), a README license section, and the plugin manifest declares it. Use it, fork it, ship it with your team; keep the copyright notice.
+
 ## 0.11.4 - 2026-10-19
 - The updater never commits your memory: it stages engine files only. Personal zones (`main/`, `memory/`, `logs/`, `library/`, `my-skills/`) are never auto-committed, so a member's notes cannot ride a push to the team fork.
 - New `tools/repair.sh`, run after every successful update: idempotent repairs for gaps earlier releases left behind (global skill wiring and hand-copied adoption, the `*.tmp` ignore rule, the legacy pending note, `logs/current`). A machine that skipped releases heals on its next boot; the repair contract is documented in `versions/README.md`.

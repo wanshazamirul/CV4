@@ -53,6 +53,7 @@ fi
 if [ -d "$ROOT/commands" ]; then
   [ -f "$ROOT/commands/remove-cv4.md" ] && ok "remove-cv4 command template present" || fail "commands/remove-cv4.md missing"
 fi
+[ -f "$ROOT/LICENSE" ] && ok "license present" || fail "LICENSE missing"
 
 # --- 2. skills engine: router current, wiring complete -----------------------
 if [ -f "$ROOT/tools/install-skills.sh" ]; then

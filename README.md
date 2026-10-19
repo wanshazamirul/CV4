@@ -125,6 +125,7 @@ Write side: today's work lands in `logs/` and the index at save time. Read side:
 CV4/
 ├── BOOT.md                      START HERE: orientation + interview + manual
 ├── README.md                    this map
+├── LICENSE                      MIT (use it, keep the notice)
 ├── versions/                    THE UPDATE BACKBONE
 │   ├── README.md                  the files + the update contract
 │   ├── VERSION                    the current release string
@@ -338,3 +339,9 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
 **Which skills actually get used?** `memory/skills.md`: save ticks the `uses` count and last-used date for whatever fired.
 
 **Why is there a `versions/` folder?** So the root stays clean and the update system has one obvious home for its state.
+
+**Can I use this commercially?** Yes: MIT. Build on it, ship it inside your company, no strings beyond keeping the copyright notice.
+
+## License
+
+MIT. Use it, fork it, ship it with your team; keep the copyright notice. See `LICENSE`.
