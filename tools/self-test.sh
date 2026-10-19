@@ -100,6 +100,9 @@ fi
 if [ -f "$ROOT/tools/trust-home.sh" ]; then
   bash -n "$ROOT/tools/trust-home.sh" && ok "trust-home syntax ok" || fail "trust-home syntax error"
 fi
+if [ -f "$ROOT/tools/repair.sh" ]; then
+  bash -n "$ROOT/tools/repair.sh" && ok "repair syntax ok" || fail "repair syntax error"
+fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------
 if [ "$QUICK" = 0 ]; then
@@ -202,6 +205,22 @@ if [ "$QUICK" = 0 ]; then
       n="$(grep -c "self-test: probe" "$SCR/memory/decisions.md" 2>/dev/null || true)"
       [ "$n" = 1 ] && ok "converge hook records once (idempotent)" || fail "converge hook recorded $n time(s), expected 1"
       grep -v "self-test: probe" "$SCR/memory/decisions.md" > "$SCR/memory/decisions.md.tmp" 2>/dev/null && mv "$SCR/memory/decisions.md.tmp" "$SCR/memory/decisions.md"
+    fi
+
+    # repair: heals install-state gaps from earlier releases, idempotently
+    if [ -f "$SCR/tools/repair.sh" ]; then
+      rm -rf "$SCR/logs/current"
+      printf 'legacy note\n' > "$SCR/logs/.pending-update"
+      : > "$SCR/logs/pending-update.tmp"
+      if grep -qx '\*\.tmp' "$SCR/.gitignore" 2>/dev/null; then
+        grep -v '^\*\.tmp$' "$SCR/.gitignore" > "$SCR/.gitignore.tmpx" && mv "$SCR/.gitignore.tmpx" "$SCR/.gitignore"
+      fi
+      mkdir -p "$SB/rhome/.claude"
+      HOME="$SB/rhome" bash "$SCR/tools/repair.sh" --quiet >/dev/null 2>&1
+      [ -d "$SCR/logs/current" ] && ok "repair restores logs/current" || fail "repair did not restore logs/current"
+      [ -f "$SCR/logs/.pending-update" ] && fail "repair left the legacy pending note" || ok "repair cleared the legacy pending note"
+      grep -qx '\*\.tmp' "$SCR/.gitignore" && ok "repair restores the *.tmp ignore rule" || fail "repair did not restore *.tmp"
+      [ -s "$SCR/logs/pending-update.tmp" ] && ok "repair folds the legacy note into the pending file" || fail "repair dropped the legacy note content"
     fi
 
     # git-guard: member blocked on engine paths, personal passes

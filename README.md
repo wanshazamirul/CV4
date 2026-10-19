@@ -200,6 +200,7 @@ CV4/
     ├── update.sh                  safe auto-update (session start)
     ├── install-skills.sh          wire the bank into your agent (project + global skill folders)
     ├── session-load.sh            the session-start load in one call (files + background updater)
+    ├── repair.sh                  post-update repairs: fixes gaps earlier versions left behind
     ├── trust-home.sh              user-run: stop the repeating trust prompt (Claude Code)
     ├── scaffold-library.sh        restore any missing standard book
     ├── git-guard.sh               team forks: members push to dev, not main
@@ -233,6 +234,7 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 - **Auto-updated**: `skills/` `tools/` `commands/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
 - **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` · the companion block in your global config
 - After an update, `update.sh` also re-wires the skills engine (project and global skill folders) and tops up any missing standard book.
+- A successful update also runs `tools/repair.sh`: idempotent repairs for gaps earlier versions left behind (skill wiring, ignore rules, legacy notes), so a machine that skipped releases heals on its next boot.
 - `my-skills/` is seeded once, then never touched: bring your skills and they stay yours.
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.
@@ -259,18 +261,18 @@ No `gh`? Run `gh auth login` once, or click Fork on the original repo page and t
 
 **Keeping the fork fresh (owner).** The original keeps improving: sync it into your fork whenever you like, `gh repo sync` from your fork clone or the "Sync fork" button on the repo page. If the sync asks about your customized README, keep your Start-here line.
 
-**How updates reach the team:** member sessions run `tools/update.sh`, which pulls engine files from the fork's main (not the original), so what the owner merges is exactly what the team gets.
+**How updates reach the team:** member sessions run `tools/update.sh`, which pulls engine files from the fork's main (not the original), so what the owner merges is exactly what the team gets. The updater commits engine files only; your memory, logs, and other personal zones are never auto-committed, so they cannot ride a push.
 
 ## Uninstalling
 
-Almost everything lives inside this folder. The machine-level traces: the companion block in your global config, an `instructions` entry if an older setup added one, and the agent settings applied at setup (if any). The repo itself never installs globally: memory stays a plain versioned folder; only the companion block goes into your global config. A clean exit is small:
+Almost everything lives inside this folder. The machine-level traces: the companion block in your global config, the skill folders wired into your tool's global skill directory, an `instructions` entry if an older setup added one, and the agent settings applied at setup (if any). Memory stays a plain folder; the traces outside it are bookkeeping, all reversible. A clean exit is small:
 
 1. **Remove the companion block** (if installed): delete the block between `<!-- CV4 companion: start -->` and `<!-- CV4 companion: end -->` in whichever global files have it (`~/.claude/CLAUDE.md`, `~/.config/opencode/AGENTS.md`, `~/.gemini/GEMINI.md`, `~/.codex/AGENTS.md`), plus a repo-file fallback if you chose it. An older setup may also have added an `instructions` entry in `~/.config/opencode/opencode.json`: remove it too.
 2. **Settings, restored automatically**: CV4 keeps one rolling backup per file (`<file>.cv4bak`, the true pre-CV4 original), never dated piles. Uninstall restores from the backups, verifies, then deletes what it consumed. If no backup exists, only the two keys CV4 added come out. The Home trust entry (if you set one with the script) is removed too when tooling allows. Want to keep the clean defaults instead? Re-add the keys after; uninstall goes back to pre-CV4 by definition.
 3. **Hand back, prefilled (work only)**: what CV4 learned about the work flows back automatically as a short dated distillation (working preferences + `main/hotlist.md` never-again rules; no persona, no personal details): into the auto-memory files when the restored settings keep auto memory on, else into the global config file.
-4. **Delete this folder.** Memory, logs, skills, and history all live inside it.
+4. **Delete this folder.** Memory, logs, skills, and history all live inside it. Then un-wire the global skill folders (`~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/`): delete the CV4 names there, and only the ones that are symlinks into this folder or carry the `.cv4-wired` marker. `/remove-cv4` does this for you.
 
-Want it handled for you? In a session inside this folder, say "uninstall", or run `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup, works from any folder). It saves the session first, then does the whole exit without asking: blocks off, settings restored, the trust entry dropped when possible, the launch shortcut removed, memory handed back, commands gone, backups cleaned up, and the folder deleted where the machine allows (folder deletes are gated on locked machines; then it hands you the exact one-liner instead of fighting). Nothing left to do. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
+Want it handled for you? In a session inside this folder, say "uninstall", or run `/remove-cv4` in Claude Code and opencode sessions (installed globally at setup, works from any folder). It saves the session first, then does the whole exit without asking: blocks off, settings restored, the trust entry dropped when possible, the launch shortcut removed, memory handed back, commands gone, global skills un-wired, backups cleaned up, and the folder deleted where the machine allows (folder deletes are gated on locked machines; then it hands you the exact one-liner instead of fighting). Nothing left to do. Just want to detach (keep the memory, stop the auto-load)? Do step 1 only.
 
 ## Roadmap
 
@@ -280,7 +282,7 @@ Want it handled for you? In a session inside this folder, say "uninstall", or ru
 
 ## FAQ
 
-**Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. `git log` is your full history. Nothing installs globally: the only trace outside the folder is the companion block in your tool's global config.
+**Where does my data live?** In this folder. Plain markdown. No server, no account, no lock-in. The only traces outside the folder are the companion block in your tool's global config and the skill links in your tool's global skill directory; `/remove-cv4` removes both. The engine's own updates are committed in your clone; your memory, logs, and other personal zones are never auto-committed, so they only travel if you choose to commit and push them.
 
 **Where do I start my agent from now on?** Anywhere: the setup installs the manual into your tool's global config, so every session in every folder wakes with memory. Declined the install (or your tool has no global config)? Then start inside this folder: the fallback file lives here; started elsewhere, your agent greets you like a stranger.
 
@@ -323,13 +325,13 @@ That hides the commit trailer, the PR attribution line, and the session link. Ol
           rules auto-reload; memory files reload via the manual's rule
 ```
 
-**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys are applied with the rest; the file is backed up first (`.bak-<date>`) and merged.
+**What about Claude Code's own auto memory?** Claude Code keeps a separate `MEMORY.md` of its own outside this repo (`autoMemoryEnabled` in `~/.claude/settings.json`, on by default). If you want one memory store, as this repo intends, set it to `false`: everything your companion learns then lives here, where you can read it, diff it, and back it up. Another agent with a built-in memory store? Same idea: switch it off, or make this repo the place the lessons land. At setup both keys are applied with the rest; the file is backed up first (one rolling `.cv4bak`) and merged.
 
 **What about Claude Code's recap (`/recap`)?** Keep it: recap covers the live session (a one-liner on demand, or the auto sum-up after you step away). The durable cross-session recap is CV4's session-start load itself: it reads the files and greets you with where things stand. No extra command needed.
 
 **I already have a CLAUDE.md or Claude memory with content. Does setup wipe it?** No. Every existing line stays; setup backs files up first and folds the personal notes it finds into `main/relationship-memory.md` under a dated import heading, and Claude's auto-memory files stay exactly where they are (setup only switches off new writes there). Uninstalling offers the reverse: a short dated, work-only hand-back (working preferences and rules; not personal details) into your old setup.
 
-**How do I know my setup is healthy?** Run `bash tools/self-test.sh`: it checks the layout and README keys, the engine wiring and router, the registries, then runs the integration pass (installer, scaffold, converge hook, git-guard) in a scratch copy. `RESULT: PASS` means the engine is sound; `--quick` skips the scratch pass.
+**How do I know my setup is healthy?** Run `bash tools/self-test.sh`: it checks the layout and README keys, the engine wiring and router, the registries, then runs the integration pass (installer incl. global wiring and copy adoption, repair, scaffold, converge hook, git-guard) in a scratch copy. `RESULT: PASS` means the engine is sound; `--quick` skips the scratch pass.
 
 **How do I add my own ritual?** Create `my-skills/<name>/SKILL.md` with a `name` and a `description` (the trigger), add a row to `my-skills/registry.md`. Sub-skills nest under their parent. That is the entire SDK.
 

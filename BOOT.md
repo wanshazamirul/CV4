@@ -245,7 +245,7 @@ Do not ask them to test anything now; the completion line already sent them to a
     main/  ·  memory/  ·  logs/  ·  library/  ·  my-skills/  ·  your installed block in the global config
 ```
 
-The load runs `tools/update.sh` in the background at every session start. Offline? It exits silently.
+The load runs `tools/update.sh` in the background at every session start. Offline? It exits silently. A successful update then runs `tools/repair.sh` once: idempotent repairs for gaps earlier versions left behind (skill wiring included), so a machine that skipped releases heals on its next boot.
 
 Windows first aid: if it throws `$'\r'` errors, that checkout has CRLF line endings. Heal once with `sed -i 's/\r$//' tools/update.sh`, then re-run. Newer clones ship LF; `.gitattributes` keeps it that way.
 
@@ -275,7 +275,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.11.3
+> Manual rev: 0.11.4
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.

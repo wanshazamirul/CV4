@@ -42,17 +42,27 @@ if [ ! -d my-skills ]; then
 fi
 
 # Normalize shell scripts to LF: Windows checkouts can add \r and bash chokes on it.
+# Keep the executable bit: the temp-file write would drop it (mode 755 -> 644).
 for f in tools/*.sh; do
   [ -f "$f" ] || continue
+  exec_bit=0; [ -x "$f" ] && exec_bit=1
   tr -d '\r' < "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+  [ "$exec_bit" = 1 ] && chmod +x "$f" 2>/dev/null || true
 done
 
-# Re-wire the skills engine and top up the library shelf after updates (best effort; never fails the update).
-[ -f tools/install-skills.sh ] && bash tools/install-skills.sh --global --quiet >/dev/null 2>&1 || true
+# Re-wire the engine, repair gaps earlier versions left behind (skills wiring included),
+# and top up the library shelf after updates (best effort; never fails the update).
+if [ -f tools/repair.sh ]; then
+  bash tools/repair.sh --quiet >/dev/null 2>&1 || true
+elif [ -f tools/install-skills.sh ]; then
+  bash tools/install-skills.sh --global --quiet >/dev/null 2>&1 || true
+fi
 [ -f tools/scaffold-library.sh ] && bash tools/scaffold-library.sh --quiet >/dev/null 2>&1 || true
 
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")
-git add -A >/dev/null 2>&1
+# Stage engine-owned paths only: personal zones (main/ memory/ logs/ library/ my-skills/)
+# are never auto-committed, so a member's memory can never ride a push to the team fork.
+git add -A -- $TEMPLATE_PATHS .gitignore >/dev/null 2>&1
 git commit -q -m "engine update: v$NEWV ($BEHIND commit(s) from $SRC_REMOTE)" >/dev/null 2>&1 || true
 # Speak only when the version actually changed: the count above stays above zero once
 # a local engine commit exists (it never joins the upstream ancestry), so the count

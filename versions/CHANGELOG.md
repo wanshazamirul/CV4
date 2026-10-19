@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.4 - 2026-10-19
+- The updater never commits your memory: it stages engine files only. Personal zones (`main/`, `memory/`, `logs/`, `library/`, `my-skills/`) are never auto-committed, so a member's notes cannot ride a push to the team fork.
+- New `tools/repair.sh`, run after every successful update: idempotent repairs for gaps earlier releases left behind (global skill wiring and hand-copied adoption, the `*.tmp` ignore rule, the legacy pending note, `logs/current`). A machine that skipped releases heals on its next boot; the repair contract is documented in `versions/README.md`.
+- Docs tell the truth about global installs: the manual uninstall steps and the data FAQ now include the global skill folders, and the backup FAQ matches the rolling `.cv4bak` rule.
+- The updater keeps `tools/*.sh` executable: the LF normalization writes through a temp file, which used to drop the exec bit on every update.
+
 ## 0.11.3 - 2026-10-19
 - Hand-copied installs heal themselves: a real skill folder whose `SKILL.md` is byte-identical to the bank's is treated as an unmarked copy of ours, replaced with a properly wired (marked or linked) version, and refreshed from then on. A copy you edited yourself is never touched. This is the state an earlier manual fix left on some machines.
 - The docs catch up with the global wiring: `README.md`, `tools/README.md`, `skills/README.md`, and the manual now say the rituals are wired into the harness's project and global skill folders, and the uninstall un-wires both.
