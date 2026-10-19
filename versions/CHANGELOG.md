@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.11.6 - 2026-10-19
+- The save ritual now performs the monthly log rotation its protocol documents: `logs/current/` moves to `logs/archived/YYYY-MM/` when the month turns (or the folder grows heavy). Documentation and ritual say the same thing now.
+
 ## 0.11.5 - 2026-10-19
 - MIT license: the repo now carries a `LICENSE` file (template-owned, so forks and existing clones receive it on their next update), a README license section, and the plugin manifest declares it. Use it, fork it, ship it with your team; keep the copyright notice.
 
