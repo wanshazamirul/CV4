@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.1 - 2026-10-19
+- The session load never waits on the network: the updater runs in the background while the memory files print right away, so the first message of a session is never blocked on a `git fetch`. A new version's one-line note surfaces at the top of the next session's load instead of stalling the current one.
+- Update notes tell the truth now: the "engine pulled" line appears only when the version actually changed (a quiet sync stays quiet), and offline exits silently as documented. The pending note lives in `logs/pending-update.tmp` (`*.tmp` is gitignored), so it never touches your git history.
+- Windows scar for the hotlist: `TZ=<named zone> date` in Git Bash silently returns GMT (no zoneinfo database there); plain `date` is local time.
+
 ## 0.11.0 - 2026-10-18
 - The install is write-first: every core step is a plain file write through the agent's own write tool (companion block, command, settings, shortcut). The scripted extras - index build, skills wiring - are one quiet attempt that skips silently, instantly, and without notes where bash, Python, or the machine says no. No retries, no workarounds, no waiting on a shell.
 - The launch shortcut is the machine probe: the block landing means a personal machine, the machine refusing means a company machine. Either way it is silent - no fallback line, no "typing the name inside the session does the same job".

@@ -3,6 +3,8 @@
 # a clone of the canonical repo pulls from the canonical repo; a clone of a team fork
 # pulls from that fork's own main (the owner merges upstream into the fork; members
 # receive it here). CV4_UPSTREAM overrides everything.
+# Background-friendly: quiet when there is nothing to do; speaks only when the version
+# actually changes (the note rides to the next session's load). Offline is silent.
 # Safe by design: never touches personal zones (main/ memory/ logs/ library/ my-skills/).
 set -u
 cd "$(dirname "$0")/.." || exit 0
@@ -25,10 +27,12 @@ TEMPLATE_PATHS="BOOT.md README.md skills tools commands versions .gitattributes 
 if [ "$SRC_REMOTE" = "upstream" ]; then
   git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$SRC_URL"
 fi
-git fetch --quiet "$SRC_REMOTE" main 2>/dev/null || { echo "update: offline, skipped"; exit 0; }
+git fetch --quiet "$SRC_REMOTE" main 2>/dev/null || exit 0
 
 BEHIND=$(git rev-list --count "HEAD..$SRC_REMOTE/main" 2>/dev/null || echo 0)
 if [ "$BEHIND" = "0" ]; then exit 0; fi
+
+OLDV=$(cat versions/VERSION 2>/dev/null || echo "?")
 
 git checkout --quiet "$SRC_REMOTE/main" -- $TEMPLATE_PATHS 2>/dev/null
 
@@ -50,4 +54,9 @@ done
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")
 git add -A >/dev/null 2>&1
 git commit -q -m "engine update: v$NEWV ($BEHIND commit(s) from $SRC_REMOTE)" >/dev/null 2>&1 || true
-echo "update: engine pulled to v$NEWV ($BEHIND commit(s) from $SRC_REMOTE). Mention it to the user in one line."
+# Speak only when the version actually changed: the count above stays above zero once
+# a local engine commit exists (it never joins the upstream ancestry), so the count
+# alone cannot gate the message. Quiet syncs stay quiet.
+if [ "$OLDV" != "$NEWV" ]; then
+  echo "update: engine pulled to v$NEWV ($BEHIND commit(s) from $SRC_REMOTE). Mention it to the user in one line."
+fi

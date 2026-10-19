@@ -199,7 +199,7 @@ CV4/
     ├── fts.py                     search index (stdlib only)
     ├── update.sh                  safe auto-update (session start)
     ├── install-skills.sh          wire the bank into your agent (opencode · Claude · .agents)
-    ├── session-load.sh            the session-start load in one call (updater + files)
+    ├── session-load.sh            the session-start load in one call (files + background updater)
     ├── trust-home.sh              user-run: stop the repeating trust prompt (Claude Code)
     ├── scaffold-library.sh        restore any missing standard book
     ├── git-guard.sh               team forks: members push to dev, not main

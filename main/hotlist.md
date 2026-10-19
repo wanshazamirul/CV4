@@ -7,6 +7,7 @@
 - Save at goodbye is always full. Never lite.
 - No em-dashes in anything written.
 - Append-only for logs and decisions.
+- Windows Git Bash: `TZ=<named zone> date` -> silently GMT; plain `date` is local time.
 
 ## Personal scars (yours go here)
 - (when something bites twice: `trigger -> action`)
