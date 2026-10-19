@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.3 - 2026-10-19
+- Hand-copied installs heal themselves: a real skill folder whose `SKILL.md` is byte-identical to the bank's is treated as an unmarked copy of ours, replaced with a properly wired (marked or linked) version, and refreshed from then on. A copy you edited yourself is never touched. This is the state an earlier manual fix left on some machines.
+- The docs catch up with the global wiring: `README.md`, `tools/README.md`, `skills/README.md`, and the manual now say the rituals are wired into the harness's project and global skill folders, and the uninstall un-wires both.
+
 ## 0.11.2 - 2026-10-19
 - The rituals now work from any folder: the install wires the skill bank into the harness's global skill folder as well as the project folders (`install-skills.sh --global`). Before this, "save" only resolved when the session ran inside Home, which is exactly where sessions never run once the companion is installed globally.
 - Wired copies are refreshed on every update: a folder we own carries a `.cv4-wired` marker, so a re-wire upgrades it in place while a real folder you made yourself is still never touched.

@@ -96,7 +96,13 @@ wire_name() { # wire_name <src_dir> <name> <target_abs_dir> <absolute_symlink 0|
   if [ -L "$dest" ]; then
     rm -f "$dest"                                   # ours: refresh the link
   elif [ -d "$dest" ]; then
-    [ -f "$dest/$WIRE_MARK" ] && rm -rf "$dest" || return 0   # never clobber real dirs
+    if [ -f "$dest/$WIRE_MARK" ]; then
+      rm -rf "$dest"                                # ours: refresh the copy
+    elif [ -f "$dest/SKILL.md" ] && cmp -s "$src/SKILL.md" "$dest/SKILL.md"; then
+      rm -rf "$dest"                                # an unmarked copy of ours (hand-copied install): adopt it
+    else
+      return 0                                      # the user's own folder: never clobber
+    fi
   elif [ -e "$dest" ]; then
     return 0
   fi

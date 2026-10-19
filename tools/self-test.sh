@@ -166,6 +166,17 @@ if [ "$QUICK" = 0 ]; then
         mkdir -p "$GH/.claude/skills/user-own"; printf 'x\n' > "$GH/.claude/skills/user-own/SKILL.md"
         HOME="$GH" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
         [ -f "$GH/.claude/skills/user-own/SKILL.md" ] && ok "re-wire leaves the user's own skill folder alone" || fail "re-wire deleted a user skill folder"
+        # unmarked hand-copied install (the work-pc case): adopted and refreshed, not left stale
+        GH2="$SB/fakehome2"; mkdir -p "$GH2/.claude/skills/save"
+        cp "$SCR/skills/save/SKILL.md" "$GH2/.claude/skills/save/SKILL.md"
+        printf 'stale extra\n' > "$GH2/.claude/skills/save/extra.txt"
+        HOME="$GH2" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        { [ -L "$GH2/.claude/skills/save" ] || [ -f "$GH2/.claude/skills/save/.cv4-wired" ]; } && ok "unmarked copy of ours is adopted and re-wired" || fail "hand-copied skill was left stale"
+        [ -f "$GH2/.claude/skills/save/extra.txt" ] && fail "adopted copy kept stale extra files" || ok "adopted copy is clean"
+        GH3="$SB/fakehome3"; mkdir -p "$GH3/.claude/skills/save"
+        printf 'my own variant\n' > "$GH3/.claude/skills/save/SKILL.md"
+        HOME="$GH3" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        grep -q "my own variant" "$GH3/.claude/skills/save/SKILL.md" && ok "edited copy of ours is respected, never clobbered" || fail "installer clobbered an edited user skill"
       fi
     fi
 

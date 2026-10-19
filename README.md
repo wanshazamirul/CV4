@@ -232,7 +232,7 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 
 - **Auto-updated**: `skills/` `tools/` `commands/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
 - **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` · the companion block in your global config
-- After an update, `update.sh` also re-wires the skills engine and tops up any missing standard book.
+- After an update, `update.sh` also re-wires the skills engine (project and global skill folders) and tops up any missing standard book.
 - `my-skills/` is seeded once, then never touched: bring your skills and they stay yours.
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.
