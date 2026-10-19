@@ -1,6 +1,7 @@
 #!/bin/bash
-# One-shot session load: surfaces the last update's note, fires the updater in the
-# background, then prints every file the manual wants at session start in one tool call.
+# One-shot session load: surfaces the last update's note, fires the engine updater and
+# any registered external skill updaters in the background, then prints every file the
+# manual wants at session start in one tool call.
 # Usage: bash tools/session-load.sh [--no-update]
 set -u
 cd "$(dirname "$0")/.." || exit 0
@@ -19,6 +20,15 @@ if [ "${1:-}" != "--no-update" ] && [ -f tools/update.sh ]; then
     nohup bash tools/update.sh > "$PENDING" 2>/dev/null &
   else
     bash tools/update.sh > "$PENDING" 2>/dev/null &
+  fi
+fi
+
+# Fire external skill updates in the background (silent; registered in tools/skill-sources.txt).
+if [ "${1:-}" != "--no-update" ] && [ -f tools/update-skills.sh ]; then
+  if command -v nohup >/dev/null 2>&1; then
+    nohup bash tools/update-skills.sh >/dev/null 2>&1 &
+  else
+    bash tools/update-skills.sh >/dev/null 2>&1 &
   fi
 fi
 
