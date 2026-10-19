@@ -53,6 +53,7 @@ fi
 if [ -d "$ROOT/commands" ]; then
   [ -f "$ROOT/commands/remove-cv4.md" ] && ok "remove-cv4 command template present" || fail "commands/remove-cv4.md missing"
 fi
+[ -f "$ROOT/LICENSE" ] && ok "license present" || fail "LICENSE missing"
 
 # --- 2. skills engine: router current, wiring complete -----------------------
 if [ -f "$ROOT/tools/install-skills.sh" ]; then
@@ -99,6 +100,9 @@ if [ -f "$ROOT/spec-kit/converge-to-memory.sh" ]; then
 fi
 if [ -f "$ROOT/tools/trust-home.sh" ]; then
   bash -n "$ROOT/tools/trust-home.sh" && ok "trust-home syntax ok" || fail "trust-home syntax error"
+fi
+if [ -f "$ROOT/tools/repair.sh" ]; then
+  bash -n "$ROOT/tools/repair.sh" && ok "repair syntax ok" || fail "repair syntax error"
 fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------
@@ -149,6 +153,35 @@ if [ "$QUICK" = 0 ]; then
         *) fail "installer did not report the plain-file skip: $out4" ;;
       esac
       [ "$pz1" = "$pz2" ] && ok "personal zones untouched by the engine" || fail "engine touched a personal zone"
+
+      # --global: wires the harness folders that exist, refreshes what it owns, leaves real dirs
+      GH="$SB/fakehome"; mkdir -p "$GH/.claude" "$GH/.config/opencode"
+      outg="$(HOME="$GH" bash "$SCR/tools/install-skills.sh" --global --quiet 2>&1 || true)"
+      nglob="$(ls "$GH/.claude/skills" 2>/dev/null | wc -l)"
+      [ "$nglob" -gt 0 ] && ok "global wiring fills ~/.claude/skills ($nglob)" || fail "global wiring wrote nothing to ~/.claude/skills"
+      [ -d "$GH/.agents/skills" ] && fail "global wiring created a harness folder that did not exist" || ok "global wiring skips harnesses not installed"
+      if [ -e "$GH/.claude/skills/save" ]; then
+        if [ -L "$GH/.claude/skills/save" ]; then
+          ok "global copy is a symlink into Home"
+        else
+          [ -f "$GH/.claude/skills/save/.cv4-wired" ] && ok "global copy is marked for refresh" || fail "global copy has no owner marker"
+        fi
+        printf 'mine\n' > "$GH/.claude/skills/mine.md" 2>/dev/null || true
+        mkdir -p "$GH/.claude/skills/user-own"; printf 'x\n' > "$GH/.claude/skills/user-own/SKILL.md"
+        HOME="$GH" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        [ -f "$GH/.claude/skills/user-own/SKILL.md" ] && ok "re-wire leaves the user's own skill folder alone" || fail "re-wire deleted a user skill folder"
+        # unmarked hand-copied install (the work-pc case): adopted and refreshed, not left stale
+        GH2="$SB/fakehome2"; mkdir -p "$GH2/.claude/skills/save"
+        cp "$SCR/skills/save/SKILL.md" "$GH2/.claude/skills/save/SKILL.md"
+        printf 'stale extra\n' > "$GH2/.claude/skills/save/extra.txt"
+        HOME="$GH2" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        { [ -L "$GH2/.claude/skills/save" ] || [ -f "$GH2/.claude/skills/save/.cv4-wired" ]; } && ok "unmarked copy of ours is adopted and re-wired" || fail "hand-copied skill was left stale"
+        [ -f "$GH2/.claude/skills/save/extra.txt" ] && fail "adopted copy kept stale extra files" || ok "adopted copy is clean"
+        GH3="$SB/fakehome3"; mkdir -p "$GH3/.claude/skills/save"
+        printf 'my own variant\n' > "$GH3/.claude/skills/save/SKILL.md"
+        HOME="$GH3" bash "$SCR/tools/install-skills.sh" --global --quiet >/dev/null 2>&1 || true
+        grep -q "my own variant" "$GH3/.claude/skills/save/SKILL.md" && ok "edited copy of ours is respected, never clobbered" || fail "installer clobbered an edited user skill"
+      fi
     fi
 
     # scaffold restores a missing book key
@@ -173,6 +206,22 @@ if [ "$QUICK" = 0 ]; then
       n="$(grep -c "self-test: probe" "$SCR/memory/decisions.md" 2>/dev/null || true)"
       [ "$n" = 1 ] && ok "converge hook records once (idempotent)" || fail "converge hook recorded $n time(s), expected 1"
       grep -v "self-test: probe" "$SCR/memory/decisions.md" > "$SCR/memory/decisions.md.tmp" 2>/dev/null && mv "$SCR/memory/decisions.md.tmp" "$SCR/memory/decisions.md"
+    fi
+
+    # repair: heals install-state gaps from earlier releases, idempotently
+    if [ -f "$SCR/tools/repair.sh" ]; then
+      rm -rf "$SCR/logs/current"
+      printf 'legacy note\n' > "$SCR/logs/.pending-update"
+      : > "$SCR/logs/pending-update.tmp"
+      if grep -qx '\*\.tmp' "$SCR/.gitignore" 2>/dev/null; then
+        grep -v '^\*\.tmp$' "$SCR/.gitignore" > "$SCR/.gitignore.tmpx" && mv "$SCR/.gitignore.tmpx" "$SCR/.gitignore"
+      fi
+      mkdir -p "$SB/rhome/.claude"
+      HOME="$SB/rhome" bash "$SCR/tools/repair.sh" --quiet >/dev/null 2>&1
+      [ -d "$SCR/logs/current" ] && ok "repair restores logs/current" || fail "repair did not restore logs/current"
+      [ -f "$SCR/logs/.pending-update" ] && fail "repair left the legacy pending note" || ok "repair cleared the legacy pending note"
+      grep -qx '\*\.tmp' "$SCR/.gitignore" && ok "repair restores the *.tmp ignore rule" || fail "repair did not restore *.tmp"
+      [ -s "$SCR/logs/pending-update.tmp" ] && ok "repair folds the legacy note into the pending file" || fail "repair dropped the legacy note content"
     fi
 
     # git-guard: member blocked on engine paths, personal passes

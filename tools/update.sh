@@ -3,6 +3,8 @@
 # a clone of the canonical repo pulls from the canonical repo; a clone of a team fork
 # pulls from that fork's own main (the owner merges upstream into the fork; members
 # receive it here). CV4_UPSTREAM overrides everything.
+# Background-friendly: quiet when there is nothing to do; speaks only when the version
+# actually changes (the note rides to the next session's load). Offline is silent.
 # Safe by design: never touches personal zones (main/ memory/ logs/ library/ my-skills/).
 set -u
 cd "$(dirname "$0")/.." || exit 0
@@ -20,15 +22,20 @@ else
 fi
 
 # Invariant: my-skills/ is deliberately NOT in this list. It is the user's zone: never fetched, never overwritten.
-TEMPLATE_PATHS="BOOT.md README.md skills tools commands versions .gitattributes .claude-plugin personas spec-kit"
+TEMPLATE_PATHS="BOOT.md README.md LICENSE skills tools commands versions .gitattributes .claude-plugin personas spec-kit"
+# Note: tools/skill-sources.txt ships as a template (safe default list); users may add
+# their own entries. update.sh won't overwrite personal-zone files, but skill-sources.txt
+# lives in tools/ (engine zone) so upstream additions merge in on the next pull.
 
 if [ "$SRC_REMOTE" = "upstream" ]; then
   git remote get-url upstream >/dev/null 2>&1 || git remote add upstream "$SRC_URL"
 fi
-git fetch --quiet "$SRC_REMOTE" main 2>/dev/null || { echo "update: offline, skipped"; exit 0; }
+git fetch --quiet "$SRC_REMOTE" main 2>/dev/null || exit 0
 
 BEHIND=$(git rev-list --count "HEAD..$SRC_REMOTE/main" 2>/dev/null || echo 0)
 if [ "$BEHIND" = "0" ]; then exit 0; fi
+
+OLDV=$(cat versions/VERSION 2>/dev/null || echo "?")
 
 git checkout --quiet "$SRC_REMOTE/main" -- $TEMPLATE_PATHS 2>/dev/null
 
@@ -38,16 +45,31 @@ if [ ! -d my-skills ]; then
 fi
 
 # Normalize shell scripts to LF: Windows checkouts can add \r and bash chokes on it.
+# Keep the executable bit: the temp-file write would drop it (mode 755 -> 644).
 for f in tools/*.sh; do
   [ -f "$f" ] || continue
+  exec_bit=0; [ -x "$f" ] && exec_bit=1
   tr -d '\r' < "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+  [ "$exec_bit" = 1 ] && chmod +x "$f" 2>/dev/null || true
 done
 
-# Re-wire the skills engine and top up the library shelf after updates (best effort; never fails the update).
-[ -f tools/install-skills.sh ] && bash tools/install-skills.sh --quiet >/dev/null 2>&1 || true
+# Re-wire the engine, repair gaps earlier versions left behind (skills wiring included),
+# and top up the library shelf after updates (best effort; never fails the update).
+if [ -f tools/repair.sh ]; then
+  bash tools/repair.sh --quiet >/dev/null 2>&1 || true
+elif [ -f tools/install-skills.sh ]; then
+  bash tools/install-skills.sh --global --quiet >/dev/null 2>&1 || true
+fi
 [ -f tools/scaffold-library.sh ] && bash tools/scaffold-library.sh --quiet >/dev/null 2>&1 || true
 
 NEWV=$(cat versions/VERSION 2>/dev/null || echo "?")
-git add -A >/dev/null 2>&1
+# Stage engine-owned paths only: personal zones (main/ memory/ logs/ library/ my-skills/)
+# are never auto-committed, so a member's memory can never ride a push to the team fork.
+git add -A -- $TEMPLATE_PATHS .gitignore >/dev/null 2>&1
 git commit -q -m "engine update: v$NEWV ($BEHIND commit(s) from $SRC_REMOTE)" >/dev/null 2>&1 || true
-echo "update: engine pulled to v$NEWV ($BEHIND commit(s) from $SRC_REMOTE). Mention it to the user in one line."
+# Speak only when the version actually changed: the count above stays above zero once
+# a local engine commit exists (it never joins the upstream ancestry), so the count
+# alone cannot gate the message. Quiet syncs stay quiet.
+if [ "$OLDV" != "$NEWV" ]; then
+  echo "update: engine pulled to v$NEWV ($BEHIND commit(s) from $SRC_REMOTE). Mention it to the user in one line."
+fi

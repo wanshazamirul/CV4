@@ -1,0 +1,8 @@
+# External skill sources. One entry per line.
+# Format: type  name
+#   npm   name   -> runs: npx <name> update --providers=claude --scope=global
+#   git   url    -> runs: git pull in the cloned skill directory (not yet supported)
+# Blank lines and lines starting with # are ignored.
+# Add a source here and it will be kept up to date every session.
+
+npm impeccable

@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.11.5 - 2026-10-19
+- MIT license: the repo now carries a `LICENSE` file (template-owned, so forks and existing clones receive it on their next update), a README license section, and the plugin manifest declares it. Use it, fork it, ship it with your team; keep the copyright notice.
+
+## 0.11.4 - 2026-10-19
+- The updater never commits your memory: it stages engine files only. Personal zones (`main/`, `memory/`, `logs/`, `library/`, `my-skills/`) are never auto-committed, so a member's notes cannot ride a push to the team fork.
+- New `tools/repair.sh`, run after every successful update: idempotent repairs for gaps earlier releases left behind (global skill wiring and hand-copied adoption, the `*.tmp` ignore rule, the legacy pending note, `logs/current`). A machine that skipped releases heals on its next boot; the repair contract is documented in `versions/README.md`.
+- Docs tell the truth about global installs: the manual uninstall steps and the data FAQ now include the global skill folders, and the backup FAQ matches the rolling `.cv4bak` rule.
+- The updater keeps `tools/*.sh` executable: the LF normalization writes through a temp file, which used to drop the exec bit on every update.
+
+## 0.11.3 - 2026-10-19
+- Hand-copied installs heal themselves: a real skill folder whose `SKILL.md` is byte-identical to the bank's is treated as an unmarked copy of ours, replaced with a properly wired (marked or linked) version, and refreshed from then on. A copy you edited yourself is never touched. This is the state an earlier manual fix left on some machines.
+- The docs catch up with the global wiring: `README.md`, `tools/README.md`, `skills/README.md`, and the manual now say the rituals are wired into the harness's project and global skill folders, and the uninstall un-wires both.
+
+## 0.11.2 - 2026-10-19
+- The rituals now work from any folder: the install wires the skill bank into the harness's global skill folder as well as the project folders (`install-skills.sh --global`). Before this, "save" only resolved when the session ran inside Home, which is exactly where sessions never run once the companion is installed globally.
+- Wired copies are refreshed on every update: a folder we own carries a `.cv4-wired` marker, so a re-wire upgrades it in place while a real folder you made yourself is still never touched.
+- Git Bash no longer silently falls back to copying: if `ln -s` does not produce a real symlink, the fallback copy is marked and refreshed next run instead of being mistaken for a folder of yours.
+- Uninstall is complete: `/remove-cv4` now un-wires the global skill folders too, deleting only folders that are symlinks into Home or carry the CV4 marker.
+
+## 0.11.1 - 2026-10-19
+- The session load never waits on the network: the updater runs in the background while the memory files print right away, so the first message of a session is never blocked on a `git fetch`. A new version's one-line note surfaces at the top of the next session's load instead of stalling the current one.
+- Update notes tell the truth now: the "engine pulled" line appears only when the version actually changed (a quiet sync stays quiet), and offline exits silently as documented. The pending note lives in `logs/pending-update.tmp` (`*.tmp` is gitignored), so it never touches your git history.
+- Windows scar for the hotlist: `TZ=<named zone> date` in Git Bash silently returns GMT (no zoneinfo database there); plain `date` is local time.
+
 ## 0.11.0 - 2026-10-18
 - The install is write-first: every core step is a plain file write through the agent's own write tool (companion block, command, settings, shortcut). The scripted extras - index build, skills wiring - are one quiet attempt that skips silently, instantly, and without notes where bash, Python, or the machine says no. No retries, no workarounds, no waiting on a shell.
 - The launch shortcut is the machine probe: the block landing means a personal machine, the machine refusing means a company machine. Either way it is silent - no fallback line, no "typing the name inside the session does the same job".

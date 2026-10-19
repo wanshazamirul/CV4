@@ -27,7 +27,9 @@ A skill is a small file with a **trigger** (its `description`) and a **procedure
 
 ## Wiring (once per machine)
 
-`bash tools/install-skills.sh` links every skill into each harness's native discovery path (opencode `.opencode/skills/`, Claude Code `.claude/skills/`, generic `.agents/skills/`) and stamps the router block (G0 + trigger table) into `AGENTS.md`. Re-run after engine updates; `--check` reports state. No symlinks on your filesystem? Add `--copy`.
+`bash tools/install-skills.sh --global` links every skill into each harness's native discovery paths: the project folders (opencode `.opencode/skills/`, Claude Code `.claude/skills/`, generic `.agents/skills/`) and the global ones (`~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/`), wiring only the harnesses actually installed on the machine. The global wiring is the important half: the companion lives in your global config, so sessions start in any folder, and a ritual like `save` must resolve there too. It also stamps the router block (G0 + trigger table) into `AGENTS.md`.
+
+The session-start updater runs this with `--global` after every update, so the wiring never goes stale. Wired copies carry a `.cv4-wired` marker and are refreshed in place; a real folder you made yourself is never touched. No symlinks on your filesystem (Windows without dev mode)? Add `--copy`, and the marked copies refresh the same way. `--check` reports state.
 
 ## Adding a skill
 
