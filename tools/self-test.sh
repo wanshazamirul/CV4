@@ -118,6 +118,23 @@ fi
 if [ -f "$ROOT/tools/check-personal.sh" ]; then
   bash -n "$ROOT/tools/check-personal.sh" && ok "check-personal syntax ok" || fail "check-personal syntax error"
 fi
+if [ -f "$ROOT/tools/hooks/dispatch.sh" ]; then
+  bash -n "$ROOT/tools/hooks/dispatch.sh" && ok "hook dispatcher syntax ok" || fail "hook dispatcher syntax error"
+fi
+if [ -f "$ROOT/tools/hooks/install.sh" ]; then
+  bash -n "$ROOT/tools/hooks/install.sh" && ok "hook installer syntax ok" || fail "hook installer syntax error"
+fi
+if [ -f "$ROOT/tools/hooks/doctor.sh" ]; then
+  bash -n "$ROOT/tools/hooks/doctor.sh" && ok "hook doctor syntax ok" || fail "hook doctor syntax error"
+fi
+if [ -f "$ROOT/tools/hooks/test.sh" ]; then
+  bash -n "$ROOT/tools/hooks/test.sh" && ok "hook test syntax ok" || fail "hook test syntax error"
+  if bash "$ROOT/tools/hooks/test.sh" --quiet >/dev/null 2>&1; then
+    ok "hook fixtures pass"
+  else
+    fail "hook fixtures failed (run: bash tools/hooks/test.sh)"
+  fi
+fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------
 if [ "$QUICK" = 0 ]; then

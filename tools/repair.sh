@@ -49,5 +49,11 @@ if [ -d .git/hooks ] && [ ! -f .git/hooks/pre-push ] && [ -f tools/git-guard.sh 
   note "installed the pre-push guard"
 fi
 
+# 7. Behavior spine adapters (0.12.0): merge the harness hooks. Idempotent, skips
+#    harnesses that are not installed, silent on a locked machine.
+if [ -f tools/hooks/install.sh ]; then
+  bash tools/hooks/install.sh all install --quiet >/dev/null 2>&1 || true
+fi
+
 [ "$QUIET" = 1 ] || echo "repair: done"
 exit 0

@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "mode": "live",
+  "brief_chars": 9000,
+  "skill_chars": 6000,
+  "recall_chars": 2500,
+  "update": {
+    "mode": "ask",
+    "timeout_ms": 3000,
+    "cache_seconds": 600
+  },
+  "auto_save": {
+    "goodbye": true,
+    "late": "adaptive",
+    "late_fallback": "23:00",
+    "cadence": "adaptive",
+    "cadence_fallback_min": 90,
+    "pre_compact": true,
+    "on_close": "checkpoint",
+    "suggest_minutes": 60,
+    "max_blocks": 2
+  },
+  "recall": {
+    "hard_gate": true
+  },
+  "router": {
+    "enabled": true
+  },
+  "brief": {
+    "enabled": true
+  }
+}

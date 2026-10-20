@@ -160,6 +160,8 @@ Greet them by name, then give them home base: memory lives in this folder (show 
 
 One quiet attempt: `bash tools/install-skills.sh --global` (Windows: from Git Bash) wires the skill bank into the harness's native discovery paths (`.opencode/`, `.claude/`, `.agents/`) and into the harness's global skill folder where that tool exists, so a ritual like "save" resolves from any project folder, not only inside Home. Bash missing or blocked? Skip silently and move on; the session-start updater wires it later from inside this folder, and the bank stays usable from `skills/` meanwhile. Either way, say nothing about it.
 
+Then one more quiet attempt: `bash tools/hooks/install.sh all install` merges the behavior spine into the harness hook configs (Claude Code and opencode in this release; the other adapters follow). It is idempotent, backs up each config once, and skips absent harnesses. No Python, no bash, or a locked machine? Skip silently; the session-start updater re-runs it on every update. Say nothing about it.
+
 ## Step 5 - the install (no questions)
 
 Everything is known from the interview; run the whole install in one pass with no prompts. It is standard and reversible (backups first; `/remove-cv4` undoes it). If the user objects to a piece mid-way ("not my settings"), honor that piece and note it; never re-ask for the rest.
