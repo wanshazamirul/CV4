@@ -20,7 +20,7 @@ fi
 T="$(mktemp -d "${TMPDIR:-/tmp}/cv4-hooks.XXXXXX" 2>/dev/null)" || exit 1
 trap 'rm -rf "$T"' EXIT
 
-mkdir -p "$T/main" "$T/memory" "$T/logs" "$T/skills" "$T/tools"
+mkdir -p "$T/main" "$T/memory" "$T/logs" "$T/skills" "$T/tools/hooks"
 for s in save recall-memory build-protocol check-reminders decision-log forge intake; do
   [ -d "$ROOT/skills/$s" ] && cp -a "$ROOT/skills/$s" "$T/skills/"
 done
@@ -32,7 +32,9 @@ for f in index.md reminders.md; do
 done
 [ -f "$ROOT/tools/fts.py" ] && cp "$ROOT/tools/fts.py" "$T/tools/"
 [ -f "$ROOT/tools/.fts.db" ] && cp "$ROOT/tools/.fts.db" "$T/tools/"
+cp "$ROOT/tools/hooks/dispatch.py" "$ROOT/tools/hooks/dispatch.sh" "$ROOT/tools/hooks/idle-save.sh" "$T/tools/hooks/"
 printf '## Basics\n- **Timezone**: MYT (UTC+8, Malaysia)\n' > "$T/main/relationship-memory.md"
+printf '{"auto_save":{"idle_minutes":0}}\n' > "$T/main/behavior.json"
 # Old session stamp so a save is never detected by the copy itself.
 touch -t 202001010000 "$T/main/current-session.md" 2>/dev/null || true
 
@@ -276,6 +278,18 @@ PATH="$T/bin:$PATH" run_at "$WR" PostToolUse '{"session_id":"w2","tool_name":"wr
 WORKER_OUT="$T/worker-member.out" PATH="$T/bin:$PATH" run_at "$WR" SessionEnd '{"session_id":"w2"}' opencode >/dev/null
 sleep 1
 [ ! -f "$T/worker-member.out" ] && ok "member close stays checkpoint-only" || bad "member close spawned a worker"
+
+# 14b. idle autosave: waits for real inactivity, then fires
+printf '{"auto_save":{"idle_minutes":0.05}}\n' > "$T/main/behavior.json"
+run SessionStart '{"session_id":"hk-idle","source":"startup"}' >/dev/null
+run PostToolUse '{"session_id":"hk-idle","tool_name":"Edit","tool_input":{"file_path":"/tmp/idle.ts"}}' >/dev/null
+CV4_IDLE_SECONDS=1 CV4_IDLE_MINUTES=0.05 run Stop '{"session_id":"hk-idle"}' >/dev/null
+sleep 2
+if ls "$T"/logs/.state/pending-save-hk-idle.json >/dev/null 2>&1; then bad "idle watcher fired while active"; else ok "idle watcher waits for inactivity"; fi
+sleep 3
+if ls "$T"/logs/.state/pending-save-hk-idle.json >/dev/null 2>&1; then ok "idle watcher saves after inactivity"; else bad "idle watcher missed the save"; fi
+rm -f "$T"/logs/.state/pending-save-hk-idle.json
+printf '{"auto_save":{"idle_minutes":0}}\n' > "$T/main/behavior.json"
 
 # 15. adaptive timing: learned late and cadence boundaries
 TR="$T/time"

@@ -12,7 +12,7 @@ bash tools/hooks/install.sh all check
 
 Expected: each installed harness reports its CV4 handlers; `doctor` is PASS after install.
 
-## The five checks (repeat per harness)
+## The checks (repeat per harness)
 
 1. **Boot brief.** Start a new session in a project folder, outside Home. First message: `hi`.
    - Expected: a greeting from memory, no "loading memory" text, no double load.
@@ -33,7 +33,13 @@ Expected: each installed harness reports its CV4 handlers; `doctor` is PASS afte
    - Expected: `logs/.state/pending-save-<sid>.json` or a stale state, plus `logs/.state/close-save.log` when the worker runs.
    - Reopen a session: the boot brief says `unsaved session` or `stale session`, with the checkpoint path.
 
-5. **Uninstall.**
+5. **Idle save (optional, 1 minute for the test).**
+   - Set `main/behavior.json` -> `{"auto_save": {"idle_minutes": 1}}`.
+   - Do a small edit, let the turn finish, then leave the session alone.
+   - Expected: after about a minute with no new prompt or tool call, `logs/.state/close-save.log` appears, or a pending marker if the worker is unavailable.
+   - Send a prompt before the minute is up on a second run: the save must not fire. Restore `idle_minutes` to 15 after the check.
+
+6. **Uninstall.**
    - `bash tools/hooks/install.sh <harness> remove`
    - Expected: zero CV4 handlers in that harness config; the user's own hooks stay; opencode plugin folder gone.
    - Reinstall with `install` and confirm idempotency (no duplicates).

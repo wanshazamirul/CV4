@@ -23,6 +23,7 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `doctor.sh` | first aid: adapters, fixtures, state, kill switch, last decision |
 | `test.sh` | fixture suite, no harness and no network |
 | `checkpoint.sh` | fast pre-update checkpoint used by `update-flow.sh` (working tree + current session) |
+| `idle-save.sh` | one watcher per session; resets on activity, fires the save worker after `idle_minutes` of real inactivity |
 | `e2e-checklist.md` | the live-harness release gate: five checks per harness, with expected evidence |
 | `adapters/claude.json` | reference shape (the installer builds it) |
 | `adapters/opencode/index.ts` | opencode plugin template; `__CV4_HOME__` is filled at install |
@@ -38,6 +39,7 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `stop` | blocks one turn at a goodbye, late trigger, cadence trigger, or pre-compact; never loops |
 | `session-end` | writes the pending-save marker so the next boot can fold the checkpoint in |
 | `pre-compact` | writes a checkpoint before context loss |
+| `idle-check` / `idle-save` | the idle watcher asks whether the session has been quiet long enough, then runs the save worker once |
 
 Shapes are per harness: Claude and Codex use `hookSpecificOutput.additionalContext`, Gemini uses its `decision`/`additionalContext`, opencode receives a small JSON contract from the plugin.
 
@@ -46,6 +48,7 @@ Shapes are per harness: Claude and Codex use `hookSpecificOutput.additionalConte
 - **No brick.** Any error, timeout, missing Python, malformed JSON, read-only Home, or blocked machine exits 0 with no output. The manual path stays.
 - **One block per trigger**, max 2 per session, `stop_hook_active` respected, one-line snooze.
 - **No network** on prompt, tool, or turn-end hooks. Only the session-start update check runs `git fetch`, with a 3s timeout and `GIT_TERMINAL_PROMPT=0`.
+- **Idle is a watcher, not a prompt.** One per session, spawned at turn end. It resets on any new event and refuses to fire while the session is active. Default 15 minutes; `{"auto_save": {"idle_minutes": 60}}` changes it, `0` turns it off.
 - **Local only.** Checkpoints are gitignored, capped, and redacted. No telemetry.
 
 ## Commands

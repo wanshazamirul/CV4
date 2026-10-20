@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.3 - 2026-10-20
+- **Idle autosave.** One watcher per session, spawned when the agent finishes a turn. It resets on every new prompt or tool call and fires only after `idle_minutes` of real inactivity (default 15). Then it runs the same save worker as a terminal close. It never fires while the agent is working, and it exits when the session closes. `main/behavior.json` -> `{"auto_save": {"idle_minutes": 60}}` changes the window; `0` turns it off.
+- **Quiet by design.** Successful hooks print nothing. The installed command exits 0 silently when Home is missing, so Claude shows no "No such file or directory" line. Only an intentional block (autosave or recall) reaches the model.
+- **Manual rev 0.12.3.** The manual documents the idle watcher and the quiet rule.
+- **Fixture suite.** 44 hook checks, including "waits while active" and "fires after inactivity". 43 self-test checks.
+
 ## 0.12.2 - 2026-10-20
 - **Native `HOME` resolution.** `install.py` and `dispatch.py` now use a `home_dir()` helper that prefers `HOME` on every platform. Windows `os.path.expanduser("~")` reads `USERPROFILE` and silently ignores `HOME`, which made the isolated install test write to the real `~/.claude/settings.json` while checking a temp home. The sandbox now stays a sandbox.
 - **Native Windows close-save worker.** The worker lookup no longer relies on `shutil.which` alone: on Windows it also scans `PATH` for bare scripts with no `PATHEXT` extension, then launches them through `bash.exe`. `.cmd` and `.bat` shims go through `cmd.exe /c`; `.exe` and `.com` run directly. This is the fix for the worker silently returning false on the work PC.

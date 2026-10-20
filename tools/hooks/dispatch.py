@@ -14,6 +14,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -44,6 +45,9 @@ EVENT_ALIASES = {
     "PreCompact": "pre-compact",
     "PreCompress": "pre-compact",
     "pre-compact": "pre-compact",
+    "idle-check": "idle-check",
+    "idle-save": "idle-save",
+    "idle-clear": "idle-clear",
 }
 
 EDIT_TOOLS = {
@@ -340,6 +344,10 @@ class Ctx:
             return ""
         if not self.policy.get("brief", {}).get("enabled", True):
             return ""
+        flags = self.flags()
+        if flags.get("save_requested") and self._saved_since(int(self.state.get("save_requested_at", 0))):
+            self._mark_saved()
+            self._clear_pending()
         budget = int(self.policy.get("brief_chars", 9000))
         parts = []
         meta = [
@@ -618,6 +626,123 @@ class Ctx:
             "checkpoint": str(checkpoints[-1]) if checkpoints else "",
         }
 
+    # -- idle watcher
+
+    def _idle_minutes(self) -> float:
+        env = os.environ.get("CV4_IDLE_MINUTES")
+        if env:
+            try:
+                return max(0.0, float(env))
+            except ValueError:
+                pass
+        try:
+            return max(0.0, float(self.policy.get("auto_save", {}).get("idle_minutes", 15)))
+        except (TypeError, ValueError):
+            return 15.0
+
+    def _idle_pid(self) -> int:
+        try:
+            return int(self.state.get("idle_pid", 0) or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    def _schedule_idle(self) -> None:
+        if self.shadow or self.flags().get("save_done") or self.state.get("closed"):
+            return
+        minutes = self._idle_minutes()
+        if minutes <= 0 or not self._has_work():
+            return
+        script = self.root / "tools" / "hooks" / "idle-save.sh"
+        if not script.exists():
+            return
+        bash = shutil.which("bash")
+        if not bash:
+            return
+        started = parse_iso(self.state.get("idle_started", ""))
+        if self._idle_pid() and started and (now() - started).total_seconds() < max(300, minutes * 120):
+            return
+        try:
+            kwargs = {"start_new_session": True} if os.name == "posix" else {"creationflags": 0x00000008}
+            proc = subprocess.Popen(
+                [bash, str(script), self.sid, self.harness, str(self.root), f"{minutes:g}"],
+                cwd=str(self.root),
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                **kwargs,
+            )
+            self.state["idle_pid"] = proc.pid
+            self.state["idle_started"] = iso(now())
+            self.log("worker", "idle-watch")
+            self.save_state()
+        except OSError:
+            pass
+
+    def _cancel_idle(self) -> None:
+        pid = self._idle_pid()
+        if pid:
+            try:
+                os.kill(pid, signal.SIGTERM)
+            except OSError:
+                pass
+        self.state["idle_pid"] = 0
+        self.state["idle_started"] = ""
+
+    def idle_check(self) -> str:
+        if self.state.get("closed") or self.flags().get("save_done") or not self._has_work():
+            return "stop"
+        last = parse_iso(self.state.get("last_event_at", "")) or now()
+        idle = (now() - last).total_seconds() / 60.0
+        return "save" if idle >= self._idle_minutes() else "wait"
+
+    def idle_save(self) -> None:
+        flags = self.flags()
+        if self.state.get("closed") or flags.get("save_done") or not self._has_work():
+            return
+        if (self.state_dir / f"pending-save-{self.sid}.json").exists():
+            return
+        self.checkpoint("idle save")
+        try:
+            write_json(self.state_dir / f"pending-save-{self.sid}.json", self._pending_payload())
+        except OSError:
+            pass
+        flags["save_requested"] = True
+        flags["save_done"] = False
+        self.state["save_requested_at"] = now().timestamp()
+        self.save_state()
+        if self._worker_enabled():
+            self._spawn_close_worker()
+        self.log("worker", "idle-save")
+
+    def idle_clear(self) -> None:
+        try:
+            pid = int(self.event.get("pid") or 0)
+        except (TypeError, ValueError):
+            pid = 0
+        if pid and self._idle_pid() == pid:
+            self.state["idle_pid"] = 0
+            self.state["idle_started"] = ""
+            try:
+                write_json(self.state_path, self.state)
+            except OSError:
+                pass
+
+    def _pending_payload(self) -> dict:
+        return {
+            "at": iso(now()),
+            "harness": self.harness,
+            "cwd": self.state.get("cwd") or self.event.get("cwd") or str(self.root),
+            "checkpoint": str(self.checkpoint_path),
+            "last_prompt": self.state.get("last_prompt", ""),
+            "last_assistant": self.state.get("last_assistant", ""),
+        }
+
+    def _clear_pending(self) -> None:
+        try:
+            (self.state_dir / f"pending-save-{self.sid}.json").unlink()
+        except OSError:
+            pass
+
     # -- checkpoint
 
     def checkpoint(self, note: str = "") -> None:
@@ -842,9 +967,11 @@ class Ctx:
         last = self.event.get("last_assistant_message") or self.event.get("prompt_response") or ""
         if last:
             self.state["last_assistant"] = clip(str(last), 600)
+        self._schedule_idle()
         flags = self.flags()
         if flags.get("save_requested") and self._saved_since(int(self.state.get("save_requested_at", 0))):
             self._mark_saved()
+            self._clear_pending()
             self.save_state()
             self.log("skip", "save-detected")
             return None
@@ -984,21 +1111,14 @@ class Ctx:
     # -- session end
 
     def session_end(self) -> None:
+        self._cancel_idle()
         self.checkpoint(
             f"session end | turns={self.state.get('turns', 0)} tools={self.state.get('tool_calls', 0)} "
             f"edits={self.state.get('edits', 0)} saved={self.flags().get('save_done', False)}"
         )
         if self._has_work() and not self.flags().get("save_done"):
-            pending = {
-                "at": iso(now()),
-                "harness": self.harness,
-                "cwd": self.event.get("cwd") or str(self.root),
-                "checkpoint": str(self.checkpoint_path),
-                "last_prompt": self.state.get("last_prompt", ""),
-                "last_assistant": self.state.get("last_assistant", ""),
-            }
             try:
-                write_json(self.state_dir / f"pending-save-{self.sid}.json", pending)
+                write_json(self.state_dir / f"pending-save-{self.sid}.json", self._pending_payload())
             except OSError:
                 pass
             self.log("skip", "pending-save")
@@ -1233,6 +1353,15 @@ def handle(ctx: Ctx):
         return {}
     if event == "pre-compact":
         ctx.pre_compact()
+        return {}
+    if event == "idle-check":
+        print(ctx.idle_check())
+        return {}
+    if event == "idle-save":
+        ctx.idle_save()
+        return {}
+    if event == "idle-clear":
+        ctx.idle_clear()
         return {}
     return {}
 

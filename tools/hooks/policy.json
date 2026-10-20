@@ -18,7 +18,8 @@
     "pre_compact": true,
     "on_close": "auto",
     "suggest_minutes": 60,
-    "max_blocks": 2
+    "max_blocks": 2,
+    "idle_minutes": 15
   },
   "recall": {
     "hard_gate": true
