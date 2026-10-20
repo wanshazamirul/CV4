@@ -10,8 +10,9 @@ QUIET=0
 [ "${1:-}" = "--quiet" ] && QUIET=1
 
 have() { command -v "$1" >/dev/null 2>&1; }
-if have python3; then PY=python3
-elif have python; then PY=python
+if have python3 && python3 -c 'import sys' >/dev/null 2>&1; then PY=python3
+elif have python && python -c 'import sys' >/dev/null 2>&1; then PY=python
+elif have py && py -c 'import sys' >/dev/null 2>&1; then PY=py
 else echo "hooks-test: python missing (skipped)"; exit 0
 fi
 [ -f "$DISPATCH" ] || { echo "hooks-test: dispatcher missing"; exit 1; }
@@ -97,7 +98,7 @@ expect_json "next boot surfaces the unsaved session" "$OUT" '"unsaved session" i
 mkdir -p "$T/logs/checkpoints"
 rm -f "$T"/logs/.state/pending-save-*.json
 printf '# stale checkpoint\n' > "$T/logs/checkpoints/2026-10-20-stale1.md"
-python3 - "$T/logs/.state/stale1.json" <<'PY'
+"$PY" - "$T/logs/.state/stale1.json" <<'PY'
 import json, sys
 from datetime import datetime, timedelta, timezone
 old = (datetime.now(timezone.utc) - timedelta(hours=3)).isoformat()
@@ -172,7 +173,7 @@ printf '%s\n' '{"$schema":"https://opencode.ai/config.json","model":"test/model"
 printf '%s\n' '{"hooks":{"BeforeTool":[{"matcher":"x","hooks":[{"name":"user","type":"command","command":"echo user-hook"}]}]}}' > "$TH/.gemini/settings.json"
 printf '%s\n' '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"echo user-hook"}]}]}}' > "$TH/.codex/hooks.json"
 HOME="$TH" bash "$CR/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
-if python3 - "$TH" <<'PY'
+if "$PY" - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
 claude = json.loads((home / ".claude/settings.json").read_text())
@@ -196,7 +197,7 @@ then ok "installer wires all four adapters, keeps user hooks"; else bad "install
 # 13b. the installed commands actually run
 for pair in "claude:$TH/.claude/settings.json" "gemini:$TH/.gemini/settings.json" "codex:$TH/.codex/hooks.json"; do
   name="${pair%%:*}"; cfg="${pair#*:}"
-  CMD="$(python3 - "$cfg" <<'PY'
+  CMD="$("$PY" - "$cfg" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
 cmds = [h["command"] for g in d["hooks"]["SessionStart"] for h in g.get("hooks", []) if "dispatch.sh" in h.get("command", "")]
@@ -207,7 +208,7 @@ PY
   if printf '%s' "$OUT" | grep -q 'additionalContext'; then ok "installed $name SessionStart command runs"; else bad "installed $name command failed"; fi
 done
 HOME="$TH" bash "$CR/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
-if python3 - "$TH" <<'PY'
+if "$PY" - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
 def cv4(path, key="hooks"):
@@ -222,7 +223,7 @@ assert claude == 7 and g == 7 and c == 7 and plugin == 1, (claude, g, c, plugin)
 PY
 then ok "installer is idempotent across all four"; else bad "installer duplicates on a second run"; fi
 HOME="$TH" bash "$CR/tools/hooks/install.sh" all remove --quiet >/dev/null 2>&1
-if python3 - "$TH" <<'PY'
+if "$PY" - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
 def state(path, key="hooks"):
@@ -287,7 +288,7 @@ CV4_NOW="2026-10-21T09:01:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht2
 OUT="$(CV4_NOW="2026-10-21T10:31:00+08:00" run_at "$TR" Stop '{"session_id":"ht2"}' claude)"
 expect_json "cadence boundary triggers autosave" "$OUT" 'd["decision"] == "block" and "cadence" in d["reason"]'
 mkdir -p "$TR/logs/.state"
-python3 - "$TR/logs/.state/usage.jsonl" <<'PY'
+"$PY" - "$TR/logs/.state/usage.jsonl" <<'PY'
 import json, sys
 rows = []
 for day in range(15, 20):
@@ -299,7 +300,7 @@ PY
 CV4_NOW="2026-10-21T11:00:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht3","source":"startup"}' claude >/dev/null
 CV4_NOW="2026-10-21T11:05:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht3","tool_name":"Edit","tool_input":{"file_path":"/tmp/t3.ts"}}' claude >/dev/null
 CV4_NOW="2026-10-21T11:10:00+08:00" run_at "$TR" SessionEnd '{"session_id":"ht3"}' claude >/dev/null
-if python3 - "$TR/logs/.state/timing.json" <<'PY'
+if "$PY" - "$TR/logs/.state/timing.json" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
 assert d.get("late") == "22:45", d
@@ -331,7 +332,7 @@ if command -v git >/dev/null 2>&1; then
     run_at "$UR" UserPromptSubmit '{"session_id":"up2","prompt":"no"}' claude >/dev/null
     OUT="$(run_at "$UR" SessionStart '{"session_id":"up3","source":"startup"}' claude)"
     if printf '%s' "$OUT" | grep -q "update: CV4"; then bad "declined version still offered"; else ok "declined version is snoozed"; fi
-    ( cd "$UR" && CV4_UPSTREAM="$BR" bash tools/update-flow.sh ) >/dev/null 2>&1
+    ( cd "$UR" && HOME="$TH" CV4_UPSTREAM="$BR" bash tools/update-flow.sh ) >/dev/null 2>&1
     NEWV="$(cat "$UR/versions/VERSION" 2>/dev/null || echo '?')"
     [ "$NEWV" = "0.12.1" ] && ok "update-flow pulls and repairs" || bad "update-flow did not pull"
   else

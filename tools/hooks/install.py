@@ -164,6 +164,8 @@ def claude_check(root: Path, quiet: bool) -> str:
         return f"claude: unreadable ({exc})"
     hooks = data.get("hooks") if isinstance(data, dict) else {}
     found = 0
+    stale = 0
+    current = dispatch_path(root)
     if isinstance(hooks, dict):
         for groups in hooks.values():
             if not isinstance(groups, list):
@@ -171,8 +173,13 @@ def claude_check(root: Path, quiet: bool) -> str:
             for group in groups:
                 inner = group.get("hooks") if isinstance(group, dict) else None
                 if isinstance(inner, list):
-                    found += sum(1 for h in inner if is_cv4_handler(h))
-    return f"claude: {found} CV4 hook handler(s) installed"
+                    for handler in inner:
+                        if is_cv4_handler(handler):
+                            found += 1
+                            if current not in str(handler.get("command", "")):
+                                stale += 1
+    extra = f", {stale} stale" if stale else ""
+    return f"claude: {found} CV4 hook handler(s) installed{extra}"
 
 
 def opencode_paths():
@@ -239,8 +246,11 @@ def opencode_check(root: Path, quiet: bool) -> str:
         return f"opencode: unreadable ({exc})"
     plugins = data.get("plugins") if isinstance(data, dict) else []
     found = len([p for p in plugins if isinstance(p, str) and "cv4-hooks" in p]) if isinstance(plugins, list) else 0
+    current = plugin_dir.as_posix()
+    stale = len([p for p in plugins if isinstance(p, str) and "cv4-hooks" in p and current not in p]) if isinstance(plugins, list) else 0
     installed = (plugin_dir / "index.ts").exists()
-    return f"opencode: {found} config entry(ies), plugin file {'present' if installed else 'missing'}"
+    extra = f", {stale} stale" if stale else ""
+    return f"opencode: {found} config entry(ies){extra}, plugin file {'present' if installed else 'missing'}"
 
 
 # ---------------------------------------------------------------- gemini
@@ -357,6 +367,8 @@ def gemini_check(root: Path, quiet: bool) -> str:
         return f"gemini: unreadable ({exc})"
     hooks = data.get("hooks") if isinstance(data, dict) else {}
     found = 0
+    stale = 0
+    current = dispatch_path(root)
     if isinstance(hooks, dict):
         for groups in hooks.values():
             if not isinstance(groups, list):
@@ -364,8 +376,13 @@ def gemini_check(root: Path, quiet: bool) -> str:
             for group in groups:
                 inner = group.get("hooks") if isinstance(group, dict) else None
                 if isinstance(inner, list):
-                    found += sum(1 for h in inner if is_cv4_handler(h))
-    return f"gemini: {found} CV4 hook handler(s) installed"
+                    for handler in inner:
+                        if is_cv4_handler(handler):
+                            found += 1
+                            if current not in str(handler.get("command", "")):
+                                stale += 1
+    extra = f", {stale} stale" if stale else ""
+    return f"gemini: {found} CV4 hook handler(s) installed{extra}"
 
 
 # ---------------------------------------------------------------- codex
@@ -485,6 +502,8 @@ def codex_check(root: Path, quiet: bool) -> str:
         return f"codex: unreadable ({exc})"
     hooks = data.get("hooks") if isinstance(data, dict) else {}
     found = 0
+    stale = 0
+    current = dispatch_path(root)
     if isinstance(hooks, dict):
         for groups in hooks.values():
             if not isinstance(groups, list):
@@ -492,8 +511,13 @@ def codex_check(root: Path, quiet: bool) -> str:
             for group in groups:
                 inner = group.get("hooks") if isinstance(group, dict) else None
                 if isinstance(inner, list):
-                    found += sum(1 for h in inner if is_cv4_handler(h))
-    return f"codex: {found} CV4 hook handler(s) installed"
+                    for handler in inner:
+                        if is_cv4_handler(handler):
+                            found += 1
+                            if current not in str(handler.get("command", "")):
+                                stale += 1
+    extra = f", {stale} stale" if stale else ""
+    return f"codex: {found} CV4 hook handler(s) installed{extra}"
 
 
 def main() -> int:

@@ -14,8 +14,9 @@ bad() { FAILS=$((FAILS + 1)); echo "  FAIL  $1"; }
 [ -f "$ROOT/tools/hooks/dispatch.py" ] && say "dispatcher present" || bad "dispatcher missing"
 [ -x "$ROOT/tools/hooks/dispatch.sh" ] && say "dispatch.sh executable" || bad "dispatch.sh not executable"
 
-if command -v python3 >/dev/null 2>&1; then PY=python3
-elif command -v python >/dev/null 2>&1; then PY=python
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import sys' >/dev/null 2>&1; then PY=python3
+elif command -v python >/dev/null 2>&1 && python -c 'import sys' >/dev/null 2>&1; then PY=python
+elif command -v py >/dev/null 2>&1 && py -c 'import sys' >/dev/null 2>&1; then PY=py
 else echo "  FAIL  python missing (hooks are a silent no-op)"; exit 1
 fi
 
@@ -47,6 +48,9 @@ elif [ "$HARNESS" = 1 ]; then
   fi
 else
   say "no supported harness config on this machine"
+fi
+if printf '%s\n' "$OUT" | grep -Eq '[1-9][0-9]* stale'; then
+  bad "stale CV4 hook paths found (run: bash tools/hooks/install.sh all install)"
 fi
 
 if bash "$ROOT/tools/hooks/test.sh" --quiet >/dev/null 2>&1; then
