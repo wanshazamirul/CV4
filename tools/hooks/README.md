@@ -23,6 +23,7 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `doctor.sh` | first aid: adapters, fixtures, state, kill switch, last decision |
 | `test.sh` | fixture suite, no harness and no network |
 | `checkpoint.sh` | fast pre-update checkpoint used by `update-flow.sh` (working tree + current session) |
+| `e2e-checklist.md` | the live-harness release gate: five checks per harness, with expected evidence |
 | `adapters/claude.json` | reference shape (the installer builds it) |
 | `adapters/opencode/index.ts` | opencode plugin template; `__CV4_HOME__` is filled at install |
 

@@ -162,12 +162,16 @@ expect_json "codex tool gate denies once" "$OUT" 'd["hookSpecificOutput"]["permi
 
 # 13. install/uninstall sandbox (Claude + opencode + Gemini + Codex)
 TH="$T/home"
+CR="$T/cv4-copy"
+mkdir -p "$CR"
+cp -a "$ROOT/." "$CR/" 2>/dev/null
+rm -rf "$CR/.git" "$CR/logs/.state" "$CR/logs/checkpoints"
 mkdir -p "$TH/.claude" "$TH/.config/opencode" "$TH/.gemini" "$TH/.codex"
 printf '%s\n' '{"attribution":false,"hooks":{"Stop":[{"hooks":[{"type":"command","command":"echo user-hook"}]}]}}' > "$TH/.claude/settings.json"
 printf '%s\n' '{"$schema":"https://opencode.ai/config.json","model":"test/model"}' > "$TH/.config/opencode/opencode.json"
 printf '%s\n' '{"hooks":{"BeforeTool":[{"matcher":"x","hooks":[{"name":"user","type":"command","command":"echo user-hook"}]}]}}' > "$TH/.gemini/settings.json"
 printf '%s\n' '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"echo user-hook"}]}]}}' > "$TH/.codex/hooks.json"
-HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
+HOME="$TH" bash "$CR/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
@@ -188,7 +192,21 @@ assert gcv4 == 7 and guser, (gcv4, guser)
 assert ccv4 == 7 and cuser, (ccv4, cuser)
 PY
 then ok "installer wires all four adapters, keeps user hooks"; else bad "installer wiring failed"; fi
-HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
+
+# 13b. the installed commands actually run
+for pair in "claude:$TH/.claude/settings.json" "gemini:$TH/.gemini/settings.json" "codex:$TH/.codex/hooks.json"; do
+  name="${pair%%:*}"; cfg="${pair#*:}"
+  CMD="$(python3 - "$cfg" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1]))
+cmds = [h["command"] for g in d["hooks"]["SessionStart"] for h in g.get("hooks", []) if "dispatch.sh" in h.get("command", "")]
+print(cmds[0])
+PY
+)"
+  OUT="$(printf '{"session_id":"cfg-%s","source":"startup"}' "$name" | HOME="$TH" bash -c "$CMD" 2>/dev/null)"
+  if printf '%s' "$OUT" | grep -q 'additionalContext'; then ok "installed $name SessionStart command runs"; else bad "installed $name command failed"; fi
+done
+HOME="$TH" bash "$CR/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
@@ -203,7 +221,7 @@ plugin = len([p for p in oc.get("plugins", []) if "cv4-hooks" in p])
 assert claude == 7 and g == 7 and c == 7 and plugin == 1, (claude, g, c, plugin)
 PY
 then ok "installer is idempotent across all four"; else bad "installer duplicates on a second run"; fi
-HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all remove --quiet >/dev/null 2>&1
+HOME="$TH" bash "$CR/tools/hooks/install.sh" all remove --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
