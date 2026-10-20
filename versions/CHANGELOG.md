@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.4 - 2026-10-20
+- **Every autosave hands back a next line.** The autosave block now asks for exactly two short lines: `saved: <what landed>` and `next: <top item from main/current-session.md Next, or continue where we left off>`. The save skill documents the two-line confirm. No more finishing a save with no idea what comes next.
+- **Idle autosave is summarized at the next greeting.** When the idle watcher fires, it writes `logs/.state/autosave-note.json`. The next load consumes it and greets with "autosaved while you were away" plus the next item. If the worker failed, the pending marker is still surfaced.
+- **Manual rev 0.12.4.** The manual and README carry the next-line rule.
+- **Fixture suite.** 46 hook checks, including the saved/next block and the idle greeting note.
+
 ## 0.12.3 - 2026-10-20
 - **Idle autosave.** One watcher per session, spawned when the agent finishes a turn. It resets on every new prompt or tool call and fires only after `idle_minutes` of real inactivity (default 15). Then it runs the same save worker as a terminal close. It never fires while the agent is working, and it exits when the session closes. `main/behavior.json` -> `{"auto_save": {"idle_minutes": 60}}` changes the window; `0` turns it off.
 - **Quiet by design.** Successful hooks print nothing. The installed command exits 0 silently when Home is missing, so Claude shows no "No such file or directory" line. Only an intentional block (autosave or recall) reaches the model.

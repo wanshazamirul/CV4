@@ -23,7 +23,7 @@ description: "MUST use when the user says 'save', 'save progress', 'save session
 4. **Reminders sweep** - completed out, stale pruned, new follow-ups into `memory/reminders.md` (caps: 200 open, 100 completed).
 5. **Library harvest** - if the session produced a reusable pattern, file it in `library/<section>/<slug>/<slug>.md`.
 6. **Rotation** - `main/current-session.md` keeps the last 3 sessions; the index stays small (hot 12 / warm 20; oldest folds into a cold summary). Monthly (or when the folder grows heavy), move last month's `logs/current/` files into `logs/archived/YYYY-MM/`: cold storage, searchable, never rewritten.
-7. **Confirm** - one line: what was saved, where.
+7. **Confirm** - one line normally. When an autosave hook requested it, use two short lines: `saved: <what landed>` then `next: <the top item from main/current-session.md Next, or continue where we left off>`.
 
 ## Lite save (mid-session)
 

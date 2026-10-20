@@ -66,12 +66,12 @@ expect_json "session start injects a brief" "$OUT" 'len(d["hookSpecificOutput"][
 
 # 2. save router
 OUT="$(run UserPromptSubmit '{"session_id":"hk1","prompt":"ok save and wrap up"}')"
-expect_json "save prompt injects the save skill" "$OUT" '"goodbye detected" in d["hookSpecificOutput"]["additionalContext"] and "Save - session close ritual" in d["hookSpecificOutput"]["additionalContext"]'
+expect_json "save prompt injects the save skill" "$OUT" '"goodbye detected" in d["hookSpecificOutput"]["additionalContext"] and "Save - session close ritual" in d["hookSpecificOutput"]["additionalContext"] and "next:" in d["hookSpecificOutput"]["additionalContext"]'
 
 # 3. work + stop gate
 run PostToolUse '{"session_id":"hk1","tool_name":"Edit","tool_input":{"file_path":"/tmp/x.ts"}}' >/dev/null
 OUT="$(run Stop '{"session_id":"hk1","last_assistant_message":"done"}')"
-expect_json "stop blocks once for autosave" "$OUT" 'd["decision"] == "block" and "autosave" in d["reason"]'
+expect_json "stop blocks once for autosave" "$OUT" 'd["decision"] == "block" and "autosave" in d["reason"] and "next:" in d["reason"]'
 
 # 4. simulated save clears the gate
 mkdir -p "$T/logs/current"
@@ -288,6 +288,9 @@ sleep 2
 if ls "$T"/logs/.state/pending-save-hk-idle.json >/dev/null 2>&1; then bad "idle watcher fired while active"; else ok "idle watcher waits for inactivity"; fi
 sleep 3
 if ls "$T"/logs/.state/pending-save-hk-idle.json >/dev/null 2>&1; then ok "idle watcher saves after inactivity"; else bad "idle watcher missed the save"; fi
+if [ -f "$T/logs/.state/autosave-note.json" ]; then ok "idle save writes the next-greeting note"; else bad "idle save left no greeting note"; fi
+OUT="$(run SessionStart '{"session_id":"hk-idle-next","source":"startup"}')"
+expect_json "idle autosave is summarized at the next boot" "$OUT" '"autosave:" in d["hookSpecificOutput"]["additionalContext"] and "next:" in d["hookSpecificOutput"]["additionalContext"]'
 rm -f "$T"/logs/.state/pending-save-hk-idle.json
 printf '{"auto_save":{"idle_minutes":0}}\n' > "$T/main/behavior.json"
 
@@ -344,7 +347,7 @@ if command -v git >/dev/null 2>&1; then
     OUT="$(run_at "$UR" SessionStart '{"session_id":"up1","source":"startup"}' claude)"
     if printf '%s' "$OUT" | grep -q "update: CV4 v$OLDV -> v9.9.9"; then ok "greeting brief offers an update"; else bad "greeting brief missed the update"; fi
     OUT="$(run_at "$UR" UserPromptSubmit '{"session_id":"up1","prompt":"yes"}' claude)"
-    expect_json "yes injects the update handoff" "$OUT" '"approved the update" in d["hookSpecificOutput"]["additionalContext"]'
+    expect_json "yes injects the update handoff" "$OUT" '"approved the update" in d["hookSpecificOutput"]["additionalContext"] and "next:" in d["hookSpecificOutput"]["additionalContext"]'
     OUT="$(run_at "$UR" SessionStart '{"session_id":"up2","source":"startup"}' claude)"
     if printf '%s' "$OUT" | grep -q "update: CV4"; then ok "a fresh session offers it again"; else bad "a fresh session missed the update"; fi
     run_at "$UR" UserPromptSubmit '{"session_id":"up2","prompt":"no"}' claude >/dev/null

@@ -36,10 +36,10 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `prompt` | injects the matching skill body; on bug-shaped prompts it runs `fts.py` + hotlist and injects the hits |
 | `pre-tool` | blocks the first edit after a bug prompt once, until the model cites or clears recall |
 | `post-tool` | tracks tool, file, and command in the checkpoint |
-| `stop` | blocks one turn at a goodbye, late trigger, cadence trigger, or pre-compact; never loops |
+| `stop` | blocks one turn at a goodbye, late trigger, cadence trigger, or pre-compact; never loops; the model replies `saved:` + `next:` |
 | `session-end` | writes the pending-save marker so the next boot can fold the checkpoint in |
 | `pre-compact` | writes a checkpoint before context loss |
-| `idle-check` / `idle-save` | the idle watcher asks whether the session has been quiet long enough, then runs the save worker once |
+| `idle-check` / `idle-save` | the idle watcher asks whether the session has been quiet long enough, then runs the save worker once; a greeting note carries the result to the next load |
 
 Shapes are per harness: Claude and Codex use `hookSpecificOutput.additionalContext`, Gemini uses its `decision`/`additionalContext`, opencode receives a small JSON contract from the plugin.
 
@@ -48,6 +48,7 @@ Shapes are per harness: Claude and Codex use `hookSpecificOutput.additionalConte
 - **No brick.** Any error, timeout, missing Python, malformed JSON, read-only Home, or blocked machine exits 0 with no output. The manual path stays.
 - **One block per trigger**, max 2 per session, `stop_hook_active` respected, one-line snooze.
 - **No network** on prompt, tool, or turn-end hooks. Only the session-start update check runs `git fetch`, with a 3s timeout and `GIT_TERMINAL_PROMPT=0`.
+- **Every autosave hands back a next line.** The stop reason asks for `saved:` + `next:`; the idle save writes a greeting note that the next load consumes. No dead-end hooks.
 - **Idle is a watcher, not a prompt.** One per session, spawned at turn end. It resets on any new event and refuses to fire while the session is active. Default 15 minutes; `{"auto_save": {"idle_minutes": 60}}` changes it, `0` turns it off.
 - **Local only.** Checkpoints are gitignored, capped, and redacted. No telemetry.
 

@@ -360,6 +360,9 @@ class Ctx:
         last = self._last_session_label()
         if last:
             meta.append(last)
+        note = self._autosave_note()
+        if note:
+            meta.append(note)
 
         update = self._update_check()
         if update:
@@ -415,6 +418,36 @@ class Ctx:
             parts.append("===== index hot =====\n" + index)
 
         return clip("\n\n".join(parts), budget)
+
+    def _next_item(self) -> str:
+        text = read_text(self.root / "main" / "current-session.md", 4000)
+        in_next = False
+        for line in text.splitlines():
+            if re.match(r"^###\s+Next", line, re.I):
+                in_next = True
+                continue
+            if in_next and re.match(r"^###\s+", line):
+                break
+            if in_next:
+                match = re.match(r"^\s*-\s+\[ \]\s+(.+)", line)
+                if match:
+                    return match.group(1).strip()
+        return ""
+
+    def _autosave_note(self) -> str:
+        path = self.state_dir / "autosave-note.json"
+        data = read_json(path, None)
+        if not isinstance(data, dict) or not data.get("at"):
+            return ""
+        try:
+            path.unlink()
+        except OSError:
+            pass
+        nxt = self._next_item()
+        return (
+            f"autosave: {data.get('at')} while you were away. "
+            f"Greet with one line: autosaved, then next: {nxt or 'continue where we left off'}."
+        )
 
     def _last_session_label(self) -> str:
         text = read_text(self.root / "main" / "current-session.md", 2000)
@@ -703,6 +736,7 @@ class Ctx:
             return
         self.checkpoint("idle save")
         try:
+            write_json(self.state_dir / "autosave-note.json", {"at": iso(now()), "trigger": "idle", "session": self.sid})
             write_json(self.state_dir / f"pending-save-{self.sid}.json", self._pending_payload())
         except OSError:
             pass
@@ -797,7 +831,8 @@ class Ctx:
             self.checkpoint(f"save requested ({save.group(0)})")
             return self._skill(
                 "save",
-                "goodbye detected. This is a full save, not lite. Run the ritual now, then reply with one line: autosaved.",
+                "goodbye detected. This is a full save, not lite. Run the ritual now, then reply with exactly two short lines: "
+                "saved: <what landed> | next: <top item from main/current-session.md Next, or continue where we left off>.",
             )
 
         debug = re.search(
@@ -857,7 +892,7 @@ class Ctx:
             "2) run the save ritual (skills/save), full save; "
             "3) if the manual rev changed, refresh the installed block; "
             "4) re-run `bash tools/session-load.sh --no-update`. "
-            "Reply with one line when done."
+            "Reply with one line: updated to v<new>; next: continue."
         )
 
     def _skill(self, name: str, why: str) -> str:
@@ -934,7 +969,8 @@ class Ctx:
             return (
                 "CV4 recall gate. Before this edit, use the recall evidence above. "
                 "Cite the matching pattern or file, or say 'Recall: clear'. "
-                "If this is a trivial fix, say 'trivial' and retry the edit."
+                "If this is a trivial fix, say 'trivial' and retry the edit. "
+                "After the gate, continue the work; do not stop here."
             )
         return None
 
@@ -1005,7 +1041,8 @@ class Ctx:
             return (
                 f"CV4 autosave ({trigger}). Run the save ritual now: skills/save. "
                 "Write the session log, memory/index, decisions, reminders sweep, rotation. "
-                "Then reply with one line: autosaved."
+                "Then reply with exactly two short lines: "
+                "saved: <what landed> | next: <top item from main/current-session.md Next, or continue where we left off>"
             )
         if self._suggest_due() and not flags.get("suggested"):
             flags["suggested"] = True
