@@ -1,6 +1,6 @@
 #!/bin/bash
-# External skill updater. Reads tools/skill-sources.txt and updates each registered
-# source. Background-friendly: silent when offline or nothing to do.
+# External skill updater. Reads tools/skill-sources.txt and keeps each registered
+# source installed and current. Background-friendly: silent when offline or nothing to do.
 # Pinned by design: an entry without @version is skipped, never run (supply chain).
 # Every run appends one line to logs/update-skills.log; failures never break a session.
 # Usage: bash tools/update-skills.sh
@@ -36,7 +36,9 @@ while IFS= read -r line; do
       ver="${spec##*@}"
       [ -n "$name" ] && [ -n "$ver" ] || { log "skip malformed: $spec"; continue; }
       if npx --yes "$spec" update --providers=claude --scope=global >/dev/null 2>&1; then
-        log "ok $spec"
+        log "ok update $spec"
+      elif npx --yes "$spec" install -y --providers=claude --scope=global >/dev/null 2>&1; then
+        log "ok install $spec"
       else
         rc=$?
         log "fail $spec (exit $rc)"
