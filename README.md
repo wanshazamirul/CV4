@@ -13,7 +13,7 @@ Clone https://github.com/wanshazamirul/CV4 into my home folder, then run the set
 
 That lands at `C:\Users\<you>\CV4` on Windows and `~/CV4` elsewhere. From a terminal: `cd ~` first, then clone; git names the folder itself, so no path gets typed and nothing can get mangled. Running a team? The [For teams](#for-teams) section has the one-command fork flow.
 
-It clones the repo to its home (`CV4` in your home folder), runs the 4-question enrollment (you, its name, behavior, this machine), installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. Then the install runs in one pass, no further questions: all plain file writes (companion block, command, clean Claude defaults), with the scripted extras (index build, skills wiring) as one quiet attempt that skips silently where a machine blocks them. It closes with one line: installation done, start a fresh session. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
+It clones the repo to its home (`CV4` in your home folder), runs the 4-question enrollment (you, its name, behavior, this machine), installs its manual into your tool's global config (Claude Code: `~/.claude/CLAUDE.md`, opencode: `~/.config/opencode/AGENTS.md`, Gemini: `~/.gemini/GEMINI.md`), seeds the memory, and says hello. Then the install runs in one pass, no further questions: all plain file writes (companion block, command, clean Claude defaults), with the scripted extras (index build, skills wiring, behavior-spine adapters) as one quiet attempt that skips silently where a machine blocks them. It closes with one line: installation done, start a fresh session. From then on, launch your agent anywhere: it reads the global config and your companion is simply there. No terminals, no config. This README is the map.
 
 **Spec-driven by design:** pairs with spec-kit (constitution -> specify -> plan -> tasks -> implement -> converge); the bridge ships in `spec-kit/` and the lessons land in `memory/`.
 
@@ -231,17 +231,43 @@ Your own rituals live in `my-skills/`: never overwritten, and on overlapping tri
 
 **External skill packs** (optional): add `npm name@version` to `main/skill-sources.txt` and CV4 keeps that pack installed and current in your Claude skills folder. Pinned only; every run logs to `logs/update-skills.log`. The engine file `tools/skill-sources.txt` is an example, and nothing installs by default.
 
+## Hooks: the behavioral spine
+
+The manual is the soft layer. The hooks are the spine: deterministic triggers under it, so the rituals fire even when the model forgets.
+
+```ascii
+  session start ──► boot brief (identity, soul, hotlist, last session, reminders)
+  your prompt   ──► skill router + auto-recall on bug-shaped asks
+  first edit    ──► recall gate, once
+  turn end      ──► autosave at goodbye, learned late boundary, cadence, pre-compact
+  terminal close──► close-save worker (full save) or a pending checkpoint
+  next greeting ──► update offer: vX -> vY, want me to update?
+```
+
+- **Four harnesses**: Claude Code, opencode, Gemini CLI, Codex. One dispatcher, thin adapters.
+- **No brick**: any hook error, timeout, bad JSON, missing Python, read-only Home, or blocked machine exits 0 silently. The manual path survives.
+- **No loop**: one block per trigger, max 2 per session, `stop_hook_active` respected, a one-line snooze.
+- **Shadow mode**: `main/behavior.json` -> `{"mode": "shadow"}` logs what it would do and never blocks. `live` is the default.
+- **Kill switch**: `CV4_HOOKS=0` or `{"enabled": false}`.
+- **Doctor**: `bash tools/hooks/doctor.sh` checks adapters, fixtures, state, and the last decision.
+- **Codex** asks for a one-time `/hooks` approval; the install says so once.
+
+Details and the capability matrix: `tools/hooks/README.md`.
+
 ## Staying updated
 
 ```ascii
-  upstream (this repo)  ──►  tools/update.sh  ──►  your copy
-                              (session start)       (personal zone untouched)
+  upstream (this repo)  ──►  tools/check-update.sh  ──►  greeting offer
+                                 (read-only)                 │ yes
+                                                             ▼
+                                      checkpoint -> update -> repair -> save -> reload
+                                      (personal zone untouched)
 ```
 
-- **Auto-updated**: `skills/` `tools/` `commands/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
+- **Check-only at session start**: `tools/check-update.sh` never pulls. The greeting offers the update; yes runs `tools/update-flow.sh` (checkpoint -> update -> repair), then the save ritual and a reload.
+- **Auto-updated**: `assets/` `skills/` `tools/` `commands/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
 - **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` · the companion block in your global config
-- After an update, `update.sh` also re-wires the skills engine (project and global skill folders) and tops up any missing standard book.
-- A successful update also runs `tools/repair.sh`: idempotent repairs for gaps earlier versions left behind (skill wiring, ignore rules, legacy notes), so a machine that skipped releases heals on its next boot.
+- After an update, `repair.sh` re-wires the skills engine (project and global skill folders), tops up any missing standard book, and re-installs the behavior-spine adapters.
 - `my-skills/` is seeded once, then never touched: bring your skills and they stay yours.
 - Version lives in `versions/VERSION`; changes in `versions/CHANGELOG.md`.
 - Offline or no git remote: silent skip. Memory always works.

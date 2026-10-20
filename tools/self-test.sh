@@ -135,6 +135,15 @@ if [ -f "$ROOT/tools/hooks/test.sh" ]; then
     fail "hook fixtures failed (run: bash tools/hooks/test.sh)"
   fi
 fi
+if [ -f "$ROOT/tools/hooks/checkpoint.sh" ]; then
+  bash -n "$ROOT/tools/hooks/checkpoint.sh" && ok "pre-update checkpoint syntax ok" || fail "pre-update checkpoint syntax error"
+fi
+if [ -f "$ROOT/tools/check-update.sh" ]; then
+  bash -n "$ROOT/tools/check-update.sh" && ok "update check syntax ok" || fail "update check syntax error"
+fi
+if [ -f "$ROOT/tools/update-flow.sh" ]; then
+  bash -n "$ROOT/tools/update-flow.sh" && ok "update flow syntax ok" || fail "update flow syntax error"
+fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------
 if [ "$QUICK" = 0 ]; then

@@ -3,9 +3,11 @@
 | Tool | What |
 |---|---|
 | `fts.py` | the search index (stdlib only). Rebuild: `python3 tools/fts.py --build` |
-| `update.sh` | session-start safe auto-update: pulls engine files from your fork's main when cloned from a team fork, else from the original (`CV4_UPSTREAM` overrides); never touches personal zones; re-wires the engine (project + global skill folders) + tops up the shelf; silent unless the version actually changed |
+| `update.sh` | the engine pull: pulls engine files from your fork's main when cloned from a team fork, else from the original (`CV4_UPSTREAM` overrides); never touches personal zones; re-wires the engine (project + global skill folders) + tops up the shelf; silent unless the version actually changed. Called by `update-flow.sh` |
+| `check-update.sh` | read-only session-start check: `git fetch` with a 3s timeout, prints one line when behind, never pulls. Offline is silent |
+| `update-flow.sh` | the handoff: pre-update checkpoint -> `update.sh` -> `repair.sh` -> prints "save, refresh the manual, reload". Never forces a conflict |
 | `install-skills.sh` | wire the bank into each agent (project `.opencode/skills/`, `.claude/skills/`, `.agents/skills/`; `--global` adds the harness's global skill folder, e.g. `~/.claude/skills/`) and refresh the router block in repo agent files that carry its markers (bare `@...` pointers and marker-less files are left alone); `--check` to inspect, `--copy` for filesystems without symlinks; wired copies carry a `.cv4-wired` marker and refresh on every run, real folders you made yourself stay untouched |
-| `session-load.sh` | the session-start load in one call: surfaces the last update's one-line note, fires the engine updater and external skill updater in the background, then prints `main/` + `memory/` files with headers; `--no-update` skips both updaters |
+| `session-load.sh` | the session-start load in one call: surfaces the last update's one-line note, checks for a new engine version (never pulls), fires the external skill updater in the background, then prints `main/` + `memory/` files with headers; `--no-update` skips the check, `--update` runs the handoff |
 | `session-scan.sh` | recent Claude Code sessions from `~/.claude/projects`: what each opened with, the last prompt, and a flag when a session looks cut off mid-conversation with no save; report-only |
 | `hooks/` | the behavior spine: dispatcher, harness adapters, doctor, fixtures, install/remove. See `tools/hooks/README.md` |
 | `update-skills.sh` | external skill sources from `main/skill-sources.txt` (your opt-in list); pinned `npm name@version` only, unpinned entries are skipped; updates when present, installs when missing; every run appends to `logs/update-skills.log`; silent on failure |

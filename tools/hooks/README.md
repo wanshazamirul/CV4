@@ -22,6 +22,7 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `install.sh` | Python finder for the installer |
 | `doctor.sh` | first aid: adapters, fixtures, state, kill switch, last decision |
 | `test.sh` | fixture suite, no harness and no network |
+| `checkpoint.sh` | fast pre-update checkpoint used by `update-flow.sh` (working tree + current session) |
 | `adapters/claude.json` | reference shape (the installer builds it) |
 | `adapters/opencode/index.ts` | opencode plugin template; `__CV4_HOME__` is filled at install |
 
@@ -64,5 +65,7 @@ bash tools/hooks/test.sh
 |---|---|---|---|---|---|---|
 | Claude Code | yes | yes | yes | yes | yes | yes |
 | opencode | yes | yes | best effort (throw) | log + checkpoint | on delete | on compact |
-| Gemini CLI | P2 | P2 | P2 | P2 | P2 | P2 |
-| Codex | P2 | P2 | P2 | P2 | P2 | P2 |
+| Gemini CLI | yes | yes | yes | yes (retry) | yes | yes (checkpoint) |
+| Codex | yes (trust) | yes | yes | yes (continue) | yes | yes |
+
+Codex skips untrusted hooks until you approve them once in `/hooks`; the install line says so. Live harness tests are part of the release gate for each tool.

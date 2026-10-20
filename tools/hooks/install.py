@@ -243,6 +243,259 @@ def opencode_check(root: Path, quiet: bool) -> str:
     return f"opencode: {found} config entry(ies), plugin file {'present' if installed else 'missing'}"
 
 
+# ---------------------------------------------------------------- gemini
+
+GEMINI_EVENTS = [
+    ("SessionStart", "startup|resume|clear", 10000),
+    ("SessionEnd", None, 10000),
+    ("BeforeAgent", None, 10000),
+    ("AfterAgent", None, 10000),
+    ("BeforeTool", "write_file|replace|edit_file|apply_patch", 10000),
+    ("AfterTool", None, 10000),
+    ("PreCompress", None, 10000),
+]
+
+
+def gemini_path() -> Path:
+    return Path(os.path.expanduser("~")) / ".gemini" / "settings.json"
+
+
+def gemini_command(root: Path, event: str) -> str:
+    return f'bash "{dispatch_path(root)}" gemini {event}'
+
+
+def gemini_install(root: Path, quiet: bool) -> str:
+    path = gemini_path()
+    if not path.parent.exists():
+        return "gemini: not installed, skipped"
+    data = read_json(path)
+    if not isinstance(data, dict):
+        raise InstallError(f"{path} is not a JSON object")
+    hooks = data.get("hooks")
+    if not isinstance(hooks, dict):
+        hooks = {}
+    for event, matcher, timeout in GEMINI_EVENTS:
+        groups = hooks.get(event)
+        if not isinstance(groups, list):
+            groups = []
+        cleaned = []
+        for group in groups:
+            if not isinstance(group, dict):
+                continue
+            inner = group.get("hooks")
+            if not isinstance(inner, list):
+                cleaned.append(group)
+                continue
+            kept = [h for h in inner if not is_cv4_handler(h)]
+            if kept:
+                group = dict(group)
+                group["hooks"] = kept
+                cleaned.append(group)
+        handler = {
+            "name": "cv4-behavior-spine",
+            "type": "command",
+            "command": gemini_command(root, event),
+            "timeout": timeout,
+        }
+        group = {"hooks": [handler]}
+        if matcher:
+            group["matcher"] = matcher
+        cleaned.append(group)
+        hooks[event] = cleaned
+    data["hooks"] = hooks
+    backup(path)
+    atomic_write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    return f"gemini: hooks installed ({len(GEMINI_EVENTS)} events)"
+
+
+def gemini_remove(root: Path, quiet: bool) -> str:
+    path = gemini_path()
+    if not path.exists():
+        return "gemini: no settings.json, nothing to remove"
+    data = read_json(path)
+    if not isinstance(data, dict):
+        raise InstallError(f"{path} is not a JSON object")
+    hooks = data.get("hooks")
+    removed = 0
+    if isinstance(hooks, dict):
+        for event in list(hooks.keys()):
+            groups = hooks.get(event)
+            if not isinstance(groups, list):
+                continue
+            cleaned = []
+            for group in groups:
+                if not isinstance(group, dict):
+                    continue
+                inner = group.get("hooks")
+                if not isinstance(inner, list):
+                    cleaned.append(group)
+                    continue
+                kept = [h for h in inner if not is_cv4_handler(h)]
+                removed += len(inner) - len(kept)
+                if kept:
+                    group = dict(group)
+                    group["hooks"] = kept
+                    cleaned.append(group)
+            if cleaned:
+                hooks[event] = cleaned
+            else:
+                del hooks[event]
+        if not hooks:
+            data.pop("hooks", None)
+    backup(path)
+    atomic_write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    return f"gemini: removed {removed} CV4 hook handler(s)"
+
+
+def gemini_check(root: Path, quiet: bool) -> str:
+    path = gemini_path()
+    if not path.exists():
+        return "gemini: settings.json absent"
+    try:
+        data = read_json(path)
+    except InstallError as exc:
+        return f"gemini: unreadable ({exc})"
+    hooks = data.get("hooks") if isinstance(data, dict) else {}
+    found = 0
+    if isinstance(hooks, dict):
+        for groups in hooks.values():
+            if not isinstance(groups, list):
+                continue
+            for group in groups:
+                inner = group.get("hooks") if isinstance(group, dict) else None
+                if isinstance(inner, list):
+                    found += sum(1 for h in inner if is_cv4_handler(h))
+    return f"gemini: {found} CV4 hook handler(s) installed"
+
+
+# ---------------------------------------------------------------- codex
+
+CODEX_EVENTS = [
+    ("SessionStart", "startup|resume|clear|compact|fork", 10),
+    ("UserPromptSubmit", None, 10),
+    ("PreToolUse", "Edit|Write|apply_patch", 10),
+    ("PostToolUse", None, 10),
+    ("Stop", None, 10),
+    ("SessionEnd", None, 3),
+    ("PreCompact", "manual|auto", 10),
+]
+
+
+def codex_path() -> Path:
+    return Path(os.path.expanduser("~")) / ".codex" / "hooks.json"
+
+
+def codex_command(root: Path, event: str) -> str:
+    return f'bash "{dispatch_path(root)}" codex {event}'
+
+
+def codex_install(root: Path, quiet: bool) -> str:
+    path = codex_path()
+    if not path.parent.exists():
+        return "codex: not installed, skipped"
+    data = read_json(path)
+    if not isinstance(data, dict):
+        raise InstallError(f"{path} is not a JSON object")
+    hooks = data.get("hooks")
+    if not isinstance(hooks, dict):
+        hooks = {}
+    for event, matcher, timeout in CODEX_EVENTS:
+        groups = hooks.get(event)
+        if not isinstance(groups, list):
+            groups = []
+        cleaned = []
+        for group in groups:
+            if not isinstance(group, dict):
+                continue
+            inner = group.get("hooks")
+            if not isinstance(inner, list):
+                cleaned.append(group)
+                continue
+            kept = [h for h in inner if not is_cv4_handler(h)]
+            if kept:
+                group = dict(group)
+                group["hooks"] = kept
+                cleaned.append(group)
+        handler = {
+            "type": "command",
+            "command": codex_command(root, event),
+            "timeout": timeout,
+            "additionalContextLimit": 6000,
+        }
+        group = {"hooks": [handler]}
+        if matcher:
+            group["matcher"] = matcher
+        cleaned.append(group)
+        hooks[event] = cleaned
+    data["hooks"] = hooks
+    backup(path)
+    atomic_write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    return "codex: hooks installed (7 events); approve once in /hooks"
+
+
+def codex_remove(root: Path, quiet: bool) -> str:
+    path = codex_path()
+    if not path.exists():
+        return "codex: no hooks.json, nothing to remove"
+    data = read_json(path)
+    if not isinstance(data, dict):
+        raise InstallError(f"{path} is not a JSON object")
+    hooks = data.get("hooks")
+    removed = 0
+    if isinstance(hooks, dict):
+        for event in list(hooks.keys()):
+            groups = hooks.get(event)
+            if not isinstance(groups, list):
+                continue
+            cleaned = []
+            for group in groups:
+                if not isinstance(group, dict):
+                    continue
+                inner = group.get("hooks")
+                if not isinstance(inner, list):
+                    cleaned.append(group)
+                    continue
+                kept = [h for h in inner if not is_cv4_handler(h)]
+                removed += len(inner) - len(kept)
+                if kept:
+                    group = dict(group)
+                    group["hooks"] = kept
+                    cleaned.append(group)
+            if cleaned:
+                hooks[event] = cleaned
+            else:
+                del hooks[event]
+        if not hooks:
+            data.pop("hooks", None)
+    backup(path)
+    if data:
+        atomic_write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    else:
+        path.unlink(missing_ok=True)
+    return f"codex: removed {removed} CV4 hook handler(s)"
+
+
+def codex_check(root: Path, quiet: bool) -> str:
+    path = codex_path()
+    if not path.exists():
+        return "codex: hooks.json absent"
+    try:
+        data = read_json(path)
+    except InstallError as exc:
+        return f"codex: unreadable ({exc})"
+    hooks = data.get("hooks") if isinstance(data, dict) else {}
+    found = 0
+    if isinstance(hooks, dict):
+        for groups in hooks.values():
+            if not isinstance(groups, list):
+                continue
+            for group in groups:
+                inner = group.get("hooks") if isinstance(group, dict) else None
+                if isinstance(inner, list):
+                    found += sum(1 for h in inner if is_cv4_handler(h))
+    return f"codex: {found} CV4 hook handler(s) installed"
+
+
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     root = Path(__file__).resolve().parents[2]
@@ -261,9 +514,11 @@ def main() -> int:
     actions = {
         "claude": {"install": claude_install, "remove": claude_remove, "check": claude_check},
         "opencode": {"install": opencode_install, "remove": opencode_remove, "check": opencode_check},
+        "gemini": {"install": gemini_install, "remove": gemini_remove, "check": gemini_check},
+        "codex": {"install": codex_install, "remove": codex_remove, "check": codex_check},
     }
     if target == "all":
-        targets = ["claude", "opencode"]
+        targets = ["claude", "opencode", "gemini", "codex"]
     else:
         targets = [target]
     try:

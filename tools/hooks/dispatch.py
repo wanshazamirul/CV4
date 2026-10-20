@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -63,6 +64,13 @@ STOPWORDS = set(
 # ---------------------------------------------------------------- utilities
 
 def now() -> datetime:
+    raw = os.environ.get("CV4_NOW")
+    if raw:
+        try:
+            value = datetime.fromisoformat(raw)
+            return value if value.tzinfo else value.astimezone()
+        except ValueError:
+            pass
     return datetime.now().astimezone()
 
 
@@ -254,7 +262,7 @@ class Ctx:
 
     def user_now(self) -> datetime:
         tz = self._user_tz()
-        return datetime.now(tz) if tz else now()
+        return now().astimezone(tz) if tz else now()
 
     # -- loading
 
@@ -267,6 +275,7 @@ class Ctx:
         source = str(self.event.get("source") or "").lower()
         existing = read_json(self.state_path, None)
         if isinstance(existing, dict) and source not in ("startup", "clear"):
+            existing["closed"] = False
             return existing
         return {
             "session_id": self.sid,
@@ -291,6 +300,7 @@ class Ctx:
                 "compact_seen": False,
                 "suggested": False,
             },
+            "closed": False,
             "save_requested_at": 0,
             "last_save_at": 0,
             "last_cadence_at": 0,
@@ -351,10 +361,20 @@ class Ctx:
                 f"unsaved session: {pending.get('at', '?')} ({pending.get('harness', '?')}). "
                 f"Checkpoint: {pending.get('checkpoint', '')}. Fold it in after the greeting, or offer to."
             )
+        stale = None if pending else self._stale_session()
+        if stale:
+            meta.append(
+                f"stale session: {stale.get('at', '?')} ({stale.get('harness', '?')}). "
+                f"Checkpoint: {stale.get('checkpoint', '')}. It never closed cleanly; fold it in or offer to save."
+            )
 
         manual = self._manual_rev_note()
         if manual:
             meta.append(manual)
+
+        doctor = self._doctor_line()
+        if doctor:
+            meta.append(doctor)
 
         parts.append("\n".join(meta))
 
@@ -425,6 +445,21 @@ class Ctx:
                 hot.append(line.rstrip())
         return clip("\n".join(hot[:14]), 1600)
 
+    def _doctor_line(self) -> str:
+        problems = []
+        try:
+            self.state_dir.mkdir(parents=True, exist_ok=True)
+            probe = self.state_dir / ".probe"
+            probe.write_text("ok", encoding="utf-8")
+            probe.unlink()
+        except OSError:
+            problems.append("state")
+        if not (self.root / "tools" / "fts.py").exists():
+            problems.append("index")
+        if not problems:
+            return ""
+        return f"hooks: degraded ({', '.join(problems)}). Run bash tools/hooks/doctor.sh."
+
     def _manual_rev_note(self) -> str:
         boot = read_text(self.root / "BOOT.md", 50000)
         source = re.search(r"Manual rev:\s*([0-9]+\.[0-9]+\.[0-9]+)", boot)
@@ -462,7 +497,7 @@ class Ctx:
             if isinstance(cached, dict) and cached.get("ts"):
                 age = (now() - parse_iso(cached["ts"])).total_seconds() if parse_iso(cached["ts"]) else 10**9
                 if age < cache_seconds:
-                    return self._declined(cached) if cached.get("commits") else None
+                    return None if self._declined(cached) else (cached if cached.get("commits") else None)
             remote = self._update_remote()
             if not remote:
                 return None
@@ -532,6 +567,47 @@ class Ctx:
             if isinstance(data, dict) and data.get("checkpoint"):
                 return data
         return None
+
+    def _stale_session(self):
+        cutoff = now().timestamp() - 2 * 3600
+        best = None
+        try:
+            paths = list(self.state_dir.glob("*.json"))
+        except OSError:
+            return None
+        for path in paths:
+            if path.name.startswith(("update-", "timing", "pending-save-")):
+                continue
+            data = read_json(path, None)
+            if not isinstance(data, dict):
+                continue
+            if data.get("closed"):
+                continue
+            if data.get("session_id") == self.sid:
+                continue
+            if data.get("flags", {}).get("save_done"):
+                continue
+            if not (data.get("tool_calls") or data.get("edits") or int(data.get("turns", 0)) > 1):
+                continue
+            last = parse_iso(data.get("last_event_at", ""))
+            if not last or last.timestamp() > cutoff:
+                continue
+            if best is None or last.timestamp() > best[0].timestamp():
+                best = (last, data)
+        if not best:
+            return None
+        data = best[1]
+        sid = safe_sid(data.get("session_id", ""))
+        checkpoints = []
+        try:
+            checkpoints = sorted(self.checkpoint_dir.glob(f"*-{sid}.md"), key=lambda p: p.stat().st_mtime)
+        except OSError:
+            pass
+        return {
+            "at": data.get("last_event_at", "?"),
+            "harness": data.get("harness", "?"),
+            "checkpoint": str(checkpoints[-1]) if checkpoints else "",
+        }
 
     # -- checkpoint
 
@@ -917,8 +993,67 @@ class Ctx:
             except OSError:
                 pass
             self.log("skip", "pending-save")
+            if self._worker_enabled():
+                self._spawn_close_worker()
+        self.state["closed"] = True
         self._append_usage()
         self.save_state()
+
+    def _worker_enabled(self) -> bool:
+        mode = str(self.policy.get("auto_save", {}).get("on_close", "auto")).lower()
+        if mode == "checkpoint":
+            return False
+        if mode == "worker":
+            return True
+        role = ""
+        try:
+            for line in (self.root / "personas" / ".machine").read_text(encoding="utf-8", errors="replace").splitlines():
+                if line.startswith("role="):
+                    role = line.split("=", 1)[1].strip().lower()
+                    break
+        except OSError:
+            role = ""
+        return role != "member"
+
+    def _spawn_close_worker(self) -> bool:
+        commands = {
+            "claude": ["claude", "-p"],
+            "opencode": ["opencode", "run"],
+            "gemini": ["gemini", "-p"],
+            "codex": ["codex", "exec"],
+        }
+        base = commands.get(self.harness)
+        if not base or not shutil.which(base[0]):
+            return False
+        pending = self.state_dir / f"pending-save-{self.sid}.json"
+        prompt = (
+            f"CV4 close-save worker. Home: {self.root}. "
+            f"Read the checkpoint at {self.checkpoint_path}. "
+            f"Run the save ritual from {self.root / 'skills' / 'save' / 'SKILL.md'} now: "
+            f"append today's log under {self.root / 'logs' / 'current'}, "
+            f"update {self.root / 'main' / 'current-session.md'}, {self.root / 'memory' / 'index.md'}, "
+            f"decisions, reminders, rotation. Use absolute paths. Do not ask questions. Do not commit. "
+            f"When done, delete {pending} and write one line to {self.state_dir / 'close-save.log'}."
+        )
+        env = dict(os.environ)
+        env["CV4_HOOKS"] = "0"
+        log = self.state_dir / "close-save.log"
+        try:
+            with log.open("a", encoding="utf-8") as handle:
+                kwargs = {"start_new_session": True} if os.name == "posix" else {"creationflags": 0x00000008}
+                subprocess.Popen(
+                    base + [prompt],
+                    cwd=str(self.root),
+                    env=env,
+                    stdin=subprocess.DEVNULL,
+                    stdout=handle,
+                    stderr=subprocess.STDOUT,
+                    **kwargs,
+                )
+            self.log("worker", "close-save")
+            return True
+        except OSError:
+            return False
 
     def pre_compact(self) -> None:
         self.flags()["compact_seen"] = True
@@ -1006,6 +1141,8 @@ def shape(harness: str, event: str, payload) -> dict:
         if event == "pre-tool":
             return {"decision": "deny", "reason": payload}
         if event == "stop":
+            if isinstance(payload, dict) and payload.get("suggest"):
+                return {}
             return {"decision": "deny", "reason": payload}
     if harness == "codex":
         if event == "session-start":
@@ -1015,6 +1152,8 @@ def shape(harness: str, event: str, payload) -> dict:
         if event == "pre-tool":
             return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": payload}}
         if event == "stop":
+            if isinstance(payload, dict) and payload.get("suggest"):
+                return {}
             return {"decision": "block", "reason": payload}
     if harness == "opencode":
         if event == "session-start":

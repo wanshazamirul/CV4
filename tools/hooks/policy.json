@@ -16,7 +16,7 @@
     "cadence": "adaptive",
     "cadence_fallback_min": 90,
     "pre_compact": true,
-    "on_close": "checkpoint",
+    "on_close": "auto",
     "suggest_minutes": 60,
     "max_blocks": 2
   },

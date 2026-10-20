@@ -19,6 +19,11 @@ A skill is a small file with a **trigger** (its `description`) and a **procedure
 | `forge` | "that keeps happening", 3x repeat | Turns repetition into upgrades (the ladder) |
 | `intake` | foreign file arrives, "read this, what do you think?" | Fences, assesses (card), routes, merges or rejects with reasons, logs |
 
+## Firing
+
+- Native discovery: the harness lists each trigger and the model chooses.
+- Behavior spine: `tools/hooks` injects the exact skill body when the trigger is explicit (save, remind, decision, build, debug), so the ritual does not depend on memory. Details: `tools/hooks/README.md`.
+
 ## Structure
 
 - One folder per skill: `skills/<name>/SKILL.md` (bank) or `my-skills/<name>/SKILL.md` (yours).

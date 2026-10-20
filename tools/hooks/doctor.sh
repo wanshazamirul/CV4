@@ -33,6 +33,8 @@ done <<< "$OUT"
 HARNESS=0
 [ -d "$HOME/.claude" ] && HARNESS=1
 [ -d "$HOME/.config/opencode" ] && HARNESS=1
+[ -d "$HOME/.gemini" ] && HARNESS=1
+[ -d "$HOME/.codex" ] && HARNESS=1
 TEMPLATE=0
 grep -q '\[AI_NAME\]' "$ROOT/main/identity-core.md" 2>/dev/null && TEMPLATE=1
 if [ "$TEMPLATE" = 1 ]; then

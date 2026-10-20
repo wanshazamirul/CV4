@@ -93,6 +93,22 @@ if ls "$T"/logs/.state/pending-save-*.json >/dev/null 2>&1; then ok "unsaved ses
 OUT="$(run SessionStart '{"session_id":"hk3","source":"startup"}')"
 expect_json "next boot surfaces the unsaved session" "$OUT" '"unsaved session" in d["hookSpecificOutput"]["additionalContext"]'
 
+# 7b. a stale state file (terminal closed without a SessionEnd) is surfaced too
+mkdir -p "$T/logs/checkpoints"
+rm -f "$T"/logs/.state/pending-save-*.json
+printf '# stale checkpoint\n' > "$T/logs/checkpoints/2026-10-20-stale1.md"
+python3 - "$T/logs/.state/stale1.json" <<'PY'
+import json, sys
+from datetime import datetime, timedelta, timezone
+old = (datetime.now(timezone.utc) - timedelta(hours=3)).isoformat()
+data = {"session_id": "stale1", "harness": "opencode", "cwd": "/tmp", "started_at": old,
+        "last_event_at": old, "turns": 3, "tool_calls": 5, "edits": 2,
+        "flags": {"save_done": False}, "closed": False}
+open(sys.argv[1], "w").write(json.dumps(data) + "\n")
+PY
+OUT="$(run SessionStart '{"session_id":"hk-stale","source":"startup"}')"
+expect_json "a stale session is surfaced" "$OUT" '"stale session" in d["hookSpecificOutput"]["additionalContext"]'
+
 # 8. kill switch
 OUT="$(CV4_HOOKS=0 "$PY" "$DISPATCH" claude SessionStart --root "$T" 2>/dev/null <<<'{"session_id":"hk4"}')"
 expect_empty "kill switch silences the dispatcher" "$OUT"
@@ -120,11 +136,37 @@ expect_json "gemini returns additionalContext" "$OUT" '"additionalContext" in d[
 OUT="$(run SessionStart '{"session_id":"hk8","source":"startup"}' codex)"
 expect_json "codex returns additionalContext" "$OUT" '"additionalContext" in d["hookSpecificOutput"]'
 
-# 13. install/uninstall sandbox (Claude + opencode)
+# gemini prompt / gate / stop shapes
+run SessionStart '{"session_id":"hk9","source":"startup"}' gemini >/dev/null
+OUT="$(run UserPromptSubmit '{"session_id":"hk9","prompt":"save and wrap up"}' gemini)"
+expect_json "gemini prompt injects save" "$OUT" '"additionalContext" in d["hookSpecificOutput"] and "goodbye detected" in d["hookSpecificOutput"]["additionalContext"]'
+run PostToolUse '{"session_id":"hk9","tool_name":"write_file","tool_input":{"file_path":"/tmp/g.ts"}}' gemini >/dev/null
+OUT="$(run Stop '{"session_id":"hk9"}' gemini)"
+expect_json "gemini turn end denies to force save" "$OUT" 'd["decision"] == "deny" and "autosave" in d["reason"]'
+run SessionStart '{"session_id":"hk11","source":"startup"}' gemini >/dev/null
+run UserPromptSubmit '{"session_id":"hk11","prompt":"this is broken"}' gemini >/dev/null
+OUT="$(run PreToolUse '{"session_id":"hk11","tool_name":"replace","tool_input":{"file_path":"/tmp/g.ts"}}' gemini)"
+expect_json "gemini tool gate denies once" "$OUT" 'd["decision"] == "deny"'
+
+# codex prompt / gate / stop shapes
+run SessionStart '{"session_id":"hk10","source":"startup"}' codex >/dev/null
+OUT="$(run UserPromptSubmit '{"session_id":"hk10","prompt":"save and wrap up"}' codex)"
+expect_json "codex prompt injects save" "$OUT" '"additionalContext" in d["hookSpecificOutput"] and "goodbye detected" in d["hookSpecificOutput"]["additionalContext"]'
+run PostToolUse '{"session_id":"hk10","tool_name":"apply_patch","tool_input":{"file_path":"/tmp/c.ts"}}' codex >/dev/null
+OUT="$(run Stop '{"session_id":"hk10"}' codex)"
+expect_json "codex turn end blocks to force save" "$OUT" 'd["decision"] == "block" and "autosave" in d["reason"]'
+run SessionStart '{"session_id":"hk12","source":"startup"}' codex >/dev/null
+run UserPromptSubmit '{"session_id":"hk12","prompt":"this is broken"}' codex >/dev/null
+OUT="$(run PreToolUse '{"session_id":"hk12","tool_name":"apply_patch","tool_input":{"file_path":"/tmp/c.ts"}}' codex)"
+expect_json "codex tool gate denies once" "$OUT" 'd["hookSpecificOutput"]["permissionDecision"] == "deny"'
+
+# 13. install/uninstall sandbox (Claude + opencode + Gemini + Codex)
 TH="$T/home"
-mkdir -p "$TH/.claude" "$TH/.config/opencode"
+mkdir -p "$TH/.claude" "$TH/.config/opencode" "$TH/.gemini" "$TH/.codex"
 printf '%s\n' '{"attribution":false,"hooks":{"Stop":[{"hooks":[{"type":"command","command":"echo user-hook"}]}]}}' > "$TH/.claude/settings.json"
 printf '%s\n' '{"$schema":"https://opencode.ai/config.json","model":"test/model"}' > "$TH/.config/opencode/opencode.json"
+printf '%s\n' '{"hooks":{"BeforeTool":[{"matcher":"x","hooks":[{"name":"user","type":"command","command":"echo user-hook"}]}]}}' > "$TH/.gemini/settings.json"
+printf '%s\n' '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"echo user-hook"}]}]}}' > "$TH/.codex/hooks.json"
 HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
@@ -135,33 +177,151 @@ cv4 = sum(1 for ev in hooks.values() for g in ev for h in g.get("hooks", []) if 
 user = any("user-hook" in h.get("command", "") for g in hooks.get("Stop", []) for h in g.get("hooks", []))
 oc = json.loads((home / ".config/opencode/opencode.json").read_text())
 plugin = any("cv4-hooks" in p for p in oc.get("plugins", []))
+g = json.loads((home / ".gemini/settings.json").read_text())
+gcv4 = sum(1 for ev in g.get("hooks", {}).values() for gr in ev for h in gr.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
+guser = any("user-hook" in h.get("command", "") for ev in g.get("hooks", {}).values() for gr in ev for h in gr.get("hooks", []))
+c = json.loads((home / ".codex/hooks.json").read_text())
+ccv4 = sum(1 for ev in c.get("hooks", {}).values() for gr in ev for h in gr.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
+cuser = any("user-hook" in h.get("command", "") for ev in c.get("hooks", {}).values() for gr in ev for h in gr.get("hooks", []))
 assert cv4 == 7 and user and plugin, (cv4, user, plugin)
+assert gcv4 == 7 and guser, (gcv4, guser)
+assert ccv4 == 7 and cuser, (ccv4, cuser)
 PY
-then ok "installer wires Claude + opencode, keeps user hooks"; else bad "installer wiring failed"; fi
+then ok "installer wires all four adapters, keeps user hooks"; else bad "installer wiring failed"; fi
 HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
-hooks = json.loads((home / ".claude/settings.json").read_text()).get("hooks", {})
-cv4 = sum(1 for ev in hooks.values() for g in ev for h in g.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
+def cv4(path, key="hooks"):
+    d = json.loads(path.read_text())
+    return sum(1 for ev in d.get(key, {}).values() for gr in ev for h in gr.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
+claude = cv4(home / ".claude/settings.json")
+g = cv4(home / ".gemini/settings.json")
+c = cv4(home / ".codex/hooks.json")
 oc = json.loads((home / ".config/opencode/opencode.json").read_text())
 plugin = len([p for p in oc.get("plugins", []) if "cv4-hooks" in p])
-assert cv4 == 7 and plugin == 1, (cv4, plugin)
+assert claude == 7 and g == 7 and c == 7 and plugin == 1, (claude, g, c, plugin)
 PY
-then ok "installer is idempotent"; else bad "installer duplicates on a second run"; fi
+then ok "installer is idempotent across all four"; else bad "installer duplicates on a second run"; fi
 HOME="$TH" bash "$ROOT/tools/hooks/install.sh" all remove --quiet >/dev/null 2>&1
 if python3 - "$TH" <<'PY'
 import json, sys, pathlib
 home = pathlib.Path(sys.argv[1])
-hooks = json.loads((home / ".claude/settings.json").read_text()).get("hooks", {})
-cv4 = sum(1 for ev in hooks.values() for g in ev for h in g.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
-user = any("user-hook" in h.get("command", "") for g in hooks.get("Stop", []) for h in g.get("hooks", []))
+def state(path, key="hooks"):
+    d = json.loads(path.read_text())
+    n = sum(1 for ev in d.get(key, {}).values() for gr in ev for h in gr.get("hooks", []) if "dispatch.sh" in h.get("command", ""))
+    u = any("user-hook" in h.get("command", "") for ev in d.get(key, {}).values() for gr in ev for h in gr.get("hooks", []))
+    return n, u
+claude = state(home / ".claude/settings.json")
+g = state(home / ".gemini/settings.json")
+c = state(home / ".codex/hooks.json")
 oc = json.loads((home / ".config/opencode/opencode.json").read_text())
 plugin = any("cv4-hooks" in p for p in oc.get("plugins", []))
 gone = not (home / ".config/opencode/plugins/cv4-hooks").exists()
-assert cv4 == 0 and user and not plugin and gone, (cv4, user, plugin, gone)
+assert claude == (0, True) and g == (0, True) and c == (0, True), (claude, g, c)
+assert not plugin and gone, (plugin, gone)
 PY
-then ok "uninstaller removes only CV4 entries"; else bad "uninstaller left CV4 entries or removed user hooks"; fi
+then ok "uninstaller removes only CV4 entries across all four"; else bad "uninstaller left CV4 entries or removed user hooks"; fi
+
+# 14. close-save worker (fake harness binary, personal vs member role)
+WR="$T/worker"
+mkdir -p "$WR/main" "$WR/memory" "$WR/logs" "$WR/skills" "$WR/personas" "$T/bin"
+cp -a "$ROOT/skills/save" "$WR/skills/"
+printf '**Last updated: <date time> - template**\n' > "$WR/main/current-session.md"
+printf 'role=personal\n' > "$WR/personas/.machine"
+cat > "$T/bin/opencode" <<'EOF'
+#!/bin/bash
+echo "$@" > "$WORKER_OUT"
+EOF
+chmod +x "$T/bin/opencode"
+run_at() { # run_at <root> <event> <json> <harness>
+  printf '%s' "$3" | "$PY" "$DISPATCH" "$4" "$2" --root "$1" 2>/dev/null
+}
+WORKER_OUT="$T/worker-personal.out" PATH="$T/bin:$PATH" run_at "$WR" SessionStart '{"session_id":"w1","source":"startup"}' opencode >/dev/null
+PATH="$T/bin:$PATH" run_at "$WR" PostToolUse '{"session_id":"w1","tool_name":"write_file","tool_input":{"file_path":"/tmp/w.ts"}}' opencode >/dev/null
+WORKER_OUT="$T/worker-personal.out" PATH="$T/bin:$PATH" run_at "$WR" SessionEnd '{"session_id":"w1"}' opencode >/dev/null
+sleep 1
+if [ -f "$T/worker-personal.out" ] && grep -q "CV4 close-save worker" "$T/worker-personal.out"; then
+  ok "personal close spawns the save worker"
+else
+  bad "personal close did not spawn the save worker"
+fi
+printf 'role=member\n' > "$WR/personas/.machine"
+rm -f "$T/worker-member.out"
+WORKER_OUT="$T/worker-member.out" PATH="$T/bin:$PATH" run_at "$WR" SessionStart '{"session_id":"w2","source":"startup"}' opencode >/dev/null
+PATH="$T/bin:$PATH" run_at "$WR" PostToolUse '{"session_id":"w2","tool_name":"write_file","tool_input":{"file_path":"/tmp/w2.ts"}}' opencode >/dev/null
+WORKER_OUT="$T/worker-member.out" PATH="$T/bin:$PATH" run_at "$WR" SessionEnd '{"session_id":"w2"}' opencode >/dev/null
+sleep 1
+[ ! -f "$T/worker-member.out" ] && ok "member close stays checkpoint-only" || bad "member close spawned a worker"
+
+# 15. adaptive timing: learned late and cadence boundaries
+TR="$T/time"
+mkdir -p "$TR/main" "$TR/memory" "$TR/logs" "$TR/skills"
+printf '## Basics\n- **Timezone**: MYT (UTC+8, Malaysia)\n' > "$TR/main/relationship-memory.md"
+printf '**Last updated: 2020-01-01 00:00 - seed**\n' > "$TR/main/current-session.md"
+cp -a "$ROOT/skills/save" "$TR/skills/"
+CV4_NOW="2026-10-20T22:55:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht1","source":"startup"}' claude >/dev/null
+CV4_NOW="2026-10-20T22:56:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht1","tool_name":"Edit","tool_input":{"file_path":"/tmp/t.ts"}}' claude >/dev/null
+OUT="$(CV4_NOW="2026-10-20T23:01:00+08:00" run_at "$TR" Stop '{"session_id":"ht1"}' claude)"
+expect_json "late boundary triggers autosave" "$OUT" 'd["decision"] == "block" and "late" in d["reason"]'
+CV4_NOW="2026-10-21T09:00:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht2","source":"startup"}' claude >/dev/null
+CV4_NOW="2026-10-21T09:01:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht2","tool_name":"Edit","tool_input":{"file_path":"/tmp/t2.ts"}}' claude >/dev/null
+OUT="$(CV4_NOW="2026-10-21T10:31:00+08:00" run_at "$TR" Stop '{"session_id":"ht2"}' claude)"
+expect_json "cadence boundary triggers autosave" "$OUT" 'd["decision"] == "block" and "cadence" in d["reason"]'
+mkdir -p "$TR/logs/.state"
+python3 - "$TR/logs/.state/usage.jsonl" <<'PY'
+import json, sys
+rows = []
+for day in range(15, 20):
+    rows.append({"date": f"2026-10-{day}", "harness": "claude", "start": f"2026-10-{day}T21:20:00+08:00", "end": f"2026-10-{day}T23:00:00+08:00", "minutes": 100, "turns": 8, "tools": 25, "saved": True})
+with open(sys.argv[1], "w") as f:
+    for row in rows:
+        f.write(json.dumps(row) + "\n")
+PY
+CV4_NOW="2026-10-21T11:00:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht3","source":"startup"}' claude >/dev/null
+CV4_NOW="2026-10-21T11:05:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht3","tool_name":"Edit","tool_input":{"file_path":"/tmp/t3.ts"}}' claude >/dev/null
+CV4_NOW="2026-10-21T11:10:00+08:00" run_at "$TR" SessionEnd '{"session_id":"ht3"}' claude >/dev/null
+if python3 - "$TR/logs/.state/timing.json" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1]))
+assert d.get("late") == "22:45", d
+assert d.get("cadence_min") == 80, d
+PY
+then ok "usage history teaches the late and cadence boundary"; else bad "adaptive timing did not learn"; fi
+
+# 16. update offer + snooze (local bare remote, no network)
+if command -v git >/dev/null 2>&1; then
+  UR="$T/update-root"; BR="$T/update-remote.git"; UC="$T/update-clone"
+  if git clone --quiet "$ROOT" "$UR" 2>/dev/null && git init --quiet --bare "$BR" 2>/dev/null; then
+    git -C "$BR" symbolic-ref HEAD refs/heads/main >/dev/null 2>&1
+    cp "$ROOT/tools/update-flow.sh" "$UR/tools/update-flow.sh" 2>/dev/null || true
+    cp "$ROOT/tools/check-update.sh" "$UR/tools/check-update.sh" 2>/dev/null || true
+    cp "$ROOT/tools/hooks/checkpoint.sh" "$UR/tools/hooks/checkpoint.sh" 2>/dev/null || true
+    git -C "$UR" remote set-url origin "$BR" >/dev/null 2>&1
+    git -C "$UR" push --quiet origin main >/dev/null 2>&1
+    git clone --quiet "$BR" "$UC" >/dev/null 2>&1
+    printf '0.12.1\n' > "$UC/versions/VERSION"
+    git -C "$UC" -c user.name=test -c user.email=test@example.com commit -qam "test bump" >/dev/null 2>&1
+    git -C "$UC" push --quiet origin main >/dev/null 2>&1
+    OLDV="$(cat "$UR/versions/VERSION" 2>/dev/null || echo '?')"
+    OUT="$(run_at "$UR" SessionStart '{"session_id":"up1","source":"startup"}' claude)"
+    if printf '%s' "$OUT" | grep -q "update: CV4 v$OLDV -> v0.12.1"; then ok "greeting brief offers an update"; else bad "greeting brief missed the update"; fi
+    OUT="$(run_at "$UR" UserPromptSubmit '{"session_id":"up1","prompt":"yes"}' claude)"
+    expect_json "yes injects the update handoff" "$OUT" '"approved the update" in d["hookSpecificOutput"]["additionalContext"]'
+    OUT="$(run_at "$UR" SessionStart '{"session_id":"up2","source":"startup"}' claude)"
+    if printf '%s' "$OUT" | grep -q "update: CV4"; then ok "a fresh session offers it again"; else bad "a fresh session missed the update"; fi
+    run_at "$UR" UserPromptSubmit '{"session_id":"up2","prompt":"no"}' claude >/dev/null
+    OUT="$(run_at "$UR" SessionStart '{"session_id":"up3","source":"startup"}' claude)"
+    if printf '%s' "$OUT" | grep -q "update: CV4"; then bad "declined version still offered"; else ok "declined version is snoozed"; fi
+    ( cd "$UR" && CV4_UPSTREAM="$BR" bash tools/update-flow.sh ) >/dev/null 2>&1
+    NEWV="$(cat "$UR/versions/VERSION" 2>/dev/null || echo '?')"
+    [ "$NEWV" = "0.12.1" ] && ok "update-flow pulls and repairs" || bad "update-flow did not pull"
+  else
+    ok "update test skipped (git clone unavailable)"
+  fi
+else
+  ok "update test skipped (no git)"
+fi
 
 # 12. no personal-zone writes from the test itself
 if [ -e "$ROOT/logs/hooks.log" ] && grep -q '"sid":"hk' "$ROOT/logs/hooks.log" 2>/dev/null; then

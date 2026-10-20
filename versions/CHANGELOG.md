@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.12.0 - 2026-10-20
+- **The behavior spine.** CV4 now ships harness hooks: one dispatcher, thin adapters for Claude Code, opencode, Gemini CLI, and Codex. The session-start brief arrives before the first token; the prompt router injects the exact skill body for save, reminders, decisions, build, debug, forge, and intake; bug-shaped prompts get `fts.py` + hotlist evidence and a one-time edit gate; turn end auto-saves at a goodbye, the user's learned late boundary, a cadence boundary, or before compaction; session end writes a checkpoint and can run a detached close-save worker. No more "the model remembered" as the only trigger.
+- **No brick, by design.** Any hook error, timeout, malformed JSON, missing Python, read-only Home, or blocked machine exits 0 with no output. One block per trigger, max 2 per session, `stop_hook_active` respected, a one-line snooze, and a kill switch (`CV4_HOOKS=0` or `main/behavior.json`). Shadow mode logs what it would do and never blocks.
+- **Adaptive timing.** `logs/.state/usage.jsonl` records timestamps only (start, end, minutes, turns, tools, saved). After five sessions, the late trigger and cadence are learned from the user's own median end and session length, blended 50/50, clamped to sane bounds. Cold start: 23:00 and 90 minutes.
+- **Updates at the greeting.** The session-start check is read-only (`tools/check-update.sh`, 3s timeout, offline silent). The greeting offers `vX -> vY`; yes runs `tools/update-flow.sh` (checkpoint -> update -> repair), then the save ritual and a reload. No silent background pull, no one-session-late note. Declining snoozes that version.
+- **Close is a save boundary.** `SessionEnd` / idle writes a checkpoint, then a detached close-save worker (`claude -p`, `opencode run`, `gemini -p`, `codex exec`) runs the full save; if it dies, the pending marker is folded in on the next boot. Team member machines stay checkpoint-only.
+- **External skill sources are personal and pinned.** `main/skill-sources.txt` is yours and never overwritten; the engine file is an example. Entries need `name@version`, unpinned entries are skipped, every run logs to `logs/update-skills.log`, and the updater installs when missing.
+- **Canonical repo guard.** `tools/check-personal.sh` refuses a filled template; `tools/git-guard.sh` blocks a clone from publishing personal zones to canonical `main`; `repair.sh` installs the guard. The 2026-10-19 leak was cleaned in `2339b5e`.
+- **Docs and housekeeping.** README hooks section + Cognitio brain mark, `tools/hooks/README.md` (capability matrix, kill switch, doctor), manual rev 0.12.0 (the brief is the load; skip the shell load), BOOT Step 4 wires the spine, `/remove-cv4` removes the hook entries and opencode plugin. `tools/session-scan.sh` surfaces recently closed Claude sessions; the save skill and every injected skill now carry the absolute Home path.
+- **Fixtures and self-test.** 29 hook checks (dispatcher, four adapter shapes, install/uninstall idempotency, close worker, kill switch, shadow, adaptive timing) run inside `tools/self-test.sh`.
+
 ## 0.11.6 - 2026-10-19
 - The save ritual now performs the monthly log rotation its protocol documents: `logs/current/` moves to `logs/archived/YYYY-MM/` when the month turns (or the folder grows heavy). Documentation and ritual say the same thing now.
 
