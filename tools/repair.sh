@@ -42,5 +42,12 @@ if [ ! -d logs/current ]; then
   note "restored logs/current"
 fi
 
+# 6. Pre-push guard: no clone publishes a filled personal instance to the canonical
+#    main (0.12.0). Never overwrite a hook the user already has.
+if [ -d .git/hooks ] && [ ! -f .git/hooks/pre-push ] && [ -f tools/git-guard.sh ]; then
+  bash tools/git-guard.sh --install --quiet >/dev/null 2>&1 || true
+  note "installed the pre-push guard"
+fi
+
 [ "$QUIET" = 1 ] || echo "repair: done"
 exit 0

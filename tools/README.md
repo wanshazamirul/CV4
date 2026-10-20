@@ -10,7 +10,8 @@
 | `trust-home.sh` | user-run once: marks this CV4 folder as trusted in Claude Code (the documented fix for the repeating "do you trust this folder?" prompt). Run it yourself in a terminal; the trust flag is consent-shaped, so agents do not set it |
 | `trust-home.cmd` | Windows wrapper for cmd/PowerShell: finds Git Bash and runs `trust-home.sh` for you |
 | `scaffold-library.sh` | top up missing standard books (README keys included); never overwrites filled content |
-| `git-guard.sh` | team forks: pre-push hook so member machines push to `dev`, not `main`; `--install` |
-| `self-test.sh` | proves the engine end to end: layout, wiring, registries, then an integration pass (installer, scaffold, hook, guard) in a scratch copy; `--quick` skips the pass |
+| `git-guard.sh` | pre-push guard: member machines push to `dev` + PR, never straight to main; any clone is blocked from publishing a filled personal instance to the canonical `CV4` main (escape hatch `CV4_ALLOW_PERSONAL=1`); `--install [--quiet]` |
+| `check-personal.sh` | canonical-template gate: fails when `main/`, `memory/`, or `logs/current/` look lived-in; keep instance memory on a personal branch or fork |
+| `self-test.sh` | proves the engine end to end: layout, wiring, registries, then an integration pass (installer, scaffold, hook, guard) in a scratch copy; `--quick` skips the pass; `--canonical` adds the personal-zone release gate |
 
 `.fts.db` is derived: delete it and rebuild in seconds. Windows: use `python` where docs say `python3`.

@@ -1,13 +1,13 @@
-# Relationship Memory - wan
+# Relationship Memory - [USER_NAME]
 *Who they are, what they like, how they work. Grows through use.*
 
 ## Basics
-- **Name**: wan
-- **Timezone**: TST (UTC+8, Malaysia)
-- **Languages**: English
-- **Language mix**: English
-- **Script level**: English/ASCII
-- **Tone preference**: warm voice, generous emoji, short answers
+- **Name**: [USER_NAME]
+- **Timezone**: [tz]
+- **Languages**: [spoken]
+- **Language mix**: [set by how they write: e.g. English + Japanese words, or English only]
+- **Script level**: [romaji or native script (kanji/kana), mirroring the user]
+- **Tone preference**: [from BOOT]
 
 ## Preferences
 - (communication quirks, formatting likes, humor, when they prefer short vs long)
@@ -18,7 +18,7 @@
 - **Routines worth knowing**:
 
 ## History highlights
-- 2026-10-19: first boot, companion initialized
+- (first boot, companion initialized)
 
 ## Notes
 - Facts land here only when they came from the person directly. Guesswork stays out.

@@ -1,19 +1,21 @@
 #!/bin/bash
 # Self-test: prove this instance's engine, end to end.
 # Read-only on the live repo; the integration pass runs in a scratch copy.
-# Usage: bash tools/self-test.sh [--root DIR] [--quick] [--quiet]
-#   --quick  layout + engine checks only (skip the scratch integration pass)
-#   --quiet  print only findings and the result
+# Usage: bash tools/self-test.sh [--root DIR] [--quick] [--quiet] [--canonical]
+#   --quick      layout + engine checks only (skip the scratch integration pass)
+#   --quiet      print only findings and the result
+#   --canonical  release gate: fail if the template's personal zones are filled
 # Exit: 0 = PASS, 1 = FAIL
 set -u
 
-ROOT=""; QUICK=0; QUIET=0
+ROOT=""; QUICK=0; QUIET=0; CANONICAL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --root) ROOT="${2:-}"; shift ;;
     --quick) QUICK=1 ;;
     --quiet) QUIET=1 ;;
-    -h|--help) sed -n '2,7p' "$0"; exit 0 ;;
+    --canonical) CANONICAL=1 ;;
+    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
     *) echo "self-test: unknown flag $1" >&2; exit 2 ;;
   esac
   shift
@@ -54,6 +56,15 @@ if [ -d "$ROOT/commands" ]; then
   [ -f "$ROOT/commands/remove-cv4.md" ] && ok "remove-cv4 command template present" || fail "commands/remove-cv4.md missing"
 fi
 [ -f "$ROOT/LICENSE" ] && ok "license present" || fail "LICENSE missing"
+
+# --- 1b. canonical release gate: personal zones stay empty ------------------
+if [ "$CANONICAL" = 1 ] && [ -f "$ROOT/tools/check-personal.sh" ]; then
+  if bash "$ROOT/tools/check-personal.sh" --root "$ROOT" --quiet >/dev/null 2>&1; then
+    ok "canonical personal zones clean"
+  else
+    fail "canonical personal zones are filled (keep instance memory off main)"
+  fi
+fi
 
 # --- 2. skills engine: router current, wiring complete -----------------------
 if [ -f "$ROOT/tools/install-skills.sh" ]; then
@@ -103,6 +114,9 @@ if [ -f "$ROOT/tools/trust-home.sh" ]; then
 fi
 if [ -f "$ROOT/tools/repair.sh" ]; then
   bash -n "$ROOT/tools/repair.sh" && ok "repair syntax ok" || fail "repair syntax error"
+fi
+if [ -f "$ROOT/tools/check-personal.sh" ]; then
+  bash -n "$ROOT/tools/check-personal.sh" && ok "check-personal syntax ok" || fail "check-personal syntax error"
 fi
 
 # --- 6. integration pass in a scratch copy ----------------------------------

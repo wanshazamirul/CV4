@@ -4,7 +4,7 @@
 ## Hot (recent, last ~12)
 | Tag | Date | Keypoint |
 |-----|------|----------|
-| `first-boot` | 2026-10-19 | Companion initialized. wan / mira / warm / generous / short / Malaysia |
+| `first-boot` | <date> | Companion initialized. |
 
 ## Warm (older, ~20 max)
 | Tag | Date | Keypoint |
