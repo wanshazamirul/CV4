@@ -1,13 +1,16 @@
 #!/bin/bash
-# External skill updater. Reads tools/skill-sources.txt and keeps each registered
-# source installed and current. Background-friendly: silent when offline or nothing to do.
+# External skill updater. Reads main/skill-sources.txt (your opt-in list) and keeps
+# each registered source installed and current. Falls back to the engine example
+# tools/skill-sources.txt when the personal list does not exist yet.
+# Background-friendly: silent when offline or nothing to do.
 # Pinned by design: an entry without @version is skipped, never run (supply chain).
 # Every run appends one line to logs/update-skills.log; failures never break a session.
 # Usage: bash tools/update-skills.sh
 set -u
 cd "$(dirname "$0")/.." || exit 0
 
-SOURCES="tools/skill-sources.txt"
+SOURCES="main/skill-sources.txt"
+[ -f "$SOURCES" ] || SOURCES="tools/skill-sources.txt"
 [ -f "$SOURCES" ] || exit 0
 
 # Claude is the only provider for now; skip on machines that do not have it.

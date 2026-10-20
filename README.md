@@ -229,6 +229,8 @@ Created locally at first boot (yours forever):
 
 Your own rituals live in `my-skills/`: never overwritten, and on overlapping triggers yours win.
 
+**External skill packs** (optional): add `npm name@version` to `main/skill-sources.txt` and CV4 keeps that pack installed and current in your Claude skills folder. Pinned only; every run logs to `logs/update-skills.log`. The engine file `tools/skill-sources.txt` is an example, and nothing installs by default.
+
 ## Staying updated
 
 ```ascii

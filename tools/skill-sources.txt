@@ -1,9 +1,11 @@
 # External skill sources. One entry per line.
+# This engine file is an example. Your own list lives in main/skill-sources.txt
+# (personal zone, never overwritten by engine updates).
 # Format: npm  name@version
-#   npm  name@version  -> runs: npx --yes name@version update --providers=claude --scope=global
+#   npm  name@version  -> runs: npx --yes name@version update ... (installs if missing)
 #   git  url@ref       -> reserved (not yet supported)
 # Blank lines and lines starting with # are ignored.
 # Pinned by design: an entry without @version is skipped, never run.
 # Every run appends one line to logs/update-skills.log.
 
-npm impeccable@4.7.0
+# npm impeccable@4.7.0
