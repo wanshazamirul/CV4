@@ -444,9 +444,10 @@ class Ctx:
         except OSError:
             pass
         nxt = self._next_item()
+        where = "while you were away" if data.get("trigger") == "idle" else "in the background"
         return (
-            f"autosave: {data.get('at')} while you were away. "
-            f"Greet with one line: autosaved, then next: {nxt or 'continue where we left off'}."
+            f"autosave: {data.get('at')} {where}. "
+            f"Tell the user in one line: autosaved, then next: {nxt or 'continue where we left off'}."
         )
 
     def _last_session_label(self) -> str:
@@ -814,9 +815,10 @@ class Ctx:
             return ""
         low = prompt.lower()
         flags = self.flags()
+        note = self._autosave_note()
 
         if self._yes_no_update(low):
-            return self._update_instruction()
+            return self._with_note(note, self._update_instruction())
 
         save = re.search(
             r"\b(save|save progress|save session|wrap up|wrap it up|close session|end session|"
@@ -829,11 +831,11 @@ class Ctx:
             flags["save_done"] = False
             self.state["save_requested_at"] = now().timestamp()
             self.checkpoint(f"save requested ({save.group(0)})")
-            return self._skill(
+            return self._with_note(note, self._skill(
                 "save",
                 "goodbye detected. This is a full save, not lite. Run the ritual now, then reply with exactly two short lines: "
                 "saved: <what landed> | next: <top item from main/current-session.md Next, or continue where we left off>.",
-            )
+            ))
 
         debug = re.search(
             r"\b(bug|broken|not working|doesn'?t work|does not work|error|fails?|failing|"
@@ -848,23 +850,28 @@ class Ctx:
                 "recall-memory",
                 "bug-shaped prompt. Recall evidence is below. Cite a file, or say 'Recall: clear', before the first edit.",
             )
-            return (recall + "\n\n" + skill).strip()
+            return self._with_note(note, (recall + "\n\n" + skill).strip())
 
         if re.search(r"\b(build|implement|ship|create|add (a )?feature|refactor|rewrite)\b", low):
-            return self._skill(
+            return self._with_note(note, self._skill(
                 "build-protocol",
                 "build track. G0: freedom words expand what may be built, never which gates run. Follow the protocol.",
-            )
+            ))
 
         if re.search(r"\b(remind me|don'?t forget|dont forget|check reminders|what'?s open|whats open|add a reminder)\b", low):
-            return self._skill("check-reminders", "reminders request.")
+            return self._with_note(note, self._skill("check-reminders", "reminders request."))
         if re.search(r"\b(log (this )?decision|decision made|let'?s go with|we'?ll go with|we will go with|decided)\b", low):
-            return self._skill("decision-log", "decision detected.")
+            return self._with_note(note, self._skill("decision-log", "decision detected."))
         if re.search(r"\b(forge|that keeps happening|happened again|again and again|third time|3rd time)\b", low):
-            return self._skill("forge", "repetition detected.")
+            return self._with_note(note, self._skill("forge", "repetition detected."))
         if re.search(r"\b(what do you think of this|review this|import this|adopt this|check this (tool|repo|skill|file))\b", low):
-            return self._skill("intake", "foreign material detected. Screen it before it lands.")
-        return ""
+            return self._with_note(note, self._skill("intake", "foreign material detected. Screen it before it lands."))
+        return self._with_note(note, "")
+
+    def _with_note(self, note: str, text: str) -> str:
+        if not note:
+            return text
+        return (note + ("\n\n" + text if text else "")).strip()
 
     def _yes_no_update(self, low: str) -> bool:
         if not self.flags().get("update_offered"):
@@ -1019,36 +1026,16 @@ class Ctx:
             return None
         trigger = self._save_trigger()
         if trigger:
-            max_blocks = int(self.policy.get("auto_save", {}).get("max_blocks", 2))
-            if self.event.get("stop_hook_active"):
-                self.save_state()
-                return None
-            if int(self.state.get("blocks", 0)) >= max_blocks:
-                self.save_state()
-                return None
-            self.state["blocks"] = int(self.state.get("blocks", 0)) + 1
-            self.state["last_block_kind"] = trigger
-            flags["save_requested"] = True
-            flags["save_done"] = False
-            self.state["save_requested_at"] = now().timestamp()
             if trigger == "late":
                 self.state["late_done_date"] = f"{self.user_now():%Y-%m-%d}"
             if trigger == "cadence":
                 self.state["last_cadence_at"] = now().timestamp()
-            self.checkpoint(f"autosave trigger: {trigger}")
-            self.log("block", f"save-{trigger}")
+            self._autosave(trigger)
             self.save_state()
-            return (
-                f"CV4 autosave ({trigger}). Run the save ritual now: skills/save. "
-                "Write the session log, memory/index, decisions, reminders sweep, rotation. "
-                "Then reply with exactly two short lines: "
-                "saved: <what landed> | next: <top item from main/current-session.md Next, or continue where we left off>"
-            )
+            return None
         if self._suggest_due() and not flags.get("suggested"):
             flags["suggested"] = True
-            self.save_state()
-            self.log("inject", "save-suggestion")
-            return {"suggest": "This session is long. Offer a save in one line when there is a natural pause."}
+            self.log("skip", "save-suggested")
         self.save_state()
         return None
 
@@ -1136,6 +1123,26 @@ class Ctx:
             except OSError:
                 continue
         return False
+
+    def _autosave(self, trigger: str) -> None:
+        flags = self.flags()
+        pending = self.state_dir / f"pending-save-{self.sid}.json"
+        if pending.exists():
+            return
+        self.checkpoint(f"autosave: {trigger}")
+        try:
+            write_json(self.state_dir / "autosave-note.json", {"at": iso(now()), "trigger": trigger, "session": self.sid})
+            write_json(pending, self._pending_payload())
+        except OSError:
+            pass
+        flags["save_requested"] = True
+        flags["save_done"] = False
+        self.state["save_requested_at"] = now().timestamp()
+        self.state["last_block_kind"] = trigger
+        self.save_state()
+        if self._worker_enabled():
+            self._spawn_close_worker()
+        self.log("worker", f"autosave-{trigger}")
 
     def _mark_saved(self) -> None:
         self.flags()["save_done"] = True
@@ -1242,8 +1249,8 @@ class Ctx:
             return False
 
     def pre_compact(self) -> None:
-        self.flags()["compact_seen"] = True
         self.checkpoint("pre-compact checkpoint")
+        self._autosave("pre-compact")
         self.log("skip", "pre-compact")
         self.save_state()
 

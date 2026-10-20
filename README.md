@@ -239,7 +239,7 @@ The manual is the soft layer. The hooks are the spine: deterministic triggers un
   session start ──► boot brief (identity, soul, hotlist, last session, reminders)
   your prompt   ──► skill router + auto-recall on bug-shaped asks
   first edit    ──► recall gate, once
-  turn end      ──► autosave at goodbye, learned late boundary, cadence, pre-compact
+  turn end      ──► quiet autosave worker (goodbye, late, cadence, pre-compact)
   idle 15 min   ──► autosave worker, only if nothing new happened (configurable)
   terminal close──► close-save worker (full save) or a pending checkpoint
   next greeting ──► update offer: vX -> vY, want me to update?
@@ -247,10 +247,10 @@ The manual is the soft layer. The hooks are the spine: deterministic triggers un
 
 - **Four harnesses**: Claude Code, opencode, Gemini CLI, Codex. One dispatcher, thin adapters.
 - **No brick**: any hook error, timeout, bad JSON, missing Python, read-only Home, or blocked machine exits 0 silently. The manual path survives.
-- **No loop**: one block per trigger, max 2 per session, `stop_hook_active` respected, a one-line snooze.
+- **No loop**: only the recall gate blocks, once per bug prompt. Autosave never blocks a turn.
 - **Idle autosave**: one watcher per session. It starts when the agent finishes a turn, resets on any prompt or tool call, and fires only after 15 minutes with no activity. Change it with `main/behavior.json` -> `{"auto_save": {"idle_minutes": 60}}`; `0` turns it off. It never fires while the agent is working.
-- **Quiet**: successful hooks print nothing. Claude only shows a line when a hook fails, and the installed command exits 0 silently when Home is missing, so no stray errors.
-- **Next line**: an autosave ends with `saved: ...` and `next: ...`, and an idle autosave is summarized at the next greeting. The hook never leaves you wondering what happened next.
+- **Quiet**: successful hooks print nothing. Autosave is a background worker, so Claude shows no Stop hook error. The installed command exits 0 silently when Home is missing, so no stray errors.
+- **Next line**: an autosave is summarized at your next prompt or greeting with `saved: ...` and `next: ...`. An explicit save replies immediately. The hook never leaves you wondering what happened next.
 - **Shadow mode**: `main/behavior.json` -> `{"mode": "shadow"}` logs what it would do and never blocks. `live` is the default.
 - **Kill switch**: `CV4_HOOKS=0` or `{"enabled": false}`.
 - **Doctor**: `bash tools/hooks/doctor.sh` checks adapters, fixtures, state, and the last decision.

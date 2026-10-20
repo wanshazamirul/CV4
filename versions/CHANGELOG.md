@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.5 - 2026-10-20
+- **Autosave is quiet now.** The Stop hook no longer blocks a turn. At a goodbye, late boundary, cadence boundary, or pre-compact, it writes the checkpoint and starts the save worker in the background. Claude shows no "Stop hook error", no continuation prompt, no line it does not need.
+- **The summary arrives at the next pause.** The worker writes `logs/.state/autosave-note.json`; the next prompt or the next greeting consumes it and gives you `saved: <what landed>` and `next: <top item>`. An explicit "save" or goodbye still replies with `saved:` + `next:` immediately, because that is a user-requested save.
+- **Only the recall gate blocks.** One denial on the first edit after a bug prompt, then it continues. Autosave never blocks.
+- **Manual rev 0.12.5.** The README and manual say the quiet rule.
+- **Fixture suite.** 51 hook checks, including quiet Stop, the autosave note, and the next-prompt summary.
+
 ## 0.12.4 - 2026-10-20
 - **Every autosave hands back a next line.** The autosave block now asks for exactly two short lines: `saved: <what landed>` and `next: <top item from main/current-session.md Next, or continue where we left off>`. The save skill documents the two-line confirm. No more finishing a save with no idea what comes next.
 - **Idle autosave is summarized at the next greeting.** When the idle watcher fires, it writes `logs/.state/autosave-note.json`. The next load consumes it and greets with "autosaved while you were away" plus the next item. If the worker failed, the pending marker is still surfaced.

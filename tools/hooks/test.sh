@@ -71,7 +71,8 @@ expect_json "save prompt injects the save skill" "$OUT" '"goodbye detected" in d
 # 3. work + stop gate
 run PostToolUse '{"session_id":"hk1","tool_name":"Edit","tool_input":{"file_path":"/tmp/x.ts"}}' >/dev/null
 OUT="$(run Stop '{"session_id":"hk1","last_assistant_message":"done"}')"
-expect_json "stop blocks once for autosave" "$OUT" 'd["decision"] == "block" and "autosave" in d["reason"] and "next:" in d["reason"]'
+expect_empty "stop autosaves quietly (no hook error)" "$OUT"
+if [ -f "$T/logs/.state/pending-save-hk1.json" ] && [ -f "$T/logs/.state/autosave-note.json" ]; then ok "stop autosave writes note + pending"; else bad "stop autosave left no trace"; fi
 
 # 4. simulated save clears the gate
 mkdir -p "$T/logs/current"
@@ -145,7 +146,8 @@ OUT="$(run UserPromptSubmit '{"session_id":"hk9","prompt":"save and wrap up"}' g
 expect_json "gemini prompt injects save" "$OUT" '"additionalContext" in d["hookSpecificOutput"] and "goodbye detected" in d["hookSpecificOutput"]["additionalContext"]'
 run PostToolUse '{"session_id":"hk9","tool_name":"write_file","tool_input":{"file_path":"/tmp/g.ts"}}' gemini >/dev/null
 OUT="$(run Stop '{"session_id":"hk9"}' gemini)"
-expect_json "gemini turn end denies to force save" "$OUT" 'd["decision"] == "deny" and "autosave" in d["reason"]'
+expect_empty "gemini turn end autosaves quietly" "$OUT"
+[ -f "$T/logs/.state/pending-save-hk9.json" ] && ok "gemini autosave writes a pending marker" || bad "gemini autosave left no marker"
 run SessionStart '{"session_id":"hk11","source":"startup"}' gemini >/dev/null
 run UserPromptSubmit '{"session_id":"hk11","prompt":"this is broken"}' gemini >/dev/null
 OUT="$(run PreToolUse '{"session_id":"hk11","tool_name":"replace","tool_input":{"file_path":"/tmp/g.ts"}}' gemini)"
@@ -157,7 +159,8 @@ OUT="$(run UserPromptSubmit '{"session_id":"hk10","prompt":"save and wrap up"}' 
 expect_json "codex prompt injects save" "$OUT" '"additionalContext" in d["hookSpecificOutput"] and "goodbye detected" in d["hookSpecificOutput"]["additionalContext"]'
 run PostToolUse '{"session_id":"hk10","tool_name":"apply_patch","tool_input":{"file_path":"/tmp/c.ts"}}' codex >/dev/null
 OUT="$(run Stop '{"session_id":"hk10"}' codex)"
-expect_json "codex turn end blocks to force save" "$OUT" 'd["decision"] == "block" and "autosave" in d["reason"]'
+expect_empty "codex turn end autosaves quietly" "$OUT"
+[ -f "$T/logs/.state/pending-save-hk10.json" ] && ok "codex autosave writes a pending marker" || bad "codex autosave left no marker"
 run SessionStart '{"session_id":"hk12","source":"startup"}' codex >/dev/null
 run UserPromptSubmit '{"session_id":"hk12","prompt":"this is broken"}' codex >/dev/null
 OUT="$(run PreToolUse '{"session_id":"hk12","tool_name":"apply_patch","tool_input":{"file_path":"/tmp/c.ts"}}' codex)"
@@ -303,11 +306,13 @@ cp -a "$ROOT/skills/save" "$TR/skills/"
 CV4_NOW="2026-10-20T22:55:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht1","source":"startup"}' claude >/dev/null
 CV4_NOW="2026-10-20T22:56:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht1","tool_name":"Edit","tool_input":{"file_path":"/tmp/t.ts"}}' claude >/dev/null
 OUT="$(CV4_NOW="2026-10-20T23:01:00+08:00" run_at "$TR" Stop '{"session_id":"ht1"}' claude)"
-expect_json "late boundary triggers autosave" "$OUT" 'd["decision"] == "block" and "late" in d["reason"]'
+expect_empty "late boundary autosaves quietly" "$OUT"
+[ -f "$TR/logs/.state/pending-save-ht1.json" ] && ok "late autosave writes a pending marker" || bad "late autosave left no marker"
 CV4_NOW="2026-10-21T09:00:00+08:00" run_at "$TR" SessionStart '{"session_id":"ht2","source":"startup"}' claude >/dev/null
 CV4_NOW="2026-10-21T09:01:00+08:00" run_at "$TR" PostToolUse '{"session_id":"ht2","tool_name":"Edit","tool_input":{"file_path":"/tmp/t2.ts"}}' claude >/dev/null
 OUT="$(CV4_NOW="2026-10-21T10:31:00+08:00" run_at "$TR" Stop '{"session_id":"ht2"}' claude)"
-expect_json "cadence boundary triggers autosave" "$OUT" 'd["decision"] == "block" and "cadence" in d["reason"]'
+expect_empty "cadence boundary autosaves quietly" "$OUT"
+[ -f "$TR/logs/.state/pending-save-ht2.json" ] && ok "cadence autosave writes a pending marker" || bad "cadence autosave left no marker"
 mkdir -p "$TR/logs/.state"
 "$PY" - "$TR/logs/.state/usage.jsonl" <<'PY'
 import json, sys
