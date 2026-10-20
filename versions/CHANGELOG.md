@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.2 - 2026-10-20
+- **Native `HOME` resolution.** `install.py` and `dispatch.py` now use a `home_dir()` helper that prefers `HOME` on every platform. Windows `os.path.expanduser("~")` reads `USERPROFILE` and silently ignores `HOME`, which made the isolated install test write to the real `~/.claude/settings.json` while checking a temp home. The sandbox now stays a sandbox.
+- **Native Windows close-save worker.** The worker lookup no longer relies on `shutil.which` alone: on Windows it also scans `PATH` for bare scripts with no `PATHEXT` extension, then launches them through `bash.exe`. `.cmd` and `.bat` shims go through `cmd.exe /c`; `.exe` and `.com` run directly. This is the fix for the worker silently returning false on the work PC.
+- **No local McGyver patches.** 0.12.1 fixed the interpreter probe and test isolation; 0.12.2 brings the two remaining work-PC fixes upstream, so `update-flow.sh` replaces any hand-patched `tools/` files with the native version.
+- **Fixture suite.** 41 hook checks, 43 self-test checks.
+
 ## 0.12.1 - 2026-10-20
 - **Windows interpreter probe.** `dispatch.sh`, `install.sh`, `brief.sh`, `doctor.sh`, and the fixture suite now run a real `-c "import sys"` probe before selecting Python. A Store `python3` alias that exists but fails is skipped; `python` and `py -3` are the fallbacks. This is the work PC's "All 9 failures are from python3: command not found" fix.
 - **Test isolation.** The fixture suite no longer hardcodes `python3`; every call uses the detected `$PY`. The update-flow test now runs with an isolated `HOME`, so it can never install hooks into the real harness settings. The earlier run left temp-clone hook paths in a real `~/.claude/settings.json`; `install.sh all install` now removes them.

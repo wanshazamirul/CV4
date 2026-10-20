@@ -26,6 +26,15 @@ EVENTS = [
 ]
 
 
+def home_dir() -> Path:
+    """User home directory, respecting HOME on every platform.
+    Windows expanduser ignores HOME and reads USERPROFILE, which breaks sandboxed installs."""
+    env = os.environ.get("HOME")
+    if env:
+        return Path(env)
+    return Path(os.path.expanduser("~"))
+
+
 class InstallError(Exception):
     pass
 
@@ -67,8 +76,14 @@ def dispatch_path(root: Path) -> str:
     return (root / "tools" / "hooks" / "dispatch.sh").as_posix()
 
 
+def guarded_command(root: Path, harness: str, event: str) -> str:
+    """A missing Home is a silent no-op, never a harness hook error."""
+    path = dispatch_path(root)
+    return f"bash -c 'test -f \"$0\" && exec bash \"$0\" {harness} {event} || exit 0' \"{path}\""
+
+
 def claude_command(root: Path, event: str) -> str:
-    return f'bash "{dispatch_path(root)}" claude {event}'
+    return guarded_command(root, "claude", event)
 
 
 def is_cv4_handler(handler: dict) -> bool:
@@ -77,7 +92,7 @@ def is_cv4_handler(handler: dict) -> bool:
 
 
 def claude_install(root: Path, quiet: bool) -> str:
-    path = Path(os.path.expanduser("~")) / ".claude" / "settings.json"
+    path = home_dir() / ".claude" / "settings.json"
     if not path.parent.exists():
         return "claude: not installed, skipped"
     data = read_json(path)
@@ -116,7 +131,7 @@ def claude_install(root: Path, quiet: bool) -> str:
 
 
 def claude_remove(root: Path, quiet: bool) -> str:
-    path = Path(os.path.expanduser("~")) / ".claude" / "settings.json"
+    path = home_dir() / ".claude" / "settings.json"
     if not path.exists():
         return "claude: no settings.json, nothing to remove"
     data = read_json(path)
@@ -155,7 +170,7 @@ def claude_remove(root: Path, quiet: bool) -> str:
 
 
 def claude_check(root: Path, quiet: bool) -> str:
-    path = Path(os.path.expanduser("~")) / ".claude" / "settings.json"
+    path = home_dir() / ".claude" / "settings.json"
     if not path.exists():
         return "claude: settings.json absent"
     try:
@@ -183,7 +198,7 @@ def claude_check(root: Path, quiet: bool) -> str:
 
 
 def opencode_paths():
-    home = Path(os.path.expanduser("~"))
+    home = home_dir()
     base = home / ".config" / "opencode"
     return base, base / "opencode.json", base / "plugins" / "cv4-hooks"
 
@@ -267,11 +282,11 @@ GEMINI_EVENTS = [
 
 
 def gemini_path() -> Path:
-    return Path(os.path.expanduser("~")) / ".gemini" / "settings.json"
+    return home_dir() / ".gemini" / "settings.json"
 
 
 def gemini_command(root: Path, event: str) -> str:
-    return f'bash "{dispatch_path(root)}" gemini {event}'
+    return guarded_command(root, "gemini", event)
 
 
 def gemini_install(root: Path, quiet: bool) -> str:
@@ -399,11 +414,11 @@ CODEX_EVENTS = [
 
 
 def codex_path() -> Path:
-    return Path(os.path.expanduser("~")) / ".codex" / "hooks.json"
+    return home_dir() / ".codex" / "hooks.json"
 
 
 def codex_command(root: Path, event: str) -> str:
-    return f'bash "{dispatch_path(root)}" codex {event}'
+    return guarded_command(root, "codex", event)
 
 
 def codex_install(root: Path, quiet: bool) -> str:

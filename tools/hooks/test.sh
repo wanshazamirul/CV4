@@ -207,6 +207,10 @@ PY
   OUT="$(printf '{"session_id":"cfg-%s","source":"startup"}' "$name" | HOME="$TH" bash -c "$CMD" 2>/dev/null)"
   if printf '%s' "$OUT" | grep -q 'additionalContext'; then ok "installed $name SessionStart command runs"; else bad "installed $name command failed"; fi
 done
+mv "$CR/tools/hooks/dispatch.sh" "$CR/tools/hooks/dispatch.sh.off"
+OUT="$(printf '{"session_id":"gone","source":"startup"}' | HOME="$TH" bash -c "$CMD" 2>&1)"
+if [ -z "$OUT" ]; then ok "missing Home exits 0 silently"; else bad "missing Home produced output: ${OUT:0:120}"; fi
+mv "$CR/tools/hooks/dispatch.sh.off" "$CR/tools/hooks/dispatch.sh"
 HOME="$TH" bash "$CR/tools/hooks/install.sh" all install --force --quiet >/dev/null 2>&1
 if "$PY" - "$TH" <<'PY'
 import json, sys, pathlib
@@ -319,12 +323,12 @@ if command -v git >/dev/null 2>&1; then
     git -C "$UR" remote set-url origin "$BR" >/dev/null 2>&1
     git -C "$UR" push --quiet origin main >/dev/null 2>&1
     git clone --quiet "$BR" "$UC" >/dev/null 2>&1
-    printf '0.12.1\n' > "$UC/versions/VERSION"
+    printf '9.9.9\n' > "$UC/versions/VERSION"
     git -C "$UC" -c user.name=test -c user.email=test@example.com commit -qam "test bump" >/dev/null 2>&1
     git -C "$UC" push --quiet origin main >/dev/null 2>&1
     OLDV="$(cat "$UR/versions/VERSION" 2>/dev/null || echo '?')"
     OUT="$(run_at "$UR" SessionStart '{"session_id":"up1","source":"startup"}' claude)"
-    if printf '%s' "$OUT" | grep -q "update: CV4 v$OLDV -> v0.12.1"; then ok "greeting brief offers an update"; else bad "greeting brief missed the update"; fi
+    if printf '%s' "$OUT" | grep -q "update: CV4 v$OLDV -> v9.9.9"; then ok "greeting brief offers an update"; else bad "greeting brief missed the update"; fi
     OUT="$(run_at "$UR" UserPromptSubmit '{"session_id":"up1","prompt":"yes"}' claude)"
     expect_json "yes injects the update handoff" "$OUT" '"approved the update" in d["hookSpecificOutput"]["additionalContext"]'
     OUT="$(run_at "$UR" SessionStart '{"session_id":"up2","source":"startup"}' claude)"
@@ -334,7 +338,7 @@ if command -v git >/dev/null 2>&1; then
     if printf '%s' "$OUT" | grep -q "update: CV4"; then bad "declined version still offered"; else ok "declined version is snoozed"; fi
     ( cd "$UR" && HOME="$TH" CV4_UPSTREAM="$BR" bash tools/update-flow.sh ) >/dev/null 2>&1
     NEWV="$(cat "$UR/versions/VERSION" 2>/dev/null || echo '?')"
-    [ "$NEWV" = "0.12.1" ] && ok "update-flow pulls and repairs" || bad "update-flow did not pull"
+    [ "$NEWV" = "9.9.9" ] && ok "update-flow pulls and repairs" || bad "update-flow did not pull"
   else
     ok "update test skipped (git clone unavailable)"
   fi

@@ -63,6 +63,15 @@ STOPWORDS = set(
 
 # ---------------------------------------------------------------- utilities
 
+def home_dir() -> Path:
+    env = os.environ.get("HOME")
+    if env:
+        return Path(env)
+    return Path(os.path.expanduser("~"))
+
+
+
+
 def now() -> datetime:
     raw = os.environ.get("CV4_NOW")
     if raw:
@@ -465,7 +474,7 @@ class Ctx:
         source = re.search(r"Manual rev:\s*([0-9]+\.[0-9]+\.[0-9]+)", boot)
         if not source:
             return ""
-        home = os.path.expanduser("~")
+        home = home_dir()
         candidates = [
             Path(home) / ".claude" / "CLAUDE.md",
             Path(home) / ".config" / "opencode" / "AGENTS.md",
@@ -1023,8 +1032,28 @@ class Ctx:
             "codex": ["codex", "exec"],
         }
         base = commands.get(self.harness)
-        if not base or not shutil.which(base[0]):
+        if not base:
             return False
+        exe = shutil.which(base[0])
+        if not exe and os.name == "nt":
+            # shutil.which ignores bare scripts with no PATHEXT extension on Windows.
+            for part in os.environ.get("PATH", "").split(os.pathsep):
+                candidate = Path(part.strip('"')) / base[0]
+                if candidate.is_file():
+                    exe = str(candidate)
+                    break
+        if not exe:
+            return False
+        cmd = list(base)
+        if os.name == "nt":
+            lower = exe.lower()
+            if lower.endswith((".cmd", ".bat")):
+                cmd = ["cmd.exe", "/c", exe] + base[1:]
+            elif not lower.endswith((".exe", ".com")):
+                bash = shutil.which("bash")
+                if not bash:
+                    return False
+                cmd = [bash, exe] + base[1:]
         pending = self.state_dir / f"pending-save-{self.sid}.json"
         prompt = (
             f"CV4 close-save worker. Home: {self.root}. "
@@ -1042,7 +1071,7 @@ class Ctx:
             with log.open("a", encoding="utf-8") as handle:
                 kwargs = {"start_new_session": True} if os.name == "posix" else {"creationflags": 0x00000008}
                 subprocess.Popen(
-                    base + [prompt],
+                    cmd + [prompt],
                     cwd=str(self.root),
                     env=env,
                     stdin=subprocess.DEVNULL,

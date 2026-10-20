@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude SessionStart",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude SessionStart || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude UserPromptSubmit",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude UserPromptSubmit || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude PreToolUse",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude PreToolUse || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude PostToolUse",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude PostToolUse || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude Stop",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude Stop || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -61,7 +61,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude SessionEnd",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude SessionEnd || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
@@ -72,7 +72,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"<CV4_HOME>/tools/hooks/dispatch.sh\" claude PreCompact",
+            "command": "bash -c 'test -f \"$0\" && exec bash \"$0\" claude PreCompact || exit 0' \"<CV4_HOME>/tools/hooks/dispatch.sh\"",
             "timeout": 10
           }
         ]
