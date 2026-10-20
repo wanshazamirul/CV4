@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/cognitio-brain.png" alt="Cognitio" width="96" height="96">
+</p>
+
 # CV4 - a memory engine for any AI agent, spec-driven by design
 *A folder of plain markdown that remembers. Bring your own agent: Claude Code, opencode, Gemini CLI, anything with file access.*
 

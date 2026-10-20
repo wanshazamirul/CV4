@@ -22,7 +22,7 @@ else
 fi
 
 # Invariant: my-skills/ is deliberately NOT in this list. It is the user's zone: never fetched, never overwritten.
-TEMPLATE_PATHS="BOOT.md README.md LICENSE skills tools commands versions .gitattributes .claude-plugin personas spec-kit"
+TEMPLATE_PATHS="BOOT.md README.md LICENSE skills tools commands versions .gitattributes .claude-plugin personas spec-kit assets"
 # Note: tools/skill-sources.txt ships as a template (safe default list); users may add
 # their own entries. update.sh won't overwrite personal-zone files, but skill-sources.txt
 # lives in tools/ (engine zone) so upstream additions merge in on the next pull.
