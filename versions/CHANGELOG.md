@@ -9,7 +9,7 @@
 - **External skill sources are personal and pinned.** `main/skill-sources.txt` is yours and never overwritten; the engine file is an example. Entries need `name@version`, unpinned entries are skipped, every run logs to `logs/update-skills.log`, and the updater installs when missing.
 - **Canonical repo guard.** `tools/check-personal.sh` refuses a filled template; `tools/git-guard.sh` blocks a clone from publishing personal zones to canonical `main`; `repair.sh` installs the guard. The 2026-10-19 leak was cleaned in `2339b5e`.
 - **Docs and housekeeping.** README hooks section + Cognitio brain mark, `tools/hooks/README.md` (capability matrix, kill switch, doctor), manual rev 0.12.0 (the brief is the load; skip the shell load), BOOT Step 4 wires the spine, `/remove-cv4` removes the hook entries and opencode plugin. `tools/session-scan.sh` surfaces recently closed Claude sessions; the save skill and every injected skill now carry the absolute Home path.
-- **Fixtures and self-test.** 29 hook checks (dispatcher, four adapter shapes, install/uninstall idempotency, close worker, kill switch, shadow, adaptive timing) run inside `tools/self-test.sh`.
+- **Fixtures and self-test.** 41 hook checks (dispatcher, four adapter shapes, install/uninstall idempotency, installed-command smoke, close worker, kill switch, shadow, adaptive timing, stale-session recovery, update offer/snooze/flow) run inside `tools/self-test.sh`.
 
 ## 0.11.6 - 2026-10-19
 - The save ritual now performs the monthly log rotation its protocol documents: `logs/current/` moves to `logs/archived/YYYY-MM/` when the month turns (or the folder grows heavy). Documentation and ritual say the same thing now.

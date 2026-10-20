@@ -521,20 +521,24 @@ def main() -> int:
         targets = ["claude", "opencode", "gemini", "codex"]
     else:
         targets = [target]
-    try:
-        for name in targets:
-            if name not in actions:
-                raise InstallError(f"unknown target: {name}")
-            if action not in actions[name]:
-                raise InstallError(f"unknown action: {action}")
+    errors = 0
+    for name in targets:
+        if name not in actions:
+            print(f"cv4-hooks: unknown target: {name}", file=sys.stderr)
+            errors += 1
+            continue
+        if action not in actions[name]:
+            print(f"cv4-hooks: unknown action: {action}", file=sys.stderr)
+            errors += 1
+            continue
+        try:
             line = actions[name][action](root, quiet)
             if not quiet:
                 print(line)
-        return 0
-    except InstallError as exc:
-        if not quiet:
-            print(f"cv4-hooks: {exc}", file=sys.stderr)
-        return 1
+        except InstallError as exc:
+            errors += 1
+            print(f"cv4-hooks: {name}: {exc}", file=sys.stderr)
+    return 1 if errors else 0
 
 
 if __name__ == "__main__":

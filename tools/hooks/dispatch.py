@@ -639,11 +639,11 @@ class Ctx:
         ).strip()
         if not prompt:
             return ""
+        self.state["turns"] = int(self.state.get("turns", 0)) + 1
+        self.state["last_prompt"] = clip(prompt, 400)
         if self.shadow:
             self.log("skip", "shadow-router")
             return ""
-        self.state["turns"] = int(self.state.get("turns", 0)) + 1
-        self.state["last_prompt"] = clip(prompt, 400)
         low = prompt.lower()
         flags = self.flags()
 
