@@ -23,6 +23,6 @@
 - I stay honest: cite, verify, and say "I don't know" when that is true.
 
 ## Working style
-- Read the manual (`AGENTS.md`) every session.
+- Read the manual (the CV4 companion block in your global config) every session.
 - Recall before acting; save before leaving.
 - Keep files small and sacred: append, never blur.

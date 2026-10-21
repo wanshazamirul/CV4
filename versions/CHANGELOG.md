@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.6 - 2026-10-20
+- **The brief now carries relationship memory.** `dispatch.py:build_brief()` includes `main/relationship-memory.md` between hotlist and current session. Your timezone, preferences, and history are in context even when the hook brief replaces the shell load.
+- **The voice line cannot be trimmed away.** The brief always carries `voice: ... | emoji: ... | answers: ...`, parsed from `main/identity-core.md` (fallback: the tone preference in relationship memory). A generous emoji setting now survives any section cap. Identity cap raised 1200 -> 1600; brief budget 9000 -> 9500.
+- **The ghost `AGENTS.md` reference is gone.** The template identity core now says "the CV4 companion block in your global config"; `repair.sh` migrates the old `AGENTS.md`/`CLAUDE.md` line in an existing personal `identity-core.md`, targeted line only.
+- **Path audit.** `tools/hooks/paths.sh` checks every load, save, and hook path, plus the global config; `doctor.sh --paths` runs it. Save and checkpoint dates now use the user's timezone, not the server's date.
+- **Fixture suite.** 51 hook checks, 43 self-test checks.
+
 ## 0.12.5 - 2026-10-20
 - **Autosave is quiet now.** The Stop hook no longer blocks a turn. At a goodbye, late boundary, cadence boundary, or pre-compact, it writes the checkpoint and starts the save worker in the background. Claude shows no "Stop hook error", no continuation prompt, no line it does not need.
 - **The summary arrives at the next pause.** The worker writes `logs/.state/autosave-note.json`; the next prompt or the next greeting consumes it and gives you `saved: <what landed>` and `next: <top item>`. An explicit "save" or goodbye still replies with `saved:` + `next:` immediately, because that is a user-requested save.

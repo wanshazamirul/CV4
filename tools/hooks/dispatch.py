@@ -243,13 +243,13 @@ class Ctx:
         self.state_dir = root / "logs" / ".state"
         self.checkpoint_dir = root / "logs" / "checkpoints"
         self.state_path = self.state_dir / f"{self.sid}.json"
-        self.checkpoint_path = self.checkpoint_dir / f"{now():%Y-%m-%d}-{self.sid}.md"
+        self._tz_cache = None
+        self.checkpoint_path = self.checkpoint_dir / f"{self.user_now():%Y-%m-%d}-{self.sid}.md"
         self.policy = self._load_policy()
         self.mode = str(self.policy.get("mode", "live")).lower()
         self.shadow = self.mode == "shadow"
         self.state = self._load_state()
         self.t0 = datetime.now()
-        self._tz_cache = None
 
     # -- user clock
 
@@ -356,6 +356,9 @@ class Ctx:
             "This brief is the session load. If the manual says to run tools/session-load.sh, skip it; do not double-load.",
             f"home: {self.root}. All companion paths (main/, memory/, logs/, skills/) resolve under home; use absolute paths.",
         ]
+        voice = self._voice_line()
+        if voice:
+            meta.append(voice)
 
         last = self._last_session_label()
         if last:
@@ -399,10 +402,11 @@ class Ctx:
         parts.append("\n".join(meta))
 
         sections = [
-            ("identity", self.root / "main" / "identity-core.md", 1, 1200),
+            ("identity", self.root / "main" / "identity-core.md", 1, 1600),
             ("soul", self.root / "main" / "soul.md", 2, 1800),
             ("hotlist", self.root / "main" / "hotlist.md", 3, 2200),
-            ("current session", self.root / "main" / "current-session.md", 4, 1800),
+            ("relationship", self.root / "main" / "relationship-memory.md", 4, 1400),
+            ("current session", self.root / "main" / "current-session.md", 5, 1800),
         ]
         for name, path, _prio, cap in sections:
             text = read_text(path, cap)
@@ -449,6 +453,31 @@ class Ctx:
             f"autosave: {data.get('at')} {where}. "
             f"Tell the user in one line: autosaved, then next: {nxt or 'continue where we left off'}."
         )
+
+    def _voice_line(self) -> str:
+        text = read_text(self.root / "main" / "identity-core.md", 12000)
+        def clean(match):
+            if not match:
+                return ""
+            value = match.group(1).strip().strip("*").strip()
+            if not value or value.startswith("["):
+                return ""
+            return value
+        voice = clean(re.search(r"Voice\**\s*:\s*(.+)", text, re.I))
+        emoji = clean(re.search(r"Emoji\**\s*:\s*(.+)", text, re.I))
+        answers = clean(re.search(r"Answers\**\s*:\s*(.+)", text, re.I))
+        parts = []
+        if voice:
+            parts.append(f"voice: {voice}")
+        if emoji:
+            parts.append(f"emoji: {emoji}")
+        if answers:
+            parts.append(f"answers: {answers}")
+        if parts:
+            return " | ".join(parts)
+        rel = read_text(self.root / "main" / "relationship-memory.md", 8000)
+        tone = clean(re.search(r"Tone preference\**\s*:\s*(.+)", rel, re.I))
+        return f"tone: {tone}" if tone else ""
 
     def _last_session_label(self) -> str:
         text = read_text(self.root / "main" / "current-session.md", 2000)
@@ -1114,7 +1143,7 @@ class Ctx:
             return False
         candidates = [
             self.root / "main" / "current-session.md",
-            self.root / "logs" / "current" / f"{now():%Y-%m-%d}.md",
+            self.root / "logs" / "current" / f"{self.user_now():%Y-%m-%d}.md",
         ]
         for path in candidates:
             try:

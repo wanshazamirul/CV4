@@ -246,6 +246,7 @@ The manual is the soft layer. The hooks are the spine: deterministic triggers un
 ```
 
 - **Four harnesses**: Claude Code, opencode, Gemini CLI, Codex. One dispatcher, thin adapters.
+- **Voice line**: the boot brief always carries voice, emoji, and answer length, plus `main/relationship-memory.md`. A cap or trim cannot erase your persona.
 - **No brick**: any hook error, timeout, bad JSON, missing Python, read-only Home, or blocked machine exits 0 silently. The manual path survives.
 - **No loop**: only the recall gate blocks, once per bug prompt. Autosave never blocks a turn.
 - **Idle autosave**: one watcher per session. It starts when the agent finishes a turn, resets on any prompt or tool call, and fires only after 15 minutes with no activity. Change it with `main/behavior.json` -> `{"auto_save": {"idle_minutes": 60}}`; `0` turns it off. It never fires while the agent is working.

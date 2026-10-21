@@ -7,6 +7,9 @@ set -u
 ROOT="$(cd "$(dirname "$0")/../.." 2>/dev/null && pwd)" || exit 1
 QUIET=0
 [ "${1:-}" = "--quiet" ] && QUIET=1
+if [ "${1:-}" = "--paths" ]; then
+  exec bash "$ROOT/tools/hooks/paths.sh"
+fi
 FAILS=0
 say() { [ "$QUIET" = 1 ] || echo "  $1"; }
 bad() { FAILS=$((FAILS + 1)); echo "  FAIL  $1"; }

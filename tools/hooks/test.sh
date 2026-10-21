@@ -34,6 +34,15 @@ done
 [ -f "$ROOT/tools/.fts.db" ] && cp "$ROOT/tools/.fts.db" "$T/tools/"
 cp "$ROOT/tools/hooks/dispatch.py" "$ROOT/tools/hooks/dispatch.sh" "$ROOT/tools/hooks/idle-save.sh" "$T/tools/hooks/"
 printf '## Basics\n- **Timezone**: MYT (UTC+8, Malaysia)\n' > "$T/main/relationship-memory.md"
+python3 - "$T/main/identity-core.md" <<'PYID'
+import sys
+p = sys.argv[1]
+s = open(p).read()
+s = s.replace("[from BOOT: e.g. playful]", "warm")
+s = s.replace("[from BOOT: none / light / generous]", "generous")
+s = s.replace("[from BOOT: short / balanced / detailed]", "short")
+open(p, "w").write(s)
+PYID
 printf '{"auto_save":{"idle_minutes":0}}\n' > "$T/main/behavior.json"
 # Old session stamp so a save is never detected by the copy itself.
 touch -t 202001010000 "$T/main/current-session.md" 2>/dev/null || true
@@ -62,7 +71,7 @@ expect_empty() { # expect_empty <name> <body>
 
 # 1. session start brief
 OUT="$(run SessionStart '{"session_id":"hk1","source":"startup"}')"
-expect_json "session start injects a brief" "$OUT" 'len(d["hookSpecificOutput"]["additionalContext"]) > 500 and "CV4 boot" in d["hookSpecificOutput"]["additionalContext"]'
+expect_json "session start injects a brief" "$OUT" 'len(d["hookSpecificOutput"]["additionalContext"]) > 500 and "CV4 boot" in d["hookSpecificOutput"]["additionalContext"] and "relationship" in d["hookSpecificOutput"]["additionalContext"] and "emoji: generous" in d["hookSpecificOutput"]["additionalContext"]'
 
 # 2. save router
 OUT="$(run UserPromptSubmit '{"session_id":"hk1","prompt":"ok save and wrap up"}')"

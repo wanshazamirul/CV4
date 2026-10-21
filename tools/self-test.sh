@@ -127,6 +127,14 @@ fi
 if [ -f "$ROOT/tools/hooks/doctor.sh" ]; then
   bash -n "$ROOT/tools/hooks/doctor.sh" && ok "hook doctor syntax ok" || fail "hook doctor syntax error"
 fi
+if [ -f "$ROOT/tools/hooks/paths.sh" ]; then
+  bash -n "$ROOT/tools/hooks/paths.sh" && ok "path audit syntax ok" || fail "path audit syntax error"
+  if bash "$ROOT/tools/hooks/paths.sh" --quiet >/dev/null 2>&1; then
+    ok "path audit clean"
+  else
+    fail "path audit failed (run: bash tools/hooks/paths.sh)"
+  fi
+fi
 if [ -f "$ROOT/tools/hooks/test.sh" ]; then
   bash -n "$ROOT/tools/hooks/test.sh" && ok "hook test syntax ok" || fail "hook test syntax error"
   if bash "$ROOT/tools/hooks/test.sh" --quiet >/dev/null 2>&1; then

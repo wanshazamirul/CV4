@@ -20,10 +20,11 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 | `policy.json` | engine defaults; `main/behavior.json` overrides them |
 | `install.py` | merge/remove adapters, atomic writes, one rolling `.cv4bak` per config |
 | `install.sh` | Python finder for the installer |
-| `doctor.sh` | first aid: adapters, fixtures, state, kill switch, last decision |
+| `doctor.sh` | first aid: adapters, fixtures, state, kill switch, last decision; `--paths` runs the path audit |
 | `test.sh` | fixture suite, no harness and no network |
 | `checkpoint.sh` | fast pre-update checkpoint used by `update-flow.sh` (working tree + current session) |
 | `idle-save.sh` | one watcher per session; resets on activity, fires the save worker after `idle_minutes` of real inactivity |
+| `paths.sh` | read-only audit of every load, save, and hook path; run it when something "is not found" |
 | `e2e-checklist.md` | the live-harness release gate: five checks per harness, with expected evidence |
 | `adapters/claude.json` | reference shape (the installer builds it) |
 | `adapters/opencode/index.ts` | opencode plugin template; `__CV4_HOME__` is filled at install |
@@ -32,7 +33,7 @@ One policy core, thin harness adapters. The manual says how to behave; this fold
 
 | Event | What the dispatcher does |
 |---|---|
-| `session-start` | injects the budgeted boot brief (identity, soul, hotlist, current session, reminders, index hot), pending update, unsaved checkpoint |
+| `session-start` | injects the budgeted boot brief (identity, soul, hotlist, relationship memory, current session, reminders, index hot) + a guaranteed voice/emoji/answers line, pending update, unsaved checkpoint |
 | `prompt` | injects the matching skill body; on bug-shaped prompts it runs `fts.py` + hotlist and injects the hits |
 | `pre-tool` | blocks the first edit after a bug prompt once, until the model cites or clears recall |
 | `post-tool` | tracks tool, file, and command in the checkpoint |
@@ -59,6 +60,7 @@ bash tools/hooks/install.sh all install     # claude + opencode where present
 bash tools/hooks/install.sh all check
 bash tools/hooks/install.sh all remove
 bash tools/hooks/doctor.sh
+bash tools/hooks/doctor.sh --paths
 bash tools/hooks/test.sh
 ```
 
