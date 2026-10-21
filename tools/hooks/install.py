@@ -64,12 +64,14 @@ def backup(path: Path) -> None:
 
 
 def is_template(root: Path) -> bool:
-    text = ""
+    """A template clone keeps the [AI_NAME] title. A filled instance may still have
+    a stray placeholder elsewhere; that must not silently disable the hooks."""
     try:
         text = (root / "main" / "identity-core.md").read_text(encoding="utf-8", errors="replace")
     except OSError:
         return True
-    return "[AI_NAME]" in text or "[USER_NAME]" in text
+    first = text.splitlines()[0] if text.splitlines() else ""
+    return "[AI_NAME]" in first
 
 
 def dispatch_path(root: Path) -> str:

@@ -140,7 +140,8 @@ Taste rules: never assume closeness early; suffix conventions follow the person'
 
 ## Step 2 - seed memory
 
-- `main/identity-core.md` and `main/relationship-memory.md`: fill the placeholders with the interview answers, plus the detected timezone, region, and address style.
+- `main/identity-core.md`: fill **every** placeholder: your name, the user's name, voice, emoji, answers, address. The behavior spine reads the voice / emoji / answers line at every boot; a leftover `[from BOOT: ...]` means the persona is missing from the brief.
+- `main/relationship-memory.md`: fill name, timezone, languages, language mix, script level, tone preference, plus the detected region and address style.
 - `main/soul.md`: leave the seed; it grows through use.
 - `main/current-session.md`: replace the template with the first real entry: `**Last updated: <YYYY-MM-DD HH:MM> - first boot**` (the actual time, never the placeholder), then a short `## Session: First boot` with what was done and Next. Every greeting's recency math reads this stamp.
 - `memory/index.md`: add the first row: `first-boot (today) - companion initialized.`

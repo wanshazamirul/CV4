@@ -40,7 +40,7 @@ HARNESS=0
 [ -d "$HOME/.gemini" ] && HARNESS=1
 [ -d "$HOME/.codex" ] && HARNESS=1
 TEMPLATE=0
-grep -q '\[AI_NAME\]' "$ROOT/main/identity-core.md" 2>/dev/null && TEMPLATE=1
+grep -q '^# Identity Core - \[AI_NAME\]' "$ROOT/main/identity-core.md" 2>/dev/null && TEMPLATE=1
 if [ "$TEMPLATE" = 1 ]; then
   say "template clone: adapters are not expected here (run BOOT first)"
 elif [ "$HARNESS" = 1 ]; then

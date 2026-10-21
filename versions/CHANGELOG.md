@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.7 - 2026-10-20
+- **Fresh-boot alignment.** BOOT Step 2 now says to fill every identity placeholder, including voice, emoji, answers, and address. A leftover `[from BOOT: ...]` previously meant the brief's voice line was empty and the persona did not land.
+- **Partial fill no longer disables hooks.** The installer's template gate reads the identity title, not any placeholder anywhere. A filled instance with one stray `[USER_NAME]` in a secondary line still wires its hooks. `doctor` uses the same title check.
+- **Fresh-user simulation.** A filled copy installs all four adapters without `--force`, doctor and path audit PASS, the brief carries relationship memory and `voice: warm | emoji: generous | answers: short`, and the fixture suite passes.
+- **Manual rev stays 0.12.6** (the installed manual content did not change).
+
 ## 0.12.6 - 2026-10-20
 - **The brief now carries relationship memory.** `dispatch.py:build_brief()` includes `main/relationship-memory.md` between hotlist and current session. Your timezone, preferences, and history are in context even when the hook brief replaces the shell load.
 - **The voice line cannot be trimmed away.** The brief always carries `voice: ... | emoji: ... | answers: ...`, parsed from `main/identity-core.md` (fallback: the tone preference in relationship memory). A generous emoji setting now survives any section cap. Identity cap raised 1200 -> 1600; brief budget 9000 -> 9500.
