@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.8 - 2026-10-20
+- **Manual refresh is a command now.** `tools/refresh-manual.sh --write` replaces the installed companion block from `BOOT.md`, preserves the AI name, user name, Home, and everything outside the markers, and keeps one `.cv4bak` per file. `--check` prints installed vs engine rev. `update-flow.sh` calls the check and prints the exact next command. No more writing `refresh_manual.py` on the fly.
+- **Repair matches the whole line.** The ghost manual migration in `repair.sh` now matches any `Read the manual ... every session.` line, not only the old `AGENTS.md`/`CLAUDE.md` strings. A hand-edited line is healed too.
+- **Skills docs are harness-neutral.** `skills/README.md` and `skills/registry.md` no longer tell a Claude Code user to edit a non-existent `AGENTS.md`; they name the global config file per harness.
+- **Brief ordering.** Index hot now sits right after hotlist, before relationship, current session, soul, and reminders, so it is never the clip victim. Budget 9500 -> 9800, still under Claude's 10K additionalContext cap.
+- **Exact time in memory and logs.** Index rows, decisions, reminders, skill usage, history highlights, session blocks, and the current-session stamp now carry `YYYY-MM-DD HH:MM` in the user's timezone. File names and release history stay date-only; the block inside carries the time. Templates, the save / decision-log / check-reminders / intake skills, and BOOT Step 2 all say it.
+- **Fixture suite.** 52 hook checks, 45 self-test checks; manual refresh is tested end to end.
+
 ## 0.12.7 - 2026-10-20
 - **Fresh-boot alignment.** BOOT Step 2 now says to fill every identity placeholder, including voice, emoji, answers, and address. A leftover `[from BOOT: ...]` previously meant the brief's voice line was empty and the persona did not land.
 - **Partial fill no longer disables hooks.** The installer's template gate reads the identity title, not any placeholder anywhere. A filled instance with one stray `[USER_NAME]` in a secondary line still wires its hooks. `doctor` uses the same title check.

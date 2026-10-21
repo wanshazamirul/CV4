@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "mode": "live",
-  "brief_chars": 9500,
+  "brief_chars": 9800,
   "skill_chars": 6000,
   "recall_chars": 2500,
   "update": {

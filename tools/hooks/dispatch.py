@@ -403,12 +403,23 @@ class Ctx:
 
         sections = [
             ("identity", self.root / "main" / "identity-core.md", 1, 1600),
-            ("soul", self.root / "main" / "soul.md", 2, 1800),
-            ("hotlist", self.root / "main" / "hotlist.md", 3, 2200),
-            ("relationship", self.root / "main" / "relationship-memory.md", 4, 1400),
-            ("current session", self.root / "main" / "current-session.md", 5, 1800),
+            ("hotlist", self.root / "main" / "hotlist.md", 2, 2200),
         ]
         for name, path, _prio, cap in sections:
+            text = read_text(path, cap)
+            if text:
+                parts.append(f"===== {name} =====\n{text}")
+
+        # Index hot sits before the longer files: it must never be the clip victim.
+        index = self._index_hot()
+        if index:
+            parts.append("===== index hot =====\n" + index)
+
+        for name, path, _prio, cap in [
+            ("relationship", self.root / "main" / "relationship-memory.md", 3, 1400),
+            ("current session", self.root / "main" / "current-session.md", 4, 1800),
+            ("soul", self.root / "main" / "soul.md", 5, 1800),
+        ]:
             text = read_text(path, cap)
             if text:
                 parts.append(f"===== {name} =====\n{text}")
@@ -416,10 +427,6 @@ class Ctx:
         reminders = self._open_reminders()
         if reminders:
             parts.append("===== open reminders =====\n" + reminders)
-
-        index = self._index_hot()
-        if index:
-            parts.append("===== index hot =====\n" + index)
 
         return clip("\n\n".join(parts), budget)
 

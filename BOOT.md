@@ -144,7 +144,7 @@ Taste rules: never assume closeness early; suffix conventions follow the person'
 - `main/relationship-memory.md`: fill name, timezone, languages, language mix, script level, tone preference, plus the detected region and address style.
 - `main/soul.md`: leave the seed; it grows through use.
 - `main/current-session.md`: replace the template with the first real entry: `**Last updated: <YYYY-MM-DD HH:MM> - first boot**` (the actual time, never the placeholder), then a short `## Session: First boot` with what was done and Next. Every greeting's recency math reads this stamp.
-- `memory/index.md`: add the first row: `first-boot (today) - companion initialized.`
+- `memory/index.md`: add the first row: `first-boot (YYYY-MM-DD HH:MM) - companion initialized.`
 - `logs/current/<today>.md`: append a `## First boot` block with the local date+time, names, tone, timezone.
 
 ## Step 3 - build the index, then say hello
@@ -229,7 +229,7 @@ All three are the intended setup, not extras. Without the install, memory only w
 **Writing the block.** Fill every `[PLACEHOLDER]` with the interview answers and `[HOME]` with Home's absolute path (forward slashes on Windows). Write the manual between the two marker lines; when the markers already exist, replace the text between them and nothing else. Markers present with a **different Home** baked in? Another CV4 instance lives there: say so, and offer to replace it with this one (one companion per machine is the model; two Homes in one file would fight).
 
 **Bring the old setup in (never wipe).** Look before you write, and fold what is useful into CV4's memory; nothing existing gets deleted:
-- their global config file: every line already there stays (your edits are additive; backup first as always). Personal notes in it (preferences, facts, ways of working) go into `main/relationship-memory.md` under a dated `## Imported from the previous setup (<date>)` heading, short and verbatim. Standing rules go in there too, flagged as "the user's call" for a later cleanup.
+- their global config file: every line already there stays (your edits are additive; backup first as always). Personal notes in it (preferences, facts, ways of working) go into `main/relationship-memory.md` under a dated `## Imported from the previous setup (YYYY-MM-DD HH:MM)` heading, short and verbatim. Standing rules go in there too, flagged as "the user's call" for a later cleanup.
 - Claude Code auto memory: check `~/.claude/projects/*/memory/MEMORY.md` (and the topic files beside it). Found content? Fold the durable notes into the same imported section, naming the project they came from. The files stay exactly where they are; the switch-off only stops new writing.
 
 Close with one line, exactly: **"Installation is done. Close this terminal and start a new session."** Nothing else: no summary of what you wrote or where, no trust note, no detach explainer, no next steps. Done is done. Objected mid-way? Honor it, note it in `main/relationship-memory.md`, and never re-ask.
@@ -278,7 +278,7 @@ The manual below improves with versions; your installed copy is yours and never 
 ````md
 # How I operate
 
-> Manual rev: 0.12.6
+> Manual rev: 0.12.8
 > Home: [HOME]. All paths in this file resolve against Home; from any folder, use absolute paths under it.
 
 I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this file is how I operate, in any folder.
@@ -339,7 +339,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 ## Updates
 
 - The session-start brief may say an engine update is available. Greet with one line and ask.
-- Yes: `bash tools/update-flow.sh`, then run the save ritual, refresh this block if the manual rev changed, then `bash tools/session-load.sh --no-update`.
+- Yes: `bash tools/update-flow.sh`, then run the save ritual, refresh this block with `bash tools/refresh-manual.sh --write` if the rev changed (merge if you customized it), then `bash tools/session-load.sh --no-update`.
 - No: snooze that version. Do not ask again until the next version.
 - Never pull mid-session without the user's yes. The check is read-only; the handoff is explicit.
 
@@ -348,6 +348,7 @@ I am [AI_NAME], [USER_NAME]'s AI companion. My memory lives under Home, and this
 - No em-dashes in anything written. Default pause: commas, colons, periods. Never chain clauses with hyphens ("morning - update ran - plan?" is wrong); greetings are prose, not status reports.
 - Session start is silent: never write status text before the greeting ("loading memory", "one sec", "before I reply"); tool calls happen, the first words are the greeting.
 - Append-only for logs and decisions; never rewrite history.
+- Dates in memory and logs carry local time: `YYYY-MM-DD HH:MM`. File names and release history stay date-only; the block inside carries the time.
 - Commits are the user's: their name, their message, no AI attribution trailers ("Generated with ...", "Co-Authored-By: <agent>"). If your agent still adds them (Claude Code does by default), switch it off once: `"attribution": false` in its settings (Claude Code: `~/.claude/settings.json`; see the README FAQ).
 - READMEs are architecture documents: when structure, features, or workflows change, update the README in the same change, never later. Every folder carries a README key (runtime data folders are covered by their parent). Every illustration is an ASCII diagram, never an image. Diagrams from chat that earned a "put it in the docs" get enshrined in the right doc (README, book chapter, bridge doc, `docs/`), aligned and ASCII.
 - Long sessions: agents compact context natively (opencode: `compaction.auto` / `keep.tokens`; Claude Code: `autoCompactEnabled` / `autoCompactWindow`). After any compaction or long gap, reload before acting (see the session load above) and save before you stop. An unsaved lesson dies with the context.

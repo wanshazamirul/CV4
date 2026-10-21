@@ -11,7 +11,7 @@ logs/
 
 ## Write
 
-- The `save` skill appends each session block: Did / Decided / Next.
+- The `save` skill appends each session block: `## HH:MM` (local time), then Did / Decided / Next. The file name is the date; the block header carries the exact time.
 - Append only. Never edit old entries.
 
 ## Read

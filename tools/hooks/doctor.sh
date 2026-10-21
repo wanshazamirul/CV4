@@ -71,6 +71,9 @@ fi
 OUT="$(CV4_HOOKS=0 bash "$ROOT/tools/hooks/dispatch.sh" claude SessionStart 2>/dev/null <<<'{"session_id":"doctor"}')"
 [ -z "$OUT" ] && say "kill switch works" || bad "kill switch did not silence the dispatcher"
 
+if [ -f "$ROOT/tools/refresh_manual.py" ]; then
+  say "legacy tools/refresh_manual.py present; use tools/refresh-manual.py and delete the old file"
+fi
 if [ -f "$ROOT/logs/hooks.log" ]; then
   say "last decision: $(tail -1 "$ROOT/logs/hooks.log")"
 else

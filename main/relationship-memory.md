@@ -18,7 +18,7 @@
 - **Routines worth knowing**:
 
 ## History highlights
-- (first boot, companion initialized)
+- (YYYY-MM-DD HH:MM: first boot, companion initialized)
 
 ## Notes
 - Facts land here only when they came from the person directly. Guesswork stays out.

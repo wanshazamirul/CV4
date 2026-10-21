@@ -269,7 +269,7 @@ Details and the capability matrix: `tools/hooks/README.md`.
                                       (personal zone untouched)
 ```
 
-- **Check-only at session start**: `tools/check-update.sh` never pulls. The greeting offers the update; yes runs `tools/update-flow.sh` (checkpoint -> update -> repair), then the save ritual and a reload.
+- **Check-only at session start**: `tools/check-update.sh` never pulls. The greeting offers the update; yes runs `tools/update-flow.sh` (checkpoint -> update -> repair), then the save ritual, `bash tools/refresh-manual.sh --write` if the manual rev changed, and a reload.
 - **Auto-updated**: `assets/` `skills/` `tools/` `commands/` `versions/` `BOOT.md` `README.md` `.claude-plugin/` `personas/` `spec-kit/`
 - **Yours forever**: `main/` `memory/` `logs/` `library/` `my-skills/` · the companion block in your global config
 - After an update, `repair.sh` re-wires the skills engine (project and global skill folders), tops up any missing standard book, and re-installs the behavior-spine adapters.

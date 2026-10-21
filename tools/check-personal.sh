@@ -31,12 +31,12 @@ if [ -f "$ROOT/main/relationship-memory.md" ] && ! grep -q '\[USER_NAME\]' "$ROO
 fi
 
 # Rolling session state: the template keeps its <date time> stamp.
-if [ -f "$ROOT/main/current-session.md" ] && ! grep -q '<date time>' "$ROOT/main/current-session.md"; then
+if [ -f "$ROOT/main/current-session.md" ] && ! grep -q '<date time>\|<YYYY-MM-DD HH:MM>' "$ROOT/main/current-session.md"; then
   bad "main/current-session.md (no <date time> placeholder)"
 fi
 
 # Memory index: the first-boot row stays a placeholder.
-if [ -f "$ROOT/memory/index.md" ] && ! grep -q '| <date> |' "$ROOT/memory/index.md"; then
+if [ -f "$ROOT/memory/index.md" ] && ! grep -q '| <date> |\|| <YYYY-MM-DD HH:MM> |' "$ROOT/memory/index.md"; then
   bad "memory/index.md (first-boot row is filled)"
 fi
 

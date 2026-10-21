@@ -17,7 +17,7 @@ foreign material -> FENCE -> ASSESS -> ROUTE -> MERGE -> LOG -> VERIFY
 2. **Assess** - answer with the card below. NO file writes yet.
 3. **Route** - forge ladder: hotlist line / library chapter / fold into an existing skill / new skill (last resort, never first).
 4. **Merge** - only on the human's approval. Fold-in beats new file; one rule stated once; skill = steps, chapter = knowledge; respect the format standards (`skill-format.md`, the shelf README).
-5. **Log** - registry row + decision record: source, date, license. Rejected material is logged with the reason too (precedent: the shopee-sdk evaluation).
+5. **Log** - registry row + decision record: source, `YYYY-MM-DD HH:MM`, license. Rejected material is logged with the reason too (precedent: the shopee-sdk evaluation).
 6. **Verify** - re-read the merged result; smoke the trigger against the scenario that spawned the intake; license compatibility check for anything entering a distributed repo.
 
 ## Assessment card (the answer to "what do you think?")

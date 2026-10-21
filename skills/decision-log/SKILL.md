@@ -17,13 +17,13 @@ description: "Triggers when a non-obvious decision is made ('let's go with X', '
 1. Append to `memory/decisions.md`:
 
    ```md
-   ## YYYY-MM-DD - <short title>
+   ## YYYY-MM-DD HH:MM - <short title>
    **Context**: what situation forced the choice
    **Decision**: what was chosen (and what was rejected)
    **Why**: trade-offs, constraints, evidence
    ```
 
-2. Add a one-line row to `memory/index.md`: `` `decision-slug` (date): one-line summary ``.
+2. Add a one-line row to `memory/index.md`: `` `decision-slug` (YYYY-MM-DD HH:MM): one-line summary ``.
 3. Confirm: "Logged: <title>".
 
 ## Read / search

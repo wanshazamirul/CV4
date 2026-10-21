@@ -5,4 +5,4 @@
 | skill | zone | uses | last |
 |---|---|---|---|
 
-Zones: `bank` = `skills/` · `mine` = `my-skills/`.
+Zones: `bank` = `skills/` · `mine` = `my-skills/`. `last` is the local `YYYY-MM-DD HH:MM`.

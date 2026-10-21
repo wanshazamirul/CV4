@@ -32,7 +32,7 @@ A skill is a small file with a **trigger** (its `description`) and a **procedure
 
 ## Wiring (once per machine)
 
-`bash tools/install-skills.sh --global` links every skill into each harness's native discovery paths: the project folders (opencode `.opencode/skills/`, Claude Code `.claude/skills/`, generic `.agents/skills/`) and the global ones (`~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/`), wiring only the harnesses actually installed on the machine. The global wiring is the important half: the companion lives in your global config, so sessions start in any folder, and a ritual like `save` must resolve there too. It also stamps the router block (G0 + trigger table) into `AGENTS.md`.
+`bash tools/install-skills.sh --global` links every skill into each harness's native discovery paths: the project folders (opencode `.opencode/skills/`, Claude Code `.claude/skills/`, generic `.agents/skills/`) and the global ones (`~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/`), wiring only the harnesses actually installed on the machine. The global wiring is the important half: the companion lives in your global config, so sessions start in any folder, and a ritual like `save` must resolve there too. It also stamps the router block (G0 + trigger table) into the repo agent files that carry its markers (`AGENTS.md` for opencode/Codex; `CLAUDE.md`/`GEMINI.md` stay pointers).
 
 The session-start updater runs this with `--global` after every update, so the wiring never goes stale. Wired copies carry a `.cv4-wired` marker and are refreshed in place; a real folder you made yourself is never touched. No symlinks on your filesystem (Windows without dev mode)? Add `--copy`, and the marked copies refresh the same way. `--check` reports state.
 
@@ -40,7 +40,7 @@ The session-start updater runs this with `--global` after every update, so the w
 
 1. Create `my-skills/<name>/SKILL.md` with `name` + `description` + the procedure.
 2. Add a row to `my-skills/registry.md` (the gate reads it).
-3. Mention it in your `AGENTS.md` skills line (so every session sees it).
+3. Mention it in your global companion block's skills line (`CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`) so every session sees it.
 4. Log it in `memory/index.md`.
 
 Or let `forge` propose it when a pattern repeats: it scans both registries first, and your skills win (fold-in offered, never an overlap). Bank skills (`skills/`) are template-owned and update automatically; anything personal belongs in `my-skills/`.

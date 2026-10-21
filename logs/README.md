@@ -9,7 +9,7 @@ logs/
 └── protocol.md  the full rules
 ```
 
-**Write:** the `save` skill appends each session block (Did / Decided / Next). Append-only. Never edit old entries.
+**Write:** the `save` skill appends each session block: `## HH:MM` (local time) then Did / Decided / Next. The file name is the date; the block header carries the exact time. Append-only. Never edit old entries.
 
 **Read:** recall searches here first for "what did we do" questions. The forge mini-review reads the last month.
 

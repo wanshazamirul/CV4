@@ -1,9 +1,9 @@
 # Current Session
 *Rolling state. Keep the last 3 sessions max; older ones already live in `logs/`.*
 
-**Last updated: <date time> - <one-line theme>**
+**Last updated: <YYYY-MM-DD HH:MM> - <one-line theme>**
 
-## Session: <theme> (<date> -> now)
+## Session: <theme> (<YYYY-MM-DD HH:MM> -> now)
 
 ### What was done
 - ...

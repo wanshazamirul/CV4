@@ -27,5 +27,9 @@ if [ "$OLD" = "$NEW" ]; then
 else
   echo "update: v$OLD -> v$NEW"
 fi
-echo "next: run the save ritual (skills/save), refresh the installed manual block if the rev changed, then bash tools/session-load.sh --no-update."
+if [ -f tools/refresh-manual.sh ]; then
+  MANUAL="$(bash tools/refresh-manual.sh --check 2>/dev/null || true)"
+  [ -n "$MANUAL" ] && printf '%s\n' "$MANUAL"
+fi
+echo "next: run the save ritual (skills/save); if the manual is stale, run bash tools/refresh-manual.sh --write (or merge if customized); then bash tools/session-load.sh --no-update."
 exit 0

@@ -57,9 +57,8 @@ fi
 
 # 8. Ghost manual reference in the personal identity core (0.12.6): the manual is
 #    the global companion block, not a repo file. Targeted line only, no rewrite.
-if [ -f main/identity-core.md ] && grep -Eq 'Read the manual \(`(AGENTS|CLAUDE)\.md`\)' main/identity-core.md 2>/dev/null; then
-  sed -e 's/Read the manual (`AGENTS.md`)/Read the manual (the CV4 companion block in your global config)/' \
-      -e 's/Read the manual (`CLAUDE.md`)/Read the manual (the CV4 companion block in your global config)/' \
+if [ -f main/identity-core.md ] && grep -Eq '^[[:space:]]*-?[[:space:]]*Read the manual .* every session\.' main/identity-core.md 2>/dev/null; then
+  sed -E 's/^[[:space:]]*-?[[:space:]]*Read the manual .* every session\.$/- Read the manual (the CV4 companion block in your global config) every session./' \
       main/identity-core.md > main/.identity-core.tmp 2>/dev/null && mv main/.identity-core.tmp main/identity-core.md
   note "fixed the ghost manual reference"
 fi

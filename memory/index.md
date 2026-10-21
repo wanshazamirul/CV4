@@ -2,12 +2,12 @@
 *Fast recall layer. One line per durable item. Hot = recent, Warm = older, Cold = era summaries.*
 
 ## Hot (recent, last ~12)
-| Tag | Date | Keypoint |
+| Tag | Date/time | Keypoint |
 |-----|------|----------|
-| `first-boot` | <date> | Companion initialized. |
+| `first-boot` | <YYYY-MM-DD HH:MM> | Companion initialized. |
 
 ## Warm (older, ~20 max)
-| Tag | Date | Keypoint |
+| Tag | Date/time | Keypoint |
 |-----|------|----------|
 
 ## Cold (era summaries)

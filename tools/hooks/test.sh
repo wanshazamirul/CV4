@@ -377,6 +377,28 @@ else
   ok "update test skipped (no git)"
 fi
 
+# 17. manual refresh: update the block, preserve names and Home
+RH="$T/refresh-home"; mkdir -p "$RH/.claude"
+cat > "$RH/.claude/CLAUDE.md" <<'EOF'
+# Notes
+<!-- CV4 companion: start (delete this block, markers included, to detach) -->
+# How I operate
+
+> Manual rev: 0.0.1
+> Home: /tmp/cv4. All paths in this file resolve against Home.
+
+I am mira, wan's AI companion.
+<!-- CV4 companion: end -->
+tail
+EOF
+HOME="$RH" bash "$ROOT/tools/refresh-manual.sh" --write --root "$ROOT" >/dev/null 2>&1
+REV="$(grep -m1 'Manual rev' "$ROOT/BOOT.md" | sed 's/.*Manual rev: //')"
+if grep -q "Manual rev: $REV" "$RH/.claude/CLAUDE.md" && grep -q "I am mira" "$RH/.claude/CLAUDE.md" && [ "$(tail -1 "$RH/.claude/CLAUDE.md")" = "tail" ]; then
+  ok "manual refresh preserves names/home and updates the rev"
+else
+  bad "manual refresh failed"
+fi
+
 # 12. no personal-zone writes from the test itself
 if [ -e "$ROOT/logs/hooks.log" ] && grep -q '"sid":"hk' "$ROOT/logs/hooks.log" 2>/dev/null; then
   bad "test wrote into the live hooks.log"
